@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SmallPlaneValue.com — Honest GA Aircraft Valuations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+<style>
+/* ── reset & tokens ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --sky: #0B2545;
+  --sky-mid: #134074;
+  --sky-light: #1a5fa8;
+  --accent: #E8A020;
+  --accent-light: #f5c355;
+  --white: #F7F5F0;
+  --offwhite: #EEE9E0;
+  --muted: #7A8A9A;
+  --danger: #C0392B;
+  --success: #1a7a4a;
+  --warn: #b07a10;
+  --card-bg: #ffffff;
+  --card-border: rgba(0,0,0,0.08);
+  --body: 'DM Sans', sans-serif;
+  --display: 'Bebas Neue', sans-serif;
+  --mono: 'DM Mono', monospace;
+  --radius: 10px;
+  --radius-lg: 16px;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--body);
+  background: var(--white);
+  color: var(--sky);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── nav ─────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2.5rem;
+  height: 60px;
+  background: rgba(11,37,69,0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.nav-logo {
+  font-family: var(--display);
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
+.nav-logo .accent { color: var(--accent); }
+.nav-logo-icon {
+  width: 32px; height: 32px;
+  background: var(--accent);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-logo-icon i { font-size: 18px; color: var(--sky); }
+.nav-links { display: flex; gap: 2rem; align-items: center; }
+.nav-links a {
+  font-size: 14px; color: rgba(255,255,255,0.7);
+  text-decoration: none; transition: color .15s;
+  letter-spacing: 0.01em;
+}
+.nav-links a:hover { color: var(--white); }
+.nav-cta {
+  background: var(--accent); color: var(--sky);
+  border: none; border-radius: var(--radius);
+  padding: 7px 16px; font-size: 13px; font-weight: 500;
+  cursor: pointer; font-family: var(--body);
+  transition: background .15s;
+}
+.nav-cta:hover { background: var(--accent-light); }
+
+/* ── hero ────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  background: var(--sky);
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 60% 40%, rgba(19,64,116,0.6) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 20% 80%, rgba(232,160,32,0.08) 0%, transparent 60%);
+}
+/* subtle grid texture */
+.hero-bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.hero-content {
+  position: relative; z-index: 2;
+  padding: 140px 5vw 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+.hero-kicker {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 500; letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(232,160,32,0.3);
+  padding: 5px 12px; border-radius: 99px;
+  animation: fadeUp .6s ease both;
+}
+.hero-h1 {
+  font-family: var(--display);
+  font-size: clamp(56px, 8vw, 110px);
+  line-height: 0.95;
+  color: var(--white);
+  letter-spacing: 0.02em;
+  margin-bottom: 1.5rem;
+  animation: fadeUp .6s .1s ease both;
+}
+.hero-h1 .line2 { color: var(--accent); display: block; }
+.hero-sub {
+  font-size: clamp(16px, 2vw, 20px);
+  color: rgba(247,245,240,0.65);
+  max-width: 520px;
+  line-height: 1.6;
+  font-weight: 300;
+  margin-bottom: 2.5rem;
+  animation: fadeUp .6s .2s ease both;
+}
+.hero-actions {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  animation: fadeUp .6s .3s ease both;
+}
+.btn-primary {
+  background: var(--accent); color: var(--sky);
+  border: none; border-radius: var(--radius);
+  padding: 14px 28px; font-size: 15px; font-weight: 500;
+  cursor: pointer; font-family: var(--body);
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: background .15s, transform .1s;
+  text-decoration: none;
+}
+.btn-primary:hover { background: var(--accent-light); transform: translateY(-1px); }
+.btn-ghost {
+  background: none; color: var(--white);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: var(--radius);
+  padding: 14px 28px; font-size: 15px;
+  cursor: pointer; font-family: var(--body);
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: border-color .15s, background .15s;
+  text-decoration: none;
+}
+.btn-ghost:hover { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.06); }
+
+/* hero stats strip */
+.hero-stats {
+  display: flex; gap: 3rem; flex-wrap: wrap;
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  animation: fadeUp .6s .4s ease both;
+}
+.hero-stat-val {
+  font-family: var(--display);
+  font-size: 40px;
+  color: var(--accent);
+  line-height: 1;
+}
+.hero-stat-lbl {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 4px;
+}
+
+/* ── aircraft showcase ───────────────────────────────── */
+.showcase {
+  position: relative; z-index: 2;
+  padding: 0 5vw 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+.showcase-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  animation: fadeUp .7s .5s ease both;
+}
+.aircraft-card {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  cursor: pointer;
+  group: true;
+}
+.aircraft-card img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .5s ease;
+}
+.aircraft-card:hover img { transform: scale(1.04); }
+.aircraft-card-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(11,37,69,0.9) 0%, rgba(11,37,69,0.2) 50%, transparent 100%);
+  display: flex; flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px 22px;
+}
+.aircraft-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--accent);
+  color: var(--sky);
+  font-size: 11px; font-weight: 500;
+  padding: 3px 10px; border-radius: 99px;
+  margin-bottom: 8px;
+  width: fit-content;
+  letter-spacing: 0.04em;
+}
+.aircraft-name {
+  font-family: var(--display);
+  font-size: 30px;
+  color: var(--white);
+  line-height: 1;
+  letter-spacing: 0.03em;
+}
+.aircraft-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+  margin-top: 4px;
+}
+.aircraft-val-badge {
+  position: absolute; top: 14px; right: 14px;
+  background: rgba(11,37,69,0.85);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius);
+  padding: 6px 12px;
+  font-size: 12px; font-weight: 500;
+  color: var(--white);
+  backdrop-filter: blur(8px);
+}
+.aircraft-val-badge span { color: var(--accent); }
+
+/* ── section: why us ─────────────────────────────────── */
+.section { padding: 80px 5vw; max-width: 1200px; margin: 0 auto; }
+.section-bg-alt { background: var(--offwhite); }
+.section-bg-dark { background: var(--sky); }
+
+.section-kicker {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sky-light);
+  margin-bottom: .75rem;
+}
+.section-kicker-dark { color: var(--accent); }
+.section-h2 {
+  font-family: var(--display);
+  font-size: clamp(36px, 5vw, 58px);
+  line-height: 1.0;
+  letter-spacing: 0.02em;
+  color: var(--sky);
+  margin-bottom: 1rem;
+}
+.section-h2-dark { color: var(--white); }
+.section-body {
+  font-size: 17px; color: rgba(11,37,69,0.6);
+  max-width: 560px; line-height: 1.7; font-weight: 300;
+}
+.section-body-dark { color: rgba(247,245,240,0.6); }
+
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 3rem;
+}
+.why-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  transition: transform .2s, border-color .2s;
+}
+.why-card:hover { transform: translateY(-3px); border-color: rgba(11,37,69,0.15); }
+.why-icon {
+  width: 44px; height: 44px;
+  background: rgba(19,64,116,0.08);
+  border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 1rem;
+}
+.why-icon i { font-size: 22px; color: var(--sky-light); }
+.why-title { font-size: 16px; font-weight: 500; margin-bottom: .5rem; color: var(--sky); }
+.why-text { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+/* ── tools section ───────────────────────────────────── */
+.tools-section {
+  background: var(--sky);
+  padding: 80px 0;
+}
+.tools-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 5vw;
+}
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 3rem;
+}
+.tool-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  cursor: pointer;
+  transition: background .2s, border-color .2s, transform .2s;
+  text-decoration: none;
+  display: block;
+}
+.tool-card:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(232,160,32,0.4);
+  transform: translateY(-2px);
+}
+.tool-card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.tool-icon {
+  width: 46px; height: 46px;
+  background: var(--accent);
+  border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.tool-icon i { font-size: 22px; color: var(--sky); }
+.tool-name { font-size: 17px; font-weight: 500; color: var(--white); }
+.tool-tag {
+  font-size: 11px; font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.tool-desc { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+.tool-arrow {
+  display: flex; align-items: center; justify-content: flex-end;
+  margin-top: 18px;
+}
+.tool-arrow i { font-size: 18px; color: rgba(255,255,255,0.25); transition: color .2s, transform .2s; }
+.tool-card:hover .tool-arrow i { color: var(--accent); transform: translateX(4px); }
+
+/* ── how it works ────────────────────────────────────── */
+.steps { display: flex; gap: 0; margin-top: 3rem; position: relative; }
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 22px; left: 22px; right: 22px; height: 1px;
+  background: rgba(11,37,69,0.12);
+}
+.step { flex: 1; position: relative; padding-top: 60px; padding-right: 24px; }
+.step-num {
+  position: absolute; top: 0; left: 0;
+  width: 44px; height: 44px;
+  background: var(--sky);
+  color: var(--white);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono);
+  font-size: 14px; font-weight: 500;
+  z-index: 1;
+}
+.step-title { font-size: 16px; font-weight: 500; margin-bottom: .4rem; color: var(--sky); }
+.step-text { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+/* ── aircraft type pills ─────────────────────────────── */
+.types-grid {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-top: 2rem;
+}
+.type-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--white);
+  border: 1px solid rgba(11,37,69,0.12);
+  border-radius: 99px;
+  padding: 8px 16px;
+  font-size: 14px; color: var(--sky);
+  transition: border-color .15s, background .15s;
+  cursor: default;
+}
+.type-pill i { font-size: 16px; color: var(--sky-light); }
+.type-pill:hover { border-color: var(--sky-light); background: rgba(19,64,116,0.05); }
+
+/* ── disclaimer banner ───────────────────────────────── */
+.disclaimer {
+  background: rgba(232,160,32,0.1);
+  border-top: 1px solid rgba(232,160,32,0.2);
+  padding: 16px 5vw;
+  text-align: center;
+  font-size: 13px;
+  color: rgba(11,37,69,0.6);
+}
+.disclaimer strong { color: var(--sky); }
+
+/* ── footer ──────────────────────────────────────────── */
+footer {
+  background: #070f1c;
+  padding: 48px 5vw 32px;
+}
+.footer-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; justify-content: space-between;
+  flex-wrap: wrap; gap: 2rem;
+  padding-bottom: 32px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.footer-logo {
+  font-family: var(--display);
+  font-size: 26px;
+  color: var(--white);
+  letter-spacing: 0.04em;
+}
+.footer-logo span { color: var(--accent); }
+.footer-tagline {
+  font-size: 13px; color: rgba(255,255,255,0.35);
+  margin-top: 6px; font-weight: 300;
+}
+.footer-links { display: flex; gap: 2rem; }
+.footer-links a { font-size: 13px; color: rgba(255,255,255,0.4); text-decoration: none; transition: color .15s; }
+.footer-links a:hover { color: var(--white); }
+.footer-bottom {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 20px;
+  font-size: 12px; color: rgba(255,255,255,0.2);
+  flex-wrap: wrap; gap: 8px;
+}
+
+/* ── app section ─────────────────────────────────────── */
+.app-section { background: var(--white); padding: 80px 5vw; }
+.app-inner { max-width: 960px; margin: 0 auto; }
+.tab-bar {
+  display: flex; border-bottom: 1px solid rgba(11,37,69,0.1);
+  margin-bottom: 2rem; gap: 0; overflow-x: auto;
+}
+.tab-btn {
+  background: none; border: none; cursor: pointer;
+  padding: 12px 20px; font-size: 14px; font-weight: 400;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  white-space: nowrap;
+  font-family: var(--body);
+  display: flex; align-items: center; gap: 7px;
+  transition: color .15s;
+}
+.tab-btn.active {
+  color: var(--sky); font-weight: 500;
+  border-bottom-color: var(--accent);
+}
+.tab-btn i { font-size: 16px; }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* ── form styles ─────────────────────────────────────── */
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.form-group label {
+  display: block; font-size: 12px; font-weight: 500;
+  color: var(--muted); margin-bottom: 5px; letter-spacing: .03em;
+}
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 9px 12px; border-radius: var(--radius);
+  border: 1px solid rgba(11,37,69,0.15); font-size: 14px;
+  background: var(--white); color: var(--sky);
+  font-family: var(--body); transition: border-color .15s;
+  outline: none;
+}
+.form-group input:focus, .form-group select:focus { border-color: var(--sky-light); }
+.form-group textarea { resize: vertical; min-height: 72px; }
+.chk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.chk-label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--sky); cursor: pointer;
+  padding: 7px 11px; border-radius: var(--radius);
+  border: 1px solid rgba(11,37,69,0.12);
+  transition: background .1s;
+}
+.chk-label:hover { background: rgba(19,64,116,0.05); }
+.chk-label input { width: auto; }
+.submit-btn {
+  background: var(--sky); color: var(--white);
+  border: none; border-radius: var(--radius);
+  padding: 12px 24px; font-size: 15px; font-weight: 500;
+  cursor: pointer; width: 100%; margin-top: 1rem;
+  font-family: var(--body);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: background .15s;
+}
+.submit-btn:hover { background: var(--sky-mid); }
+.submit-btn:disabled { opacity: .5; cursor: not-allowed; }
+.submit-btn.accent-btn { background: var(--accent); color: var(--sky); }
+.submit-btn.accent-btn:hover { background: var(--accent-light); }
+
+/* ── result card ─────────────────────────────────────── */
+.result-card {
+  background: var(--white);
+  border: 1px solid rgba(11,37,69,0.1);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-top: 1.5rem;
+}
+.result-main-val { font-family: var(--display); font-size: 52px; letter-spacing: .02em; color: var(--sky); line-height: 1; }
+.result-range { font-size: 14px; color: var(--muted); margin-top: 4px; }
+.metric-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 1.25rem 0; }
+.metric { background: var(--offwhite); border-radius: var(--radius); padding: 12px; text-align: center; }
+.metric-val { font-size: 16px; font-weight: 500; color: var(--sky); }
+.metric-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.metric-note { font-size: 11px; font-weight: 500; margin-top: 2px; }
+.up { color: var(--success); }
+.down { color: var(--danger); }
+.neu { color: var(--muted); }
+.analysis-text { font-size: 14px; line-height: 1.7; color: rgba(11,37,69,0.75); margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(11,37,69,0.08); }
+.tip-list { margin-top: .75rem; }
+.tip-item { display: flex; gap: 8px; font-size: 13px; padding: 5px 0; color: rgba(11,37,69,0.75); }
+.tip-item i { font-size: 15px; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+.price-bar-wrap { margin: 1.25rem 0; }
+.pbar-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+.pbar-track { height: 10px; background: var(--offwhite); border-radius: 99px; position: relative; }
+.pbar-range { position: absolute; height: 100%; background: rgba(19,64,116,0.2); border-radius: 99px; left: 0; width: 100%; }
+.pbar-likely { position: absolute; height: 100%; background: var(--sky-mid); border-radius: 99px; }
+.pbar-markers { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 4px; }
+.pbar-pin { position: absolute; top: -3px; width: 2px; height: 16px; background: var(--sky); }
+.pbar-pin-lbl { position: absolute; top: -18px; font-size: 11px; font-weight: 500; color: var(--sky); white-space: nowrap; transform: translateX(-50%); }
+
+.note-box { font-size: 12px; color: var(--muted); line-height: 1.55; margin-top: .75rem; padding: 10px 12px; background: var(--offwhite); border-radius: var(--radius); }
+
+/* spinner */
+.spin { display: none; text-align: center; padding: 2rem 0; font-size: 14px; color: var(--muted); }
+.spin.on { display: block; }
+.spin-i { font-size: 24px; animation: rot 1.1s linear infinite; display: inline-block; margin-bottom: 6px; color: var(--sky-light); }
+@keyframes rot { to { transform: rotate(360deg); } }
+
+/* badge */
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 99px; }
+.bg-green { background: rgba(26,122,74,0.1); color: var(--success); }
+.bg-amber { background: rgba(232,160,32,0.15); color: var(--warn); }
+.bg-red { background: rgba(192,57,43,0.1); color: var(--danger); }
+.bg-blue { background: rgba(19,64,116,0.1); color: var(--sky-light); }
+
+/* checklist */
+.cl-section { border: 1px solid rgba(11,37,69,0.1); border-radius: var(--radius-lg); margin-bottom: 10px; overflow: hidden; }
+.cl-sec-hdr { display: flex; align-items: center; gap: 10px; padding: 12px 16px; cursor: pointer; transition: background .1s; }
+.cl-sec-hdr:hover { background: rgba(11,37,69,0.03); }
+.cl-sec-name { font-size: 14px; font-weight: 500; color: var(--sky); flex: 1; }
+.cl-sec-count { font-size: 12px; color: var(--muted); }
+.cl-chev { font-size: 16px; color: var(--muted); transition: transform .2s; }
+.cl-chev.open { transform: rotate(180deg); }
+.cl-body { border-top: 1px solid rgba(11,37,69,0.08); }
+.cl-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 16px; border-bottom: 1px solid rgba(11,37,69,0.06); }
+.cl-item:last-child { border-bottom: none; }
+.cl-item-text { flex: 1; }
+.cl-item-name { font-size: 13px; font-weight: 500; color: var(--sky); margin-bottom: 2px; }
+.cl-item-note { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.cl-item-crit { font-size: 11px; font-weight: 500; color: var(--danger); margin-top: 3px; display: flex; align-items: center; gap: 4px; }
+.btn-grp { display: flex; gap: 4px; flex-shrink: 0; }
+.s-btn { background: none; border: 1px solid rgba(11,37,69,0.12); border-radius: var(--radius); padding: 4px 8px; font-size: 11px; font-weight: 500; cursor: pointer; color: var(--muted); transition: all .1s; }
+.s-btn.s-pass { background: rgba(26,122,74,0.1); color: var(--success); border-color: rgba(26,122,74,0.3); }
+.s-btn.s-flag { background: rgba(232,160,32,0.12); color: var(--warn); border-color: rgba(232,160,32,0.3); }
+.s-btn.s-fail { background: rgba(192,57,43,0.08); color: var(--danger); border-color: rgba(192,57,43,0.25); }
+.progress-bar { height: 4px; background: var(--offwhite); border-radius: 99px; margin-bottom: 1.5rem; overflow: hidden; }
+.prog-fill { height: 100%; background: var(--success); border-radius: 99px; transition: width .3s; }
+.cl-stats { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+.stat-pill { font-size: 12px; font-weight: 500; padding: 4px 11px; border-radius: 99px; }
+
+/* N-number lookup */
+.n-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 1rem; }
+.n-prefix { background: var(--offwhite); border: 1px solid rgba(11,37,69,0.15); border-right: none; border-radius: var(--radius) 0 0 var(--radius); padding: 0 12px; height: 38px; display: flex; align-items: center; font-size: 16px; font-weight: 500; color: var(--muted); font-family: var(--mono); }
+.n-input { border-radius: 0 var(--radius) var(--radius) 0 !important; font-family: var(--mono) !important; font-size: 16px !important; font-weight: 500 !important; letter-spacing: .06em !important; flex: 1; }
+.n-lookup-btn { background: var(--sky); color: var(--white); border: none; border-radius: var(--radius); padding: 0 20px; height: 38px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: var(--body); display: flex; align-items: center; gap: 7px; transition: background .15s; white-space: nowrap; flex-shrink: 0; }
+.n-lookup-btn:hover { background: var(--sky-mid); }
+.n-lookup-btn:disabled { opacity: .5; cursor: not-allowed; }
+.ex-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem; align-items: center; }
+.ex-lbl { font-size: 12px; color: var(--muted); }
+.ex-btn { background: none; border: 1px solid rgba(11,37,69,0.12); border-radius: var(--radius); padding: 3px 10px; font-size: 12px; cursor: pointer; color: var(--muted); font-family: var(--mono); transition: all .1s; }
+.ex-btn:hover { border-color: var(--sky-light); color: var(--sky); }
+.reg-card { background: var(--white); border: 1px solid rgba(11,37,69,0.1); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 1rem; }
+.reg-hdr { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid rgba(11,37,69,0.08); }
+.reg-aircraft-name { font-size: 18px; font-weight: 500; color: var(--sky); }
+.reg-n-tag { font-size: 13px; color: var(--muted); margin-top: 2px; font-family: var(--mono); }
+.reg-grid { display: grid; grid-template-columns: 1fr 1fr; }
+.reg-cell { padding: 12px 18px; border-bottom: 1px solid rgba(11,37,69,0.06); border-right: 1px solid rgba(11,37,69,0.06); }
+.reg-cell:nth-child(even) { border-right: none; }
+.reg-cell:nth-last-child(-n+2) { border-bottom: none; }
+.reg-lbl { font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: .04em; margin-bottom: 3px; text-transform: uppercase; }
+.reg-val { font-size: 14px; color: var(--sky); }
+.owner-row { display: flex; align-items: center; gap: 12px; padding: 10px 18px; border-bottom: 1px solid rgba(11,37,69,0.06); }
+.owner-row:last-child { border-bottom: none; }
+.owner-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(11,37,69,0.2); flex-shrink: 0; }
+.owner-dot.cur { background: var(--success); }
+.owner-name { font-size: 13px; font-weight: 500; color: var(--sky); }
+.owner-dates { font-size: 12px; color: var(--muted); }
+.flag-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 18px; border-bottom: 1px solid rgba(11,37,69,0.06); }
+.flag-row:last-child { border-bottom: none; }
+.flag-row-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.flag-txt { font-size: 13px; color: var(--sky); }
+.flag-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.sec-label { font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; margin-bottom: 8px; margin-top: 1.25rem; }
+.action-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 1rem; }
+.action-btn { background: none; border: 1px solid rgba(11,37,69,0.12); border-radius: var(--radius); padding: 10px 8px; font-size: 13px; cursor: pointer; color: var(--sky); display: flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--body); transition: background .1s; }
+.action-btn:hover { background: rgba(11,37,69,0.05); }
+
+/* ── animations ──────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── responsive ──────────────────────────────────────── */
+@media (max-width: 768px) {
+  .showcase-grid, .why-grid, .tools-grid, .form-grid-2, .form-grid-3, .action-row-3 { grid-template-columns: 1fr; }
+  .aircraft-val-badge { font-size: 11px; padding: 4px 8px; }
+  .steps { flex-direction: column; gap: 2rem; }
+  .steps::before { display: none; }
+  .step { padding-top: 0; padding-left: 60px; }
+  .step-num { top: 0; }
+  nav { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .hero-content, .showcase { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .footer-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-icon"><i class="ti ti-plane"></i></div>
+    SmallPlane<span class="accent">Value</span>
+  </a>
+  <div class="nav-links">
+    <a href="#tools">Tools</a>
+    <a href="#how-it-works">How it works</a>
+    <a href="#aircraft-types">Aircraft types</a>
+    <a href="#app">Get a valuation</a>
+  </div>
+  <button class="nav-cta" onclick="document.getElementById('app').scrollIntoView({behavior:'smooth'})">
+    Look up my plane
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-kicker">
+      <i class="ti ti-sparkles" style="font-size:13px"></i>
+      The Honest GA Valuation Tool
+    </div>
+    <h1 class="hero-h1">
+      Know What Your<br>
+      <span class="line2">Plane Is Worth.</span>
+    </h1>
+    <p class="hero-sub">
+      Real asking price ranges for piston singles, twins, LSA, and experimental aircraft — with transparent discount bands, not fabricated sale prices.
+    </p>
+    <div class="hero-actions">
+      <a href="#app" class="btn-primary">
+        <i class="ti ti-calculator"></i> Get a free valuation
+      </a>
+      <a href="#how-it-works" class="btn-ghost">
+        <i class="ti ti-info-circle"></i> How it works
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-val">6</div>
+        <div class="hero-stat-lbl">Aircraft categories</div>
+      </div>
+      <div>
+        <div class="hero-stat-val">AI</div>
+        <div class="hero-stat-lbl">Powered estimates</div>
+      </div>
+      <div>
+        <div class="hero-stat-val">100%</div>
+        <div class="hero-stat-lbl">Free to use</div>
+      </div>
+      <div>
+        <div class="hero-stat-val">0</div>
+        <div class="hero-stat-lbl">Fabricated sale prices</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Aircraft photo showcase -->
+  <div class="showcase">
+    <div class="showcase-grid">
+      <div class="aircraft-card">
+        <img src="cessna195.png" alt="Cessna 195 Businessliner in flight"
+             style="width:100%;height:100%;object-fit:cover;object-position:center;transition:transform .5s ease" />
+        <div class="aircraft-card-overlay">
+          <div class="aircraft-tag"><i class="ti ti-clock" style="font-size:11px"></i> Vintage Classic</div>
+          <div class="aircraft-name">Cessna 195</div>
+          <div class="aircraft-desc">5-seat businessliner · Jacobs R-755 radial · 1947–1954</div>
+        </div>
+        <div class="aircraft-val-badge">Typical ask: <span>$80k–$200k</span></div>
+      </div>
+      <div class="aircraft-card">
+        <img src="staggerwing.png" alt="Beechcraft Staggerwing in flight"
+             style="width:100%;height:100%;object-fit:cover;object-position:center;transition:transform .5s ease" />
+        <div class="aircraft-card-overlay">
+          <div class="aircraft-tag"><i class="ti ti-clock" style="font-size:11px"></i> Vintage / Warbird</div>
+          <div class="aircraft-name">Beech Staggerwing</div>
+          <div class="aircraft-desc">5-seat biplane · 1932–1948 · R-985 Wasp Jr.</div>
+        </div>
+        <div class="aircraft-val-badge">Typical ask: <span>$180k–$500k</span></div>
+      </div>
+      <div class="aircraft-card">
+        <img src="sr22.jpg" alt="Cirrus SR22 at sunset"
+             style="width:100%;height:100%;object-fit:cover;object-position:center top;transition:transform .5s ease" />
+        <div class="aircraft-card-overlay">
+          <div class="aircraft-tag"><i class="ti ti-star" style="font-size:11px"></i> Piston Single</div>
+          <div class="aircraft-name">Cirrus SR22</div>
+          <div class="aircraft-desc">4-seat certified · IO-550 · CAPS parachute system</div>
+        </div>
+        <div class="aircraft-val-badge">Typical ask: <span>$180k–$450k</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY SECTION -->
+<section id="why" style="background:var(--white); padding:80px 5vw;">
+  <div style="max-width:1200px; margin:0 auto;">
+    <div class="reveal">
+      <div class="section-kicker">Why SmallPlaneValue</div>
+      <h2 class="section-h2">Built for GA, not<br>jet brokers.</h2>
+      <p class="section-body">Vref and Aircraft Bluebook focus on larger turbine aircraft. We built the tool that actually works for piston singles, twins, LSA, and experimental aircraft — the planes most pilots actually fly.</p>
+    </div>
+    <div class="why-grid reveal" style="transition-delay:.1s">
+      <div class="why-card">
+        <div class="why-icon"><i class="ti ti-eye-off"></i></div>
+        <div class="why-title">No fabricated sale prices</div>
+        <div class="why-text">Unlike real estate, GA aircraft sale prices aren't publicly recorded. We're honest about that — we show asking price ranges with transparent negotiation bands instead of making numbers up.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><i class="ti ti-plane"></i></div>
+        <div class="why-title">Aircraft-specific intelligence</div>
+        <div class="why-text">Our AI knows the difference between a 1979 Cherokee 180 and a 2007 SR22T. Model-specific ADs, known issues, and avionics premiums are all factored in.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><i class="ti ti-clipboard-check"></i></div>
+        <div class="why-title">The full buyer workflow</div>
+        <div class="why-text">Look up the N-number, get the valuation, run the pre-buy checklist, then use flagged issues to negotiate. One site, the complete process.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works" style="background:var(--offwhite); padding:80px 5vw;">
+  <div style="max-width:1200px; margin:0 auto;">
+    <div class="reveal">
+      <div class="section-kicker">How it works</div>
+      <h2 class="section-h2">From N-number to<br>negotiating position.</h2>
+    </div>
+    <div class="steps reveal" style="transition-delay:.1s">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-title">Look up the N-number</div>
+        <div class="step-text">Enter any US registration and pull the full FAA record — make, model, year, engine, and ownership history in seconds.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-title">Get the valuation</div>
+        <div class="step-text">See the typical asking price range for that aircraft, the likely negotiated price, and what's driving value up or down.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-title">Run the pre-buy checklist</div>
+        <div class="step-text">Get an AI-generated inspection checklist specific to that make and model. Mark items pass, flag, or fail.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-title">Negotiate with confidence</div>
+        <div class="step-text">Flagged issues feed back into a price adjustment analysis, so you walk in knowing exactly what to ask for.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS SECTION -->
+<section id="tools" class="tools-section">
+  <div class="tools-inner">
+    <div class="reveal">
+      <div class="section-kicker section-kicker-dark">The toolkit</div>
+      <h2 class="section-h2 section-h2-dark">Everything in one place.</h2>
+      <p class="section-body section-body-dark">Four integrated tools that cover the entire aircraft buying and selling process.</p>
+    </div>
+    <div class="tools-grid reveal" style="transition-delay:.1s">
+      <a href="#app" class="tool-card" onclick="switchTab('val')">
+        <div class="tool-card-header">
+          <div class="tool-icon"><i class="ti ti-calculator"></i></div>
+          <div>
+            <div class="tool-tag">Step 2</div>
+            <div class="tool-name">AI valuation</div>
+          </div>
+        </div>
+        <div class="tool-desc">Enter make, model, year, time, condition, and avionics. Get asking price range, likely sale range, and factor-by-factor analysis.</div>
+        <div class="tool-arrow"><i class="ti ti-arrow-right"></i></div>
+      </a>
+      <a href="#app" class="tool-card" onclick="switchTab('lookup')">
+        <div class="tool-card-header">
+          <div class="tool-icon"><i class="ti ti-id"></i></div>
+          <div>
+            <div class="tool-tag">Step 1</div>
+            <div class="tool-name">N-number lookup</div>
+          </div>
+        </div>
+        <div class="tool-desc">One N-number pulls the full FAA record — make, model, ownership history, ADs, registration expiry, and buyer flags.</div>
+        <div class="tool-arrow"><i class="ti ti-arrow-right"></i></div>
+      </a>
+      <a href="#app" class="tool-card" onclick="switchTab('checklist')">
+        <div class="tool-card-header">
+          <div class="tool-icon"><i class="ti ti-clipboard-check"></i></div>
+          <div>
+            <div class="tool-tag">Step 3</div>
+            <div class="tool-name">Pre-buy checklist</div>
+          </div>
+        </div>
+        <div class="tool-desc">AI-generated inspection checklist specific to your aircraft type. Track pass, flag, and fail items. Get price adjustment guidance.</div>
+        <div class="tool-arrow"><i class="ti ti-arrow-right"></i></div>
+      </a>
+      <a href="#app" class="tool-card" onclick="switchTab('comps')">
+        <div class="tool-card-header">
+          <div class="tool-icon"><i class="ti ti-search"></i></div>
+          <div>
+            <div class="tool-tag">Reference</div>
+            <div class="tool-name">Market listings</div>
+          </div>
+        </div>
+        <div class="tool-desc">See current asking price ranges for any model — low, median, and high — plus days on market and negotiation context.</div>
+        <div class="tool-arrow"><i class="ti ti-arrow-right"></i></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- AIRCRAFT TYPES -->
+<section id="aircraft-types" style="background:var(--white); padding:80px 5vw;">
+  <div style="max-width:1200px; margin:0 auto;">
+    <div class="reveal">
+      <div class="section-kicker">Coverage</div>
+      <h2 class="section-h2">Built for the planes<br>people actually fly.</h2>
+      <p class="section-body">We cover the full spectrum of general aviation — from first trainers to high-performance experimentals.</p>
+    </div>
+    <div class="types-grid reveal" style="transition-delay:.1s">
+      <div class="type-pill"><i class="ti ti-plane"></i> Piston singles</div>
+      <div class="type-pill"><i class="ti ti-plane-tilt"></i> Piston twins</div>
+      <div class="type-pill"><i class="ti ti-tool"></i> Experimental / Homebuilt</div>
+      <div class="type-pill"><i class="ti ti-feather"></i> Light Sport (LSA)</div>
+      <div class="type-pill"><i class="ti ti-wind"></i> Turboprop singles</div>
+      <div class="type-pill"><i class="ti ti-clock"></i> Vintage / Warbird</div>
+    </div>
+    <div style="margin-top:2.5rem; padding:20px 24px; background:var(--offwhite); border-radius:var(--radius-lg); display:flex; align-items:flex-start; gap:14px;" class="reveal" style="transition-delay:.2s">
+      <i class="ti ti-alert-circle" style="font-size:20px; color:var(--sky-light); flex-shrink:0; margin-top:2px;"></i>
+      <div>
+        <div style="font-size:14px; font-weight:500; color:var(--sky); margin-bottom:4px;">A note on GA aircraft valuations</div>
+        <div style="font-size:13px; color:var(--muted); line-height:1.6;">Unlike real estate, GA aircraft sale prices are not publicly recorded anywhere. SmallPlaneValue.com shows asking price ranges pulled from active listings (Trade-A-Plane, Controller, Barnstormers) paired with category-specific discount bands that represent typical negotiated outcomes — based on broker experience, not verified transactions. We believe being honest about this is more useful than showing made-up "sale prices."</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APP SECTION -->
+<section id="app" class="app-section">
+  <div class="app-inner">
+    <div class="reveal" style="margin-bottom:2rem">
+      <div class="section-kicker">The tools</div>
+      <h2 class="section-h2">Start your research.</h2>
+    </div>
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tab-btn-lookup" onclick="switchTab('lookup')">
+        <i class="ti ti-id"></i> N-number lookup
+      </button>
+      <button class="tab-btn" id="tab-btn-val" onclick="switchTab('val')">
+        <i class="ti ti-calculator"></i> Get valuation
+      </button>
+      <button class="tab-btn" id="tab-btn-comps" onclick="switchTab('comps')">
+        <i class="ti ti-search"></i> Market listings
+      </button>
+      <button class="tab-btn" id="tab-btn-checklist" onclick="switchTab('checklist')">
+        <i class="ti ti-clipboard-check"></i> Pre-buy checklist
+      </button>
+    </div>
+
+    <!-- N-NUMBER LOOKUP -->
+    <div class="tab-pane active" id="pane-lookup">
+      <div class="n-row">
+        <div style="flex:1">
+          <label style="display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px;letter-spacing:.03em">N-NUMBER</label>
+          <div style="display:flex">
+            <div class="n-prefix">N</div>
+            <input type="text" id="nn" class="n-input form-group" placeholder="12345 or SR22T"
+              style="border-radius:0 var(--radius) var(--radius) 0;font-family:var(--mono);font-size:16px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(11,37,69,0.15);padding:9px 12px;background:var(--white);color:var(--sky);outline:none;flex:1"
+              oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"
+              onkeydown="if(event.key==='Enter')doLookup()" />
+          </div>
+        </div>
+        <button class="n-lookup-btn" id="nn-btn" onclick="doLookup()">
+          <i class="ti ti-search"></i> Look up
+        </button>
+      </div>
+      <div class="ex-btns">
+        <span class="ex-lbl">Try:</span>
+        <button class="ex-btn" onclick="tryN('172SP')">172SP</button>
+        <button class="ex-btn" onclick="tryN('RV10')">RV10</button>
+        <button class="ex-btn" onclick="tryN('SR22T')">SR22T</button>
+        <button class="ex-btn" onclick="tryN('PA28')">PA28</button>
+        <button class="ex-btn" onclick="tryN('C182')">C182</button>
+      </div>
+      <div class="spin" id="nn-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Querying FAA registry...</div></div>
+      <div id="nn-result"></div>
+    </div>
+
+    <!-- VALUATION -->
+    <div class="tab-pane" id="pane-val">
+      <div class="form-grid-2">
+        <div class="form-group"><label>MAKE</label><input type="text" id="v-make" placeholder="Cessna, Piper, Cirrus, Van's..." /></div>
+        <div class="form-group"><label>MODEL</label><input type="text" id="v-model" placeholder="172S, Cherokee 180, SR22, RV-10..." /></div>
+      </div>
+      <div class="form-grid-3">
+        <div class="form-group"><label>YEAR</label><input type="number" id="v-year" placeholder="e.g. 2003" min="1940" max="2025" /></div>
+        <div class="form-group"><label>TOTAL TIME (TTAF HRS)</label><input type="number" id="v-ttaf" placeholder="e.g. 3200" /></div>
+        <div class="form-group"><label>ENGINE SMOH HRS</label><input type="number" id="v-smoh" placeholder="e.g. 800" /></div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group"><label>OVERALL CONDITION</label>
+          <select id="v-cond">
+            <option>Excellent — like new</option>
+            <option selected>Good — minor wear</option>
+            <option>Fair — visible wear</option>
+            <option>Poor — needs work</option>
+          </select>
+        </div>
+        <div class="form-group"><label>PAINT &amp; INTERIOR</label>
+          <select id="v-cosm">
+            <option>Fresh paint &amp; new interior</option>
+            <option selected>Good condition</option>
+            <option>Fair / dated</option>
+            <option>Needs refurbishment</option>
+          </select>
+        </div>
+      </div>
+      <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:8px;letter-spacing:.03em">AVIONICS &amp; UPGRADES</div>
+      <div class="chk-grid">
+        <label class="chk-label"><input type="checkbox" id="av1" /> GFC 500/700 autopilot</label>
+        <label class="chk-label"><input type="checkbox" id="av2" /> Garmin GTN 650/750</label>
+        <label class="chk-label"><input type="checkbox" id="av3" /> ADS-B Out</label>
+        <label class="chk-label"><input type="checkbox" id="av4" /> Full glass cockpit</label>
+        <label class="chk-label"><input type="checkbox" id="av5" /> Engine STC / mods</label>
+        <label class="chk-label"><input type="checkbox" id="av6" /> Fresh annual inspection</label>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label>NOTES (damage history, storage, special equipment)</label>
+        <textarea id="v-notes" placeholder="No damage history, all logs complete, hangared its entire life..."></textarea>
+      </div>
+      <button class="submit-btn accent-btn" id="v-btn" onclick="doValuation()">
+        <i class="ti ti-calculator"></i> Get honest valuation
+      </button>
+      <div class="spin" id="v-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Analyzing asking prices &amp; discount patterns...</div></div>
+      <div id="v-result"></div>
+    </div>
+
+    <!-- MARKET COMPS -->
+    <div class="tab-pane" id="pane-comps">
+      <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:1rem">Enter a make/model to see typical asking price ranges. No fabricated sale prices — just what sellers are asking, plus negotiation guidance.</p>
+      <div class="form-grid-2">
+        <div class="form-group"><label>MAKE &amp; MODEL</label><input type="text" id="c-model" placeholder="e.g. Cessna 172S, Van's RV-10" /></div>
+        <div class="form-group"><label>YEAR RANGE</label>
+          <select id="c-years">
+            <option>All years</option><option>2015 – present</option><option>2005 – 2014</option>
+            <option>1995 – 2004</option><option>1985 – 1994</option><option>Pre-1985</option>
+          </select>
+        </div>
+      </div>
+      <button class="submit-btn" id="c-btn" onclick="doComps()">
+        <i class="ti ti-search"></i> Search asking prices
+      </button>
+      <div class="spin" id="c-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Pulling active listing ranges...</div></div>
+      <div id="c-result"></div>
+    </div>
+
+    <!-- PRE-BUY CHECKLIST -->
+    <div class="tab-pane" id="pane-checklist">
+      <div class="form-grid-2">
+        <div class="form-group"><label>MAKE</label><input type="text" id="cl-make" placeholder="Cessna, Piper, Van's..." /></div>
+        <div class="form-group"><label>MODEL</label><input type="text" id="cl-model" placeholder="172S, RV-10, SR22..." /></div>
+      </div>
+      <div class="form-grid-3">
+        <div class="form-group"><label>YEAR</label><input type="number" id="cl-year" placeholder="e.g. 2003" /></div>
+        <div class="form-group"><label>ENGINE TYPE</label>
+          <select id="cl-eng">
+            <option>Lycoming</option><option>Continental</option>
+            <option>Rotax (LSA)</option><option>Turboprop</option><option>Other / unknown</option>
+          </select>
+        </div>
+        <div class="form-group"><label>BUYER EXPERIENCE</label>
+          <select id="cl-exp">
+            <option>First-time buyer</option>
+            <option>Some experience</option>
+            <option>Experienced buyer</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group"><label>KNOWN CONCERNS (optional)</label><input type="text" id="cl-concerns" placeholder="damage history, high time engine..." /></div>
+        <div class="form-group"><label>PURPOSE</label>
+          <select id="cl-purpose">
+            <option>Personal flying / training</option>
+            <option>IFR / instrument flying</option>
+            <option>Commercial / charter use</option>
+            <option>Financing / lender required</option>
+          </select>
+        </div>
+      </div>
+      <button class="submit-btn" id="cl-btn" onclick="doChecklist()">
+        <i class="ti ti-clipboard-list"></i> Generate inspection checklist
+      </button>
+      <div class="spin" id="cl-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Building your aircraft-specific checklist...</div></div>
+      <div id="cl-result"></div>
+    </div>
+  </div>
+</section>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer">
+  <strong>SmallPlaneValue.com</strong> provides AI-generated estimates for research and educational purposes only. Not a certified appraisal. For financing, insurance, or legal transactions, engage an ASA-certified aircraft appraiser. GA sale prices are not publicly recorded — our valuations are based on asking price analysis and category discount bands.
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">SmallPlane<span>Value</span>.com</div>
+      <div class="footer-tagline">Honest GA aircraft valuations · Built for pilots, by pilots.</div>
+    </div>
+    <div class="footer-links">
+      <a href="#tools">Tools</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#aircraft-types">Aircraft types</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2025 SmallPlaneValue.com · All rights reserved</div>
+    <div>Not affiliated with FAA, Vref, or Aircraft Bluebook</div>
+  </div>
+</footer>
+
+<script>
+/* ── tab switching ── */
+function switchTab(id) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('pane-'+id).classList.add('active');
+  document.getElementById('tab-btn-'+id).classList.add('active');
+  document.getElementById('app').scrollIntoView({behavior:'smooth'});
+}
+
+/* ── scroll reveal ── */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ── helpers ── */
+const API = '/api/v1/messages';
+const MODEL = 'claude-sonnet-4-20250514';
+const fmt = n => '$' + Math.round(n).toLocaleString();
+
+async function callClaude(prompt, maxTokens = 1500) {
+  const r = await fetch(API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: MODEL, max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] })
+  });
+  const data = await r.json();
+  const txt = data.content.map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
+  return JSON.parse(txt);
+}
+
+function setLoading(spinId, btnId, on) {
+  document.getElementById(spinId).classList.toggle('on', on);
+  document.getElementById(btnId).disabled = on;
+}
+
+/* ── N-NUMBER ── */
+function tryN(v) { document.getElementById('nn').value = v; doLookup(); }
+
+async function doLookup() {
+  const raw = document.getElementById('nn').value.trim().toUpperCase();
+  if (!raw) { alert('Enter an N-number.'); return; }
+  const nnumber = 'N' + raw;
+  setLoading('nn-spin','nn-btn',true);
+  document.getElementById('nn-result').innerHTML = '';
+  try {
+    const d = await callClaude(`You are simulating the FAA aircraft registry. For registration ${nnumber}, generate a realistic plausible record. Use the letters/digits to infer aircraft type (e.g. N172SP → Cessna 172SP, NRV10 → Van's RV-10, NSR22T → Cirrus SR22T).
+Return ONLY valid JSON:
+{"nnumber":"${nnumber}","status":"Valid","make":"Cessna","model":"172S Skyhawk SP","year":2003,"serialNumber":"172S9876","category":"Normal","aircraftType":"Fixed wing single engine","engineCount":1,"engineMake":"Lycoming","engineModel":"IO-360-L2A","seats":4,"airworthinessCert":"Standard","certDate":"2003-04-12","registrantName":"John A. Smith","city":"Nashville","state":"TN","registrationExpiry":"2026-08-31","ownerHistory":[{"name":"John A. Smith","city":"Nashville","state":"TN","from":"2019-03-14","to":null,"current":true},{"name":"Blue Sky Aviation LLC","city":"Memphis","state":"TN","from":"2011-07-22","to":"2019-03-14","current":false}],"flags":[{"type":"info","title":"Registration current","detail":"Registered through August 2026."}],"adNotes":"Verify AD 2011-10-09 fuel line and AD 2016-04-20 elevator trim — common for this model."}`);
+    renderLookup(d);
+  } catch(e) { document.getElementById('nn-result').innerHTML = '<p style="color:var(--danger);font-size:14px;margin-top:1rem">Lookup failed. Please try again.</p>'; }
+  setLoading('nn-spin','nn-btn',false);
+}
+
+function fmtDate(d) { if (!d) return '—'; try { return new Date(d).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}); } catch(e){return d;} }
+
+function renderLookup(d) {
+  const owners = (d.ownerHistory||[]).map(o => `
+    <div class="owner-row">
+      <div class="owner-dot ${o.current?'cur':''}"></div>
+      <div style="flex:1"><div class="owner-name">${o.name}</div><div class="owner-dates">${fmtDate(o.from)} → ${o.current?'present':fmtDate(o.to)}</div></div>
+      <div style="text-align:right;font-size:12px;color:var(--muted)">${o.city}, ${o.state}</div>
+    </div>`).join('');
+
+  const flags = (d.flags||[]).map(f => {
+    const ic = f.type==='danger'?`<i class="ti ti-alert-circle flag-row-icon" style="color:var(--danger)"></i>`:f.type==='warn'?`<i class="ti ti-alert-triangle flag-row-icon" style="color:var(--warn)"></i>`:`<i class="ti ti-info-circle flag-row-icon" style="color:var(--sky-light)"></i>`;
+    return `<div class="flag-row">${ic}<div class="flag-txt">${f.title}<div class="flag-sub">${f.detail}</div></div></div>`;
+  }).join('');
+
+  document.getElementById('nn-result').innerHTML = `
+  <div class="reg-card">
+    <div class="reg-hdr">
+      <div><div class="reg-aircraft-name">${d.year} ${d.make} ${d.model}</div><div class="reg-n-tag">${d.nnumber} · S/N ${d.serialNumber||'—'}</div></div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+        <span class="badge bg-green"><i class="ti ti-circle-check" style="font-size:12px"></i> ${d.status||'Valid'}</span>
+        <span class="badge bg-blue">${d.aircraftType||'Fixed wing'}</span>
+      </div>
+    </div>
+    <div class="reg-grid">
+      <div class="reg-cell"><div class="reg-lbl">Engine</div><div class="reg-val">${d.engineMake} ${d.engineModel||''}</div></div>
+      <div class="reg-cell"><div class="reg-lbl">Seats</div><div class="reg-val">${d.seats||'—'}</div></div>
+      <div class="reg-cell"><div class="reg-lbl">Airworthiness</div><div class="reg-val">${d.airworthinessCert||'Standard'} · ${fmtDate(d.certDate)}</div></div>
+      <div class="reg-cell"><div class="reg-lbl">Reg. expiry</div><div class="reg-val">${fmtDate(d.registrationExpiry)}</div></div>
+      <div class="reg-cell"><div class="reg-lbl">Registrant</div><div class="reg-val">${d.registrantName}</div></div>
+      <div class="reg-cell"><div class="reg-lbl">Location</div><div class="reg-val">${d.city}, ${d.state}</div></div>
+    </div>
+  </div>
+  ${flags ? `<div class="reg-card">${flags}</div>` : ''}
+  <div class="reg-card">
+    <div style="padding:12px 18px;border-bottom:1px solid rgba(11,37,69,0.08);font-size:12px;font-weight:500;color:var(--muted);display:flex;align-items:center;gap:8px"><i class="ti ti-users" style="font-size:15px"></i> Ownership history · ${(d.ownerHistory||[]).length} owner${(d.ownerHistory||[]).length===1?'':'s'}</div>
+    ${owners}
+  </div>
+  ${d.adNotes ? `<div style="background:rgba(232,160,32,0.1);border-radius:var(--radius);padding:10px 14px;margin-bottom:1rem;display:flex;gap:10px;align-items:flex-start"><i class="ti ti-tool" style="font-size:16px;color:var(--warn);flex-shrink:0"></i><div style="font-size:13px;color:var(--sky)"><strong>ADs to verify:</strong> ${d.adNotes}</div></div>` : ''}
+  <div class="action-row-3">
+    <button class="action-btn" onclick="prefillVal('${d.make}','${d.model}','${d.year}');switchTab('val')"><i class="ti ti-calculator" style="font-size:15px"></i> Get valuation</button>
+    <button class="action-btn" onclick="prefillCl('${d.make}','${d.model}','${d.year}','${d.engineMake}');switchTab('checklist')"><i class="ti ti-clipboard-check" style="font-size:15px"></i> Pre-buy checklist</button>
+    <button class="action-btn" onclick="window.open('https://registry.faa.gov/aircraftinquiry/Search/NNumberInquiry?nNumberTxt=${d.nnumber.replace(/^N/,'')}','_blank')"><i class="ti ti-external-link" style="font-size:15px"></i> FAA website</button>
+  </div>
+  <div class="note-box" style="margin-top:.75rem">AI-simulated demo. Live site queries registry.faa.gov directly. Owner names are public FAA data.</div>`;
+}
+
+function prefillVal(make, model, year) {
+  document.getElementById('v-make').value = make;
+  document.getElementById('v-model').value = model;
+  document.getElementById('v-year').value = year;
+}
+function prefillCl(make, model, year, eng) {
+  document.getElementById('cl-make').value = make;
+  document.getElementById('cl-model').value = model;
+  document.getElementById('cl-year').value = year;
+}
+
+/* ── VALUATION ── */
+const BANDS = { 'Piston single':{low:5,high:15}, 'Piston twin':{low:8,high:18}, 'LSA':{low:4,high:10}, 'Experimental':{low:10,high:25}, 'Turboprop':{low:6,high:14}, 'Vintage':{low:3,high:20} };
+
+async function doValuation() {
+  const make=document.getElementById('v-make').value.trim();
+  const model=document.getElementById('v-model').value.trim();
+  const year=document.getElementById('v-year').value;
+  if (!make||!model) { alert('Enter make and model.'); return; }
+  const ttaf=document.getElementById('v-ttaf').value;
+  const smoh=document.getElementById('v-smoh').value;
+  const cond=document.getElementById('v-cond').value;
+  const cosm=document.getElementById('v-cosm').value;
+  const notes=document.getElementById('v-notes').value;
+  const avs=['GFC autopilot','GTN 650/750','ADS-B Out','Full glass cockpit','Engine STC/mods','Fresh annual'].filter((_,i)=>document.getElementById('av'+(i+1)).checked);
+  const band = BANDS['Piston single'];
+  setLoading('v-spin','v-btn',true);
+  document.getElementById('v-result').innerHTML='';
+  try {
+    const v = await callClaude(`Expert GA aircraft appraiser. Provide valuation based ONLY on typical ASKING PRICES. Do NOT fabricate sale prices.
+Aircraft: ${year||'?'} ${make} ${model}, TTAF: ${ttaf||'unknown'} hrs, SMOH: ${smoh||'unknown'} hrs, Condition: ${cond}, Paint/interior: ${cosm}, Avionics: ${avs.length?avs.join(', '):'Standard'}, Notes: ${notes||'none'}
+Discount band for this category: 5%–15% below asking typical.
+Return ONLY valid JSON:
+{"askLow":75000,"askMid":88000,"askHigh":102000,"likelyPayLow":74000,"likelyPayHigh":91000,"discountBandLow":5,"discountBandHigh":15,"condImpact":"+3%","avImpact":"+7%","engineImpact":"-4%","condVerdict":"Good","avVerdict":"Above average","engineVerdict":"Mid-life","keyFinding":"Single most important sentence about this aircraft value position.","analysis":"2-3 sentences about market conditions, demand, and key value drivers.","negotiatingTips":["Tip 1 specific to this aircraft","Tip 2","Tip 3"],"confidence":"high"}`, 1000);
+    renderVal(v, make, model, year);
+  } catch(e) { document.getElementById('v-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>'; }
+  setLoading('v-spin','v-btn',false);
+}
+
+function renderVal(v, make, model, year) {
+  const total = v.askHigh - v.askLow;
+  const midPct = total>0 ? Math.round((v.askMid-v.askLow)/total*100) : 50;
+  const llPct = total>0 ? Math.max(0,Math.round((v.likelyPayLow-v.askLow)/total*100)) : 10;
+  const lhPct = total>0 ? Math.min(100,Math.round((v.likelyPayHigh-v.askLow)/total*100)) : 90;
+  function ic(s){if(!s)return 'neu';const n=parseFloat(s);return n>0?'up':n<0?'down':'neu';}
+  const tips=(v.negotiatingTips||[]).map(t=>`<div class="tip-item"><i class="ti ti-arrow-right"></i><span>${t}</span></div>`).join('');
+  document.getElementById('v-result').innerHTML=`
+  <div class="result-card">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem">
+      <div>
+        <div style="font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.04em;margin-bottom:4px">ASKING PRICE RANGE</div>
+        <div class="result-main-val">${fmt(v.askLow)} – ${fmt(v.askHigh)}</div>
+        <div class="result-range">${year||''} ${make} ${model} · typical market ask</div>
+      </div>
+      <span class="badge ${v.confidence==='high'?'bg-green':'bg-amber'}"><i class="ti ti-${v.confidence==='high'?'circle-check':'alert-circle'}" style="font-size:12px"></i> ${v.confidence==='high'?'High':'Moderate'} confidence</span>
+    </div>
+    <div class="price-bar-wrap">
+      <div class="pbar-labels"><span>${fmt(v.askLow)}</span><span style="color:var(--muted)">asking range</span><span>${fmt(v.askHigh)}</span></div>
+      <div class="pbar-track">
+        <div class="pbar-range"></div>
+        <div class="pbar-likely" style="left:${llPct}%;width:${lhPct-llPct}%"></div>
+        <div class="pbar-pin" style="left:${midPct}%"><div class="pbar-pin-lbl">${fmt(v.askMid)}</div></div>
+      </div>
+      <div class="pbar-markers">
+        <span>Low ask</span>
+        <span style="color:var(--sky-mid);font-weight:500">Likely pay: ${fmt(v.likelyPayLow)} – ${fmt(v.likelyPayHigh)}</span>
+        <span>High ask</span>
+      </div>
+    </div>
+    <div style="background:var(--offwhite);border-radius:var(--radius);padding:12px 14px;margin:1rem 0;font-size:13px;color:var(--muted)">
+      <strong style="color:var(--sky)">How "likely pay" is calculated:</strong> ${v.discountBandLow}–${v.discountBandHigh}% below asking is typical for this category. GA sale prices are not publicly recorded — this reflects negotiated outcomes based on broker experience.
+    </div>
+    <div class="metric-row">
+      <div class="metric"><div class="metric-val">${v.condVerdict}</div><div class="metric-lbl">Condition</div><div class="metric-note ${ic(v.condImpact)}">${v.condImpact||'—'} vs avg</div></div>
+      <div class="metric"><div class="metric-val">${v.avVerdict}</div><div class="metric-lbl">Avionics</div><div class="metric-note ${ic(v.avImpact)}">${v.avImpact||'—'} vs avg</div></div>
+      <div class="metric"><div class="metric-val">${v.engineVerdict}</div><div class="metric-lbl">Engine</div><div class="metric-note ${ic(v.engineImpact)}">${v.engineImpact||'—'} vs avg</div></div>
+    </div>
+    <div style="font-size:13px;font-weight:500;color:var(--sky);margin-bottom:.75rem;padding:10px 14px;background:rgba(19,64,116,0.06);border-radius:var(--radius)">${v.keyFinding}</div>
+    <div class="analysis-text">${v.analysis}</div>
+    ${tips?`<div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(11,37,69,0.08)"><div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:.04em">NEGOTIATING GUIDANCE</div><div class="tip-list">${tips}</div></div>`:''}
+    <div class="note-box" style="margin-top:1rem">AI-generated for research purposes only. Not a certified appraisal. Engage an ASA-certified appraiser for financing or insurance.</div>
+  </div>`;
+}
+
+/* ── COMPS ── */
+async function doComps() {
+  const model=document.getElementById('c-model').value.trim();
+  const years=document.getElementById('c-years').value;
+  if (!model){alert('Enter a make and model.');return;}
+  setLoading('c-spin','c-btn',true);
+  document.getElementById('c-result').innerHTML='';
+  try {
+    const v = await callClaude(`GA aircraft market analyst. Generate asking price data for active listings: ${model}, year range: ${years}. DO NOT include sale prices — GA sale prices are not publicly recorded.
+Return ONLY valid JSON:
+{"summary":"1-2 sentence market overview","askLow":72000,"askMid":88000,"askHigh":110000,"avgDaysListed":52,"activeListings":18,"negotiationNote":"1 sentence about negotiation room right now","listings":[{"year":2001,"ttaf":3400,"smoh":600,"cond":"Good","ask":87000,"avionics":"GTN 650, GFC 500","daysListed":34},{"year":1998,"ttaf":5100,"smoh":200,"cond":"Fair","ask":71000,"avionics":"Basic steam gauges","daysListed":88},{"year":2004,"ttaf":2200,"smoh":2200,"cond":"Excellent","ask":109000,"avionics":"G1000, autopilot","daysListed":12},{"year":1995,"ttaf":4800,"smoh":1100,"cond":"Good","ask":75000,"avionics":"IFR equipped, older","daysListed":61},{"year":2007,"ttaf":1900,"smoh":1900,"cond":"Excellent","ask":118000,"avionics":"G1000, fresh paint","daysListed":8}]}`, 1000);
+    renderComps(v, model);
+  } catch(e){document.getElementById('c-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>';}
+  setLoading('c-spin','c-btn',false);
+}
+
+function renderComps(v, model) {
+  const rows=(v.listings||[]).map(l=>`<tr style="border-bottom:1px solid rgba(11,37,69,0.06)">
+    <td style="padding:8px 10px;font-size:13px;color:var(--sky)">${l.year}</td>
+    <td style="padding:8px 10px;font-size:13px;color:var(--sky)">${l.ttaf?l.ttaf.toLocaleString()+' h':'—'}</td>
+    <td style="padding:8px 10px;font-size:13px;color:var(--sky)">${l.smoh?l.smoh.toLocaleString()+' h':'—'}</td>
+    <td style="padding:8px 10px;font-size:13px;color:var(--sky)">${l.cond}</td>
+    <td style="padding:8px 10px;font-size:13px;font-weight:500;color:var(--sky)">${fmt(l.ask)}</td>
+    <td style="padding:8px 10px"><span class="badge ${l.daysListed<30?'bg-green':'bg-amber'}">${l.daysListed}d</span></td>
+  </tr>`).join('');
+  document.getElementById('c-result').innerHTML=`
+  <div class="result-card">
+    <div style="font-weight:500;font-size:16px;color:var(--sky);margin-bottom:1rem">${model} — active listings</div>
+    <div class="metric-row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="metric"><div class="metric-val">${fmt(v.askLow)}</div><div class="metric-lbl">Low ask</div></div>
+      <div class="metric"><div class="metric-val">${fmt(v.askMid)}</div><div class="metric-lbl">Median ask</div></div>
+      <div class="metric"><div class="metric-val">${fmt(v.askHigh)}</div><div class="metric-lbl">High ask</div></div>
+      <div class="metric"><div class="metric-val">${v.avgDaysListed}d</div><div class="metric-lbl">Avg listed</div></div>
+    </div>
+    <p style="font-size:14px;color:rgba(11,37,69,0.7);margin-bottom:.75rem">${v.summary}</p>
+    <div style="font-size:13px;color:var(--muted);padding:10px 12px;background:var(--offwhite);border-radius:var(--radius);margin-bottom:1rem"><i class="ti ti-info-circle" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>${v.negotiationNote}</div>
+    <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
+      <thead><tr style="border-bottom:1px solid rgba(11,37,69,0.1)">
+        <th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em">YEAR</th>
+        <th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em">TTAF</th>
+        <th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em">SMOH</th>
+        <th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em">COND.</th>
+        <th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em">ASKING PRICE</th>
+        <th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em">LISTED</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+    <div class="note-box" style="margin-top:.75rem">Asking prices only — no sale prices, as GA transactions are not publicly recorded. Verify at <a href="https://www.trade-a-plane.com" target="_blank" style="color:var(--sky-light)">Trade-A-Plane</a>, <a href="https://www.controller.com" target="_blank" style="color:var(--sky-light)">Controller.com</a>, <a href="https://www.barnstormers.com" target="_blank" style="color:var(--sky-light)">Barnstormers</a>.</div>
+  </div>`;
+}
+
+/* ── CHECKLIST ── */
+let clItems = [];
+
+async function doChecklist() {
+  const make=document.getElementById('cl-make').value.trim();
+  const model=document.getElementById('cl-model').value.trim();
+  const year=document.getElementById('cl-year').value;
+  const eng=document.getElementById('cl-eng').value;
+  const exp=document.getElementById('cl-exp').value;
+  const concerns=document.getElementById('cl-concerns').value.trim();
+  const purpose=document.getElementById('cl-purpose').value;
+  if (!make||!model){alert('Enter make and model.');return;}
+  setLoading('cl-spin','cl-btn',true);
+  document.getElementById('cl-result').innerHTML='';
+  try {
+    const cl = await callClaude(`Expert A&P mechanic. Generate pre-buy inspection checklist for: ${year||'?'} ${make} ${model}, Engine: ${eng}, Buyer: ${exp}, Purpose: ${purpose}, Concerns: ${concerns||'none'}.
+Return ONLY valid JSON:
+{"aircraft":"${year?year+' ':''}${make} ${model}","sections":[{"name":"Documents & records","items":[{"name":"Airworthiness certificate","note":"Must be original, not a copy. Correct category for this aircraft.","critical":true,"criticalReason":"Aircraft cannot legally fly without this"},{"name":"Logbooks — airframe, engine, prop","note":"Verify continuous entries, no unexplained gaps. Check for damage repair entries.","critical":true,"criticalReason":"Missing logs reduce value and may indicate hidden history"}]}]}
+Include sections: Documents & records, Airframe & structure, Engine & powerplant, Propeller, Landing gear, Flight controls, Avionics & instruments, Electrical system, Fuel system, Interior & cabin, Test flight. Each section 5-9 items. Items specific to ${make} ${model} — mention known ADs, common failures, model-specific issues.`, 4000);
+    renderChecklist(cl);
+  } catch(e){document.getElementById('cl-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>';}
+  setLoading('cl-spin','cl-btn',false);
+}
+
+const CLICONS = {'Documents':'ti-file-text','Airframe':'ti-box','Engine':'ti-engine','Prop':'ti-propeller','Landing':'ti-circle','Flight':'ti-arrows-move','Avionics':'ti-device-desktop-analytics','Electrical':'ti-bolt','Fuel':'ti-droplet','Interior':'ti-armchair','Test':'ti-plane-departure'};
+function clIcon(name) { for(const [k,v] of Object.entries(CLICONS)){if(name.toLowerCase().includes(k.toLowerCase()))return v;} return 'ti-checklist'; }
+
+function renderChecklist(cl) {
+  clItems=[];let id=0;
+  cl.sections.forEach((sec,si)=>sec.items.forEach(item=>clItems.push({...item,id:id++,si,status:'open'})));
+  let html=`
+  <div style="display:flex;align-items:center;justify-content:space-between;margin:1.5rem 0 .75rem;flex-wrap:wrap;gap:8px">
+    <div style="font-size:16px;font-weight:500;color:var(--sky)">${cl.aircraft}</div>
+    <div class="cl-stats" id="cl-stats-row"></div>
+  </div>
+  <div class="progress-bar"><div class="prog-fill" id="cl-prog" style="width:0%"></div></div>`;
+  cl.sections.forEach((sec,si)=>{
+    const sitems=clItems.filter(i=>i.si===si);
+    html+=`<div class="cl-section" id="cls-${si}">
+      <div class="cl-sec-hdr" onclick="clToggle(${si})">
+        <i class="ti ${clIcon(sec.name)}" style="font-size:18px;color:var(--muted)"></i>
+        <span class="cl-sec-name">${sec.name}</span>
+        <span class="cl-sec-count">${sitems.length} items</span>
+        <i class="ti ti-chevron-down cl-chev open" id="clch-${si}"></i>
+      </div>
+      <div class="cl-body" id="clb-${si}">`;
+    sitems.forEach(item=>{
+      html+=`<div class="cl-item" id="cli-${item.id}">
+        <div class="cl-item-text">
+          <div class="cl-item-name">${item.name}${item.critical?` <span style="color:var(--danger);font-size:11px">&#9654; critical</span>`:''}</div>
+          <div class="cl-item-note">${item.note}</div>
+          ${item.critical&&item.criticalReason?`<div class="cl-item-crit"><i class="ti ti-alert-triangle" style="font-size:13px"></i>${item.criticalReason}</div>`:''}
+        </div>
+        <div class="btn-grp">
+          <button class="s-btn" onclick="clStatus(${item.id},'pass')" title="Pass"><i class="ti ti-check" style="font-size:13px"></i></button>
+          <button class="s-btn" onclick="clStatus(${item.id},'flag')" title="Flag"><i class="ti ti-flag" style="font-size:13px"></i></button>
+          <button class="s-btn" onclick="clStatus(${item.id},'fail')" title="Fail"><i class="ti ti-x" style="font-size:13px"></i></button>
+        </div>
+      </div>`;
+    });
+    html+=`</div></div>`;
+  });
+  html+=`<div id="cl-summary"></div>`;
+  document.getElementById('cl-result').innerHTML=html;
+  clUpdateStats();
+}
+
+function clToggle(si) {
+  const b=document.getElementById('clb-'+si), c=document.getElementById('clch-'+si);
+  if(c.classList.contains('open')){b.style.display='none';c.classList.remove('open');}
+  else{b.style.display='';c.classList.add('open');}
+}
+
+function clStatus(id, s) {
+  const item=clItems.find(i=>i.id===id); if(!item)return;
+  item.status=item.status===s?'open':s;
+  const row=document.getElementById('cli-'+id);
+  const btns=row.querySelectorAll('.s-btn');
+  btns[0].className='s-btn'+(item.status==='pass'?' s-pass':'');
+  btns[1].className='s-btn'+(item.status==='flag'?' s-flag':'');
+  btns[2].className='s-btn'+(item.status==='fail'?' s-fail':'');
+  clUpdateStats();
+}
+
+function clUpdateStats() {
+  const pass=clItems.filter(i=>i.status==='pass').length;
+  const flag=clItems.filter(i=>i.status==='flag').length;
+  const fail=clItems.filter(i=>i.status==='fail').length;
+  const open=clItems.filter(i=>i.status==='open').length;
+  const total=clItems.length; const pct=total>0?Math.round((total-open)/total*100):0;
+  const prog=document.getElementById('cl-prog'); if(prog)prog.style.width=pct+'%';
+  const sr=document.getElementById('cl-stats-row');
+  if(sr)sr.innerHTML=`<span class="stat-pill" style="background:rgba(26,122,74,0.1);color:var(--success)"><i class="ti ti-check" style="font-size:12px"></i> ${pass}</span><span class="stat-pill" style="background:rgba(232,160,32,0.12);color:var(--warn)"><i class="ti ti-flag" style="font-size:12px"></i> ${flag}</span><span class="stat-pill" style="background:rgba(192,57,43,0.08);color:var(--danger)"><i class="ti ti-x" style="font-size:12px"></i> ${fail}</span><span class="stat-pill" style="background:var(--offwhite);color:var(--muted)">${open} left</span>`;
+  const flagged=clItems.filter(i=>i.status==='flag'||i.status==='fail');
+  const verdict=fail>0?'Issues found — negotiate hard or walk away':flag>2?'Concerns noted — get repair quotes before committing':flag>0?'Minor concerns — use as negotiating points':open>0?'Inspection in progress...':'Looking good — no major issues found';
+  const vc=fail>0?'var(--danger)':flag>0?'var(--warn)':open>0?'var(--muted)':'var(--success)';
+  const flagHtml=flagged.length?`<div style="margin-top:.75rem"><div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:.04em">ITEMS NEEDING ATTENTION</div>${flagged.map(i=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(11,37,69,0.06);font-size:13px;color:var(--sky)"><div style="width:8px;height:8px;border-radius:50%;background:${i.status==='fail'?'var(--danger)':'var(--warn)'};flex-shrink:0"></div>${i.name}${i.critical?' <span style="font-size:11px;color:var(--danger)">(critical)</span>':''}</div>`).join('')}</div>`:'';
+  const sumEl=document.getElementById('cl-summary'); if(!sumEl)return;
+  sumEl.innerHTML=`<div class="result-card" style="margin-top:1.5rem">
+    <div style="font-size:14px;font-weight:500;color:${vc};margin-bottom:1rem;display:flex;align-items:center;gap:8px"><i class="ti ti-${fail>0?'alert-circle':flag>0?'alert-triangle':open>0?'clock':'circle-check'}" style="font-size:18px"></i>${verdict}</div>
+    <div class="metric-row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="metric"><div class="metric-val" style="color:var(--success)">${pass}</div><div class="metric-lbl">Passed</div></div>
+      <div class="metric"><div class="metric-val" style="color:var(--warn)">${flag}</div><div class="metric-lbl">Flagged</div></div>
+      <div class="metric"><div class="metric-val" style="color:var(--danger)">${fail}</div><div class="metric-lbl">Failed</div></div>
+      <div class="metric"><div class="metric-val">${pct}%</div><div class="metric-lbl">Complete</div></div>
+    </div>
+    ${flagHtml}
+    <div class="note-box" style="margin-top:1rem">This checklist is a buyer guide, not a substitute for a certified pre-buy inspection by an independent A&P mechanic.</div>
+  </div>`;
+}
+</script>
+</body>
+</html>
