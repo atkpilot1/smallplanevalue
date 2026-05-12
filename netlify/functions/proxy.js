@@ -21,7 +21,7 @@ exports.handler = async function(event) {
     return { statusCode: 400, body: 'Invalid JSON' };
   }
 
-  body.model = 'claude-sonnet-4-20250514';
+  body.model = 'claude-sonnet-4-5-20250929';
   body.max_tokens = Math.min(body.max_tokens || 1000, 4000);
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
