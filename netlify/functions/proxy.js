@@ -22,41 +22,34 @@ exports.handler = async function(event) {
     return { statusCode: 400, body: 'Invalid JSON' };
   }
 
-  // ── FAA N-NUMBER LOOKUP ───────────────────────────────
+  // ── FAA N-NUMBER LOOKUP via airport-data.com ──────────
   if (body.type === 'faa_lookup') {
     const nn = (body.nnumber || '').replace(/^N/i, '').trim().toUpperCase();
     if (!nn) return { statusCode: 400, body: JSON.stringify({ error: 'No N-number provided' }) };
 
     try {
-      // Fetch the FAA registry page
-      const faaUrl = `https://registry.faa.gov/AircraftInquiry/Search/NNumberResult?nNumberTxt=${nn}`;
-      const faaResp = await fetch(faaUrl, {
+      // airport-data.com has clean JSON API - free, no auth needed
+      const adUrl = `https://airport-data.com/api/ac_thumb.json?r=N${nn}&n=1`;
+      const adResp = await fetch(adUrl, {
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-          'Accept-Language': 'en-US,en;q=0.5',
-          'Accept-Encoding': 'gzip, deflate, br',
-          'Connection': 'keep-alive',
-          'Upgrade-Insecure-Requests': '1',
-          'Sec-Fetch-Dest': 'document',
-          'Sec-Fetch-Mode': 'navigate',
-          'Sec-Fetch-Site': 'none',
-          'Cache-Control': 'max-age=0'
+          'User-Agent': 'Mozilla/5.0 (compatible; SmallPlaneValue/1.0)',
+          'Accept': 'application/json'
         }
       });
 
-      const html = await faaResp.text();
+      const adData = await adResp.json();
 
-      // Check if blocked or not found
-      if (html.length < 500 || html.includes('is not assigned') || html.includes('No aircraft found')) {
-        return {
-          statusCode: 200,
-          headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-          body: JSON.stringify({ found: false, nnumber: 'N' + nn })
-        };
-      }
+      // Also fetch detailed page for full info
+      const detailUrl = `https://airport-data.com/aircraft/N${nn}.html`;
+      const detailResp = await fetch(detailUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+          'Accept': 'text/html'
+        }
+      });
+      const detailHtml = await detailResp.text();
 
-      // Use Claude to extract the data accurately from the HTML
+      // Use Claude to extract from airport-data.com HTML
       const aiResp = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -66,32 +59,31 @@ exports.handler = async function(event) {
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-5-20250929',
-          max_tokens: 600,
+          max_tokens: 500,
           messages: [{
             role: 'user',
-            content: `Extract aircraft registration data from this FAA registry HTML. Be precise - only extract what is explicitly shown, do not infer or guess.
-
-Return ONLY valid JSON, no markdown, no explanation:
+            content: `Extract aircraft data from this airport-data.com page for N${nn}. Return ONLY valid JSON, no markdown:
 {
   "found": true,
-  "make": "BEECH",
-  "model": "D55",
+  "make": "Beech",
+  "model": "D55 Baron",
   "year": 1969,
   "serialNumber": "TE-714",
   "status": "Valid",
-  "aircraftType": "Fixed Wing Multi-Engine",
+  "aircraftType": "Fixed wing multi engine",
   "engineType": "Reciprocating",
-  "certDate": "03/10/2023",
-  "registrationExpiry": "03/31/2030",
-  "registrantName": "OWNER NAME LLC",
-  "street": "123 Main St",
-  "city": "NASHVILLE",
-  "state": "TN",
-  "zip": "37201"
+  "engineMake": "Continental",
+  "engineModel": "IO-520",
+  "seats": 6,
+  "engines": 2,
+  "certDate": "",
+  "registrantName": "",
+  "city": "",
+  "state": "",
+  "registrationExpiry": ""
 }
 
-FAA HTML (first 6000 chars):
-${html.substring(0, 6000)}`
+HTML: ${detailHtml.substring(0, 5000)}`
           }]
         })
       });
@@ -100,27 +92,75 @@ ${html.substring(0, 6000)}`
       const txt = aiData.content.map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
       const parsed = JSON.parse(txt);
 
-      return {
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-        body: JSON.stringify({
-          ...parsed,
-          nnumber: 'N' + nn,
-          _realData: true,
-          _source: 'faa',
-          ownerHistory: [],
-          flags: []
-        })
-      };
-
+      if (parsed.found) {
+        return {
+          statusCode: 200,
+          headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+          body: JSON.stringify({
+            ...parsed,
+            nnumber: 'N' + nn,
+            _realData: true,
+            _source: 'airport-data',
+            ownerHistory: [],
+            flags: []
+          })
+        };
+      }
     } catch(err) {
-      // Fall back to AI simulation
-      return {
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-        body: JSON.stringify({ found: false, nnumber: 'N' + nn, error: err.message })
-      };
+      console.log('airport-data error:', err.message);
     }
+
+    // Fall back to FAA direct
+    try {
+      const faaUrl = `https://registry.faa.gov/AircraftInquiry/Search/NNumberResult?nNumberTxt=${nn}`;
+      const faaResp = await fetch(faaUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+          'Accept': 'text/html',
+          'Accept-Language': 'en-US,en;q=0.9',
+        }
+      });
+      const html = await faaResp.text();
+
+      if (html.length > 1000 && !html.includes('is not assigned')) {
+        const aiResp2 = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': process.env.ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01'
+          },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-5-20250929',
+            max_tokens: 500,
+            messages: [{
+              role: 'user',
+              content: `Extract aircraft data from FAA registry HTML. Return ONLY valid JSON:
+{"found":true,"make":"","model":"","year":null,"serialNumber":"","status":"Valid","aircraftType":"","engineType":"","certDate":"","registrationExpiry":"","registrantName":"","city":"","state":""}
+HTML: ${html.substring(0, 5000)}`
+            }]
+          })
+        });
+        const aiData2 = await aiResp2.json();
+        const txt2 = aiData2.content.map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
+        const parsed2 = JSON.parse(txt2);
+        if (parsed2.found && parsed2.make) {
+          return {
+            statusCode: 200,
+            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+            body: JSON.stringify({ ...parsed2, nnumber: 'N' + nn, _realData: true, _source: 'faa', ownerHistory: [], flags: [] })
+          };
+        }
+      }
+    } catch(err) {
+      console.log('FAA fallback error:', err.message);
+    }
+
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ found: false, nnumber: 'N' + nn })
+    };
   }
 
   // ── ANTHROPIC AI PROXY ───────────────────────────────
@@ -141,10 +181,7 @@ ${html.substring(0, 6000)}`
 
   return {
     statusCode: response.status,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-    },
+    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
     body: data
   };
 };
