@@ -23,83 +23,63 @@ exports.handler = async function(event) {
     return { statusCode: 400, body: 'Invalid JSON' };
   }
 
-  // ── FAA N-NUMBER LOOKUP ──────────────────────────────
+  // ── FAA N-NUMBER LOOKUP via Supabase ─────────────────
   if (body.type === 'faa_lookup') {
     const nn = (body.nnumber || '').replace(/^N/i, '').trim().toUpperCase();
     if (!nn) return { statusCode: 400, body: JSON.stringify({ error: 'No N-number provided' }) };
 
+    const SUPABASE_URL = process.env.SUPABASE_URL;
+    const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY;
+
     try {
-      // Fetch real FAA registry page
-      const faaUrl = `https://registry.faa.gov/AircraftInquiry/Search/NNumberResult?nNumberTxt=${nn}`;
-      const faaResp = await fetch(faaUrl, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; SmallPlaneValue/1.0)',
-          'Accept': 'text/html,application/xhtml+xml'
+      const resp = await fetch(
+        `${SUPABASE_URL}/rest/v1/aircraft?nnumber=eq.${nn}&limit=1`,
+        {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json'
+          }
         }
-      });
+      );
 
-      const faaHtml = await faaResp.text();
+      const rows = await resp.json();
 
-      // Check if not found
-      if (faaHtml.includes('No aircraft found') || faaHtml.includes('invalid') || faaHtml.length < 500) {
+      if (!rows || rows.length === 0) {
+        // Not in our database yet — fall back to AI simulation
         return {
           statusCode: 200,
           headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-          body: JSON.stringify({ found: false, nnumber: 'N' + nn })
+          body: JSON.stringify({ found: false, nnumber: 'N' + nn, message: 'Not found in registry' })
         };
       }
 
-      // Use Claude to extract the data from the FAA HTML
-      const aiResp = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': process.env.ANTHROPIC_API_KEY,
-          'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-5-20250929',
-          max_tokens: 800,
-          messages: [{
-            role: 'user',
-            content: `Extract aircraft registration data from this FAA registry HTML page. Return ONLY valid JSON, no markdown.
-
-HTML:
-${faaHtml.substring(0, 8000)}
-
-Return this exact JSON structure (use null for missing fields):
-{
-  "found": true,
-  "nnumber": "N${nn}",
-  "status": "Valid",
-  "make": "Beechcraft",
-  "model": "D17S Staggerwing",
-  "year": 1944,
-  "serialNumber": "4935",
-  "engineMake": "Pratt & Whitney",
-  "engineModel": "R-985",
-  "seats": 5,
-  "category": "Normal",
-  "aircraftType": "Fixed wing single engine",
-  "airworthinessCert": "Standard",
-  "certDate": "1962-03-15",
-  "registrantName": "John Smith",
-  "city": "Nashville",
-  "state": "TN",
-  "registrationExpiry": "2025-08-31"
-}`
-          }]
-        })
-      });
-
-      const aiData = await aiResp.json();
-      const txt = aiData.content.map(b => b.text || '').join('').replace(/\`\`\`json|\`\`\`/g, '').trim();
-      const parsed = JSON.parse(txt);
+      const r = rows[0];
 
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-        body: JSON.stringify({ ...parsed, _realData: true })
+        body: JSON.stringify({
+          found: true,
+          _realData: true,
+          nnumber: 'N' + r.nnumber,
+          status: r.status || 'Valid',
+          make: r.make,
+          model: r.model,
+          year: r.year,
+          serialNumber: r.serial_number,
+          engineMake: r.engine_make,
+          engineModel: r.engine_model,
+          seats: r.seats,
+          category: r.category,
+          aircraftType: r.aircraft_type,
+          airworthinessCert: r.airworthiness,
+          certDate: r.cert_date,
+          registrantName: r.registrant_name,
+          city: r.city,
+          state: r.state,
+          registrationExpiry: r.expiry_date
+        })
       };
 
     } catch(err) {
@@ -136,3 +116,4 @@ Return this exact JSON structure (use null for missing fields):
     body: data
   };
 };
+
