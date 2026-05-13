@@ -946,11 +946,31 @@ footer {
         <div class="form-group"><label>MAKE</label><input type="text" id="v-make" placeholder="Cessna, Piper, Cirrus, Van's..." /></div>
         <div class="form-group"><label>MODEL</label><input type="text" id="v-model" placeholder="172S, Cherokee 180, SR22, RV-10..." /></div>
       </div>
-      <div class="form-grid-3">
-        <div class="form-group"><label>YEAR</label><input type="number" id="v-year" placeholder="e.g. 2003" min="1940" max="2025" /></div>
+            <div class="form-grid-2">
         <div class="form-group"><label>TOTAL TIME (TTAF HRS)</label><input type="number" id="v-ttaf" placeholder="e.g. 3200" /></div>
-        <div class="form-group"><label>ENGINE SMOH HRS</label><input type="number" id="v-smoh" placeholder="e.g. 800" /></div>
+        <div class="form-group"><label>ENGINES</label>
+          <select id="engines" onchange="updateEngineFields()">
+            <option value="1">Single engine</option>
+            <option value="2">Twin engine</option>
+          </select>
+        </div>
       </div>
+      <div id="engine-fields">
+        <div class="form-grid-2" id="single-eng-fields">
+          <div class="form-group"><label>ENGINE SMOH HRS</label><input type="number" id="v-smoh" placeholder="e.g. 800" /></div>
+          <div class="form-group"><label>PROP TIME SINCE OH (HRS)</label><input type="number" id="v-prop1" placeholder="e.g. 400" /></div>
+        </div>
+        <div id="twin-eng-fields" style="display:none">
+          <div class="form-grid-2" style="margin-bottom:8px">
+            <div class="form-group"><label>LEFT ENGINE SMOH HRS</label><input type="number" id="v-smoh-l" placeholder="e.g. 800" /></div>
+            <div class="form-group"><label>RIGHT ENGINE SMOH HRS</label><input type="number" id="v-smoh-r" placeholder="e.g. 900" /></div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group"><label>LEFT PROP TIME SINCE OH (HRS)</label><input type="number" id="v-prop-l" placeholder="e.g. 400" /></div>
+            <div class="form-group"><label>RIGHT PROP TIME SINCE OH (HRS)</label><input type="number" id="v-prop-r" placeholder="e.g. 450" /></div>
+          </div>
+        </div>
+      </div>>
       <div class="form-grid-2">
         <div class="form-group"><label>OVERALL CONDITION</label>
           <select id="v-cond">
@@ -1118,14 +1138,10 @@ async function doLookup() {
   const raw = document.getElementById('nn').value.trim().toUpperCase();
   if (!raw) { alert('Enter an N-number.'); return; }
   const nnumber = 'N' + raw;
-
   const btn = document.getElementById('nn-btn');
   const spin = document.getElementById('nn-spin');
   const result = document.getElementById('nn-result');
-  btn.disabled = true;
-  spin.classList.add('on');
-  result.innerHTML = '';
-
+  btn.disabled = true; spin.classList.add('on'); result.innerHTML = '';
   try {
     const resp = await fetch('/.netlify/functions/proxy', {
       method: 'POST',
@@ -1133,19 +1149,11 @@ async function doLookup() {
       body: JSON.stringify({ type: 'faa_lookup', nnumber: raw })
     });
     const d = await resp.json();
-    if (d && d.found) {
-      renderLookup(d);
-    } else {
-      result.innerHTML = '<p style="color:var(--danger);font-size:14px;margin-top:1rem">No aircraft found for that N-number. Try another.</p>';
-    }
-  } catch(e) {
-    result.innerHTML = '<p style="color:var(--danger);font-size:14px;margin-top:1rem">Lookup failed. Please try again.</p>';
-  }
-
-  btn.disabled = false;
-  spin.classList.remove('on');
+    if (d && d.found) { renderLookup(d); }
+    else { result.innerHTML = '<p style="color:var(--danger);font-size:14px;margin-top:1rem">No aircraft found for that N-number.</p>'; }
+  } catch(e) { result.innerHTML = '<p style="color:var(--danger);font-size:14px;margin-top:1rem">Lookup failed. Please try again.</p>'; }
+  btn.disabled = false; spin.classList.remove('on');
 }
-
 async function doLookup_unused() {
   const raw = document.getElementById('nn').value.trim().toUpperCase();
   if (!raw) { alert('Enter an N-number.'); return; }
@@ -1219,6 +1227,16 @@ function prefillCl(make, model, year, eng) {
   document.getElementById('cl-year').value = year;
 }
 
+/* ── ENGINE FIELD TOGGLE ── */
+function updateEngineFields() {
+  const engines = document.getElementById('engines');
+  const isTwin = engines && engines.value === '2';
+  const single = document.getElementById('single-eng-fields');
+  const twin = document.getElementById('twin-eng-fields');
+  if (single) single.style.display = isTwin ? 'none' : '';
+  if (twin) twin.style.display = isTwin ? 'block' : 'none';
+}
+
 /* ── VALUATION ── */
 const BANDS = { 'Piston single':{low:5,high:15}, 'Piston twin':{low:8,high:18}, 'LSA':{low:4,high:10}, 'Experimental':{low:10,high:25}, 'Turboprop':{low:6,high:14}, 'Vintage':{low:3,high:20} };
 
@@ -1228,8 +1246,16 @@ async function doValuation() {
   const year=document.getElementById('v-year').value;
   if (!make||!model) { alert('Enter make and model.'); return; }
   const ttaf=document.getElementById('v-ttaf').value;
-  const smoh=document.getElementById('v-smoh').value;
+  const isTwin = document.getElementById('engines') && document.getElementById('engines').value === '2';
+  const smohL = isTwin ? (document.getElementById('v-smoh-l') ? document.getElementById('v-smoh-l').value : '') : (document.getElementById('v-smoh') ? document.getElementById('v-smoh').value : '');
+  const smohR = isTwin ? (document.getElementById('v-smoh-r') ? document.getElementById('v-smoh-r').value : '') : '';
+  const propL = isTwin ? (document.getElementById('v-prop-l') ? document.getElementById('v-prop-l').value : '') : (document.getElementById('v-prop1') ? document.getElementById('v-prop1').value : '');
+  const propR = isTwin ? (document.getElementById('v-prop-r') ? document.getElementById('v-prop-r').value : '') : '';
+  const smoh = smohL; // keep backward compat
   const cond=document.getElementById('v-cond').value;
+  const engineInfo = isTwin
+    ? \`Left engine SMOH: \${smohL||'unknown'} hrs, Right engine SMOH: \${smohR||'unknown'} hrs, Left prop TSOH: \${propL||'unknown'} hrs, Right prop TSOH: \${propR||'unknown'} hrs\`
+    : \`Engine SMOH: \${smohL||'unknown'} hrs, Prop TSOH: \${propL||'unknown'} hrs\`;
   const cosm=document.getElementById('v-cosm').value;
   const notes=document.getElementById('v-notes').value;
   const avs=['GFC autopilot','GTN 650/750','ADS-B Out','Full glass cockpit','Engine STC/mods','Fresh annual'].filter((_,i)=>document.getElementById('av'+(i+1)).checked);
