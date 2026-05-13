@@ -39,19 +39,39 @@ STATUS_CODES = {
 }
 
 HEADERS = {
-    'N-NUMBER': 0, 'MFR MDL CODE': 1, 'ENG MFR MDL': 2,
-    'YEAR MFR': 3, 'TYPE REGISTRANT': 4, 'NAME': 5,
-    'STREET': 6, 'STREET2': 7, 'CITY': 8, 'STATE': 9,
-    'ZIP CODE': 10, 'REGION': 11, 'COUNTY': 12, 'COUNTRY': 13,
-    'LAST ACTION DATE': 14, 'CERT ISSUE DATE': 15, 'CERTIFICATION': 16,
-    'TYPE AIRCRAFT': 17, 'TYPE ENGINE': 18, 'STATUS CODE': 19,
-    'MODE S CODE': 20, 'FRACT OWNER': 21, 'AIR WORTH DATE': 22,
-    'OTHER NAMES(1)': 23, 'OTHER NAMES(2)': 24, 'OTHER NAMES(3)': 25,
-    'OTHER NAMES(4)': 26, 'OTHER NAMES(5)': 27, 'EXPIRATION DATE': 28,
-    'UNIQUE ID': 29, 'KIT MFR': 30, 'KIT MODEL': 31, 'MODE S CODE HEX': 32,
+    'N-NUMBER': 0, 'SERIAL NUMBER': 1, 'MFR MDL CODE': 2, 'ENG MFR MDL': 3,
+    'YEAR MFR': 4, 'TYPE REGISTRANT': 5, 'NAME': 6,
+    'STREET': 7, 'STREET2': 8, 'CITY': 9, 'STATE': 10,
+    'ZIP CODE': 11, 'REGION': 12, 'COUNTY': 13, 'COUNTRY': 14,
+    'LAST ACTION DATE': 15, 'CERT ISSUE DATE': 16, 'CERTIFICATION': 17,
+    'TYPE AIRCRAFT': 18, 'TYPE ENGINE': 19, 'STATUS CODE': 20,
+    'MODE S CODE': 21, 'FRACT OWNER': 22, 'AIR WORTH DATE': 23,
+    'OTHER NAMES(1)': 24, 'OTHER NAMES(2)': 25, 'OTHER NAMES(3)': 26,
+    'OTHER NAMES(4)': 27, 'OTHER NAMES(5)': 28, 'EXPIRATION DATE': 29,
+    'UNIQUE ID': 30, 'KIT MFR': 31, 'KIT MODEL': 32, 'MODE S CODE HEX': 33,
 }
 
+FAA_LOCAL_PATH = os.environ.get('FAA_LOCAL_PATH')
+
+def load_local_zip():
+    if not FAA_LOCAL_PATH:
+        return None
+    local_path = FAA_LOCAL_PATH
+    if os.path.isdir(local_path):
+        local_path = os.path.join(local_path, 'ReleasableAircraft.zip')
+    if not os.path.exists(local_path):
+        print(f"Local FAA path not found: {local_path}")
+        return None
+    print(f"Loading FAA registry from local file: {local_path}")
+    with open(local_path, 'rb') as f:
+        return f.read()
+
+
 def download_faa_zip():
+    local_zip = load_local_zip()
+    if local_zip is not None:
+        return local_zip
+
     print(f"Downloading FAA registry...")
     headers = {
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120.0 Safari/537.36',
@@ -65,7 +85,7 @@ def download_faa_zip():
     try:
         session.get('https://registry.faa.gov/aircraftinquiry/', headers=headers, timeout=30)
         time.sleep(2)
-    except:
+    except Exception:
         pass
     
     # Now download the zip
@@ -149,9 +169,11 @@ def parse_master_csv(zip_content):
                     if idx < 0 or idx >= len(row): return ''
                     return row[idx].strip()
                 
-                nnumber = col('N-NUMBER').strip()
+                nnumber = col('N-NUMBER').strip().upper()
                 if not nnumber:
                     continue
+                if not nnumber.startswith('N'):
+                    nnumber = f'N{nnumber}'
 
                 mfr_code = col('MFR MDL CODE')
                 eng_code = col('ENG MFR MDL')
@@ -160,12 +182,13 @@ def parse_master_csv(zip_content):
                 
                 try:
                     year = int(col('YEAR MFR')) if col('YEAR MFR').isdigit() else None
-                except:
+                except Exception:
                     year = None
 
                 try:
-                    seats = int(ref.get('seats', '') or 0) or None
-                except:
+                    seats = int(ref.get('seats', '') or 0)
+                    seats = seats if seats > 0 else None
+                except Exception:
                     seats = None
 
                 records.append({
@@ -173,11 +196,11 @@ def parse_master_csv(zip_content):
                     'make': ref.get('make') or mfr_code,
                     'model': ref.get('model', ''),
                     'year': year,
-                    'serial_number': '',
+                    'serial_number': col('SERIAL NUMBER'),
                     'engine_make': eng.get('make', ''),
                     'engine_model': eng.get('model', ''),
                     'seats': seats,
-                    'category': '',
+                    'category': col('TYPE REGISTRANT'),
                     'aircraft_type': AIRCRAFT_TYPES.get(col('TYPE AIRCRAFT'), col('TYPE AIRCRAFT')),
                     'engine_type': ENGINE_TYPES.get(col('TYPE ENGINE'), ''),
                     'registrant_name': col('NAME'),

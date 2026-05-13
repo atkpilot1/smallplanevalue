@@ -27,48 +27,58 @@ exports.handler = async function(event) {
     const nn = (body.nnumber || '').replace(/^N/i, '').trim().toUpperCase();
     if (!nn) return { statusCode: 400, body: JSON.stringify({ error: 'No N-number provided' }) };
 
-    // ── VERIFIED AIRCRAFT DATABASE ──
-    // Hand-verified from FAA registry - these are always correct
-    const VERIFIED = {
-      '7989R': {
-        found: true, _realData: true, _source: 'verified',
-        nnumber: 'N7989R', status: 'Valid',
-        make: 'BEECH', model: 'D55 Baron',
-        year: 1969, serialNumber: 'TE-714',
-        aircraftType: 'Fixed wing multi engine',
-        engineType: 'Reciprocating',
-        engineMake: 'Continental', engineModel: 'IO-520-C',
-        seats: 6, engines: 2,
-        certDate: '03/10/2023',
-        registrationExpiry: '03/31/2030',
-        registrantName: '111RW LLC',
-        city: 'NASHVILLE', state: 'TN',
-        ownerHistory: [], flags: []
-      },
-      '7817R': {
-        found: true, _realData: true, _source: 'verified',
-        nnumber: 'N7817R', status: 'Valid',
-        make: 'BEECH', model: 'D55 Baron',
-        year: 1968, serialNumber: 'TE-666',
-        aircraftType: 'Fixed wing multi engine',
-        engineType: 'Reciprocating',
-        engineMake: 'Continental', engineModel: 'IO-520-C',
-        seats: 6, engines: 2,
-        certDate: '03/04/2002',
-        registrationExpiry: '03/31/2026',
-        registrantName: 'REGISTERED OWNER',
-        city: 'NASHVILLE', state: 'TN',
-        ownerHistory: [], flags: []
-      }
-    };
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
-    // Return verified data immediately if we have it
-    if (VERIFIED[nn]) {
-      return {
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-        body: JSON.stringify(VERIFIED[nn])
-      };
+    if (supabaseUrl && supabaseAnonKey) {
+      try {
+        const lookupUrl = `${supabaseUrl}/rest/v1/aircraft?nnumber=eq.N${nn}&limit=1`;
+        const dbResp = await fetch(lookupUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: supabaseAnonKey,
+            Authorization: `Bearer ${supabaseAnonKey}`
+          }
+        });
+
+        if (dbResp.ok) {
+          const rows = await dbResp.json();
+          if (Array.isArray(rows) && rows.length > 0) {
+            const row = rows[0];
+            return {
+              statusCode: 200,
+              headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+              body: JSON.stringify({
+                found: true,
+                _realData: true,
+                _source: 'supabase',
+                nnumber: row.nnumber,
+                status: row.status || 'Valid',
+                make: row.make,
+                model: row.model,
+                year: row.year,
+                serialNumber: row.serial_number,
+                aircraftType: row.aircraft_type,
+                engineType: row.engine_type,
+                engineMake: row.engine_make,
+                engineModel: row.engine_model,
+                seats: row.seats,
+                certDate: row.cert_date,
+                registrationExpiry: row.expiry_date,
+                registrantName: row.registrant_name,
+                street: row.street,
+                city: row.city,
+                state: row.state,
+                zip: row.zip,
+                airworthiness: row.airworthiness
+              })
+            };
+          }
+        }
+      } catch (err) {
+        console.error('Supabase FAA lookup failed:', err);
+      }
     }
 
     // For all other N-numbers, use AI with FAA knowledge
