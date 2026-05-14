@@ -98,8 +98,11 @@ def download_google_drive_file(file_id, session, headers):
     if token:
         response = session.get(download_url, headers=headers, params={'id': file_id, 'confirm': token}, timeout=180, stream=True)
 
-    if 'text/html' in response.headers.get('content-type', ''):
+    content_type = response.headers.get('content-type', '')
+    if 'text/html' in content_type:
         text = response.text
+        if 'accounts.google.com/ServiceLogin' in text or 'sign in' in text.lower():
+            raise RuntimeError('Google Drive file access requires public sharing. Set the file to "Anyone with the link can view".')
         if 'Google Drive' in text and 'virus' in text.lower():
             raise RuntimeError('Google Drive download requires confirmation or is blocked')
         raise RuntimeError('Google Drive download did not return a ZIP file')
