@@ -8,7 +8,7 @@ on:
 jobs:
   update-registry:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     steps:
       - name: Checkout repository
@@ -26,4 +26,5 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          FAA_ZIP_URL: ${{ secrets.FAA_ZIP_URL }}
         run: python .github/scripts/update_faa_registry.py

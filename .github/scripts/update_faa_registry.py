@@ -14,7 +14,7 @@ from datetime import datetime
 
 SUPABASE_URL = os.environ['SUPABASE_URL']
 SUPABASE_KEY = os.environ['SUPABASE_SERVICE_KEY']
-FAA_ZIP_URL = 'https://registry.faa.gov/database/ReleasableAircraft.zip'
+FAA_ZIP_URL = os.environ.get('FAA_ZIP_URL', 'https://registry.faa.gov/database/ReleasableAircraft.zip')
 
 AIRCRAFT_TYPES = {
     '1': 'Glider', '2': 'Balloon', '3': 'Blimp/Dirigible',
@@ -114,7 +114,7 @@ def parse_master_csv(zip_content):
         print(f"Files in zip: {z.namelist()}")
         
         ref_data = {}
-        for fname in ['ACFTREF.txt', 'AcftRef.txt', 'acftref.txt']:
+        for fname in ['ACFTREF.txt', 'AcftRef.txt', 'acftref.txt', 'ReleasableAircraft/ACFTREF.txt', 'ReleasableAircraft/AcftRef.txt', 'ReleasableAircraft/acftref.txt']:
             if fname in z.namelist():
                 with z.open(fname) as f:
                     reader = csv.reader(io.TextIOWrapper(f, encoding='latin-1'))
@@ -131,7 +131,7 @@ def parse_master_csv(zip_content):
                 break
         
         eng_data = {}
-        for fname in ['ENGINE.txt', 'Engine.txt', 'engine.txt']:
+        for fname in ['ENGINE.txt', 'Engine.txt', 'engine.txt', 'ReleasableAircraft/ENGINE.txt', 'ReleasableAircraft/Engine.txt', 'ReleasableAircraft/engine.txt']:
             if fname in z.namelist():
                 with z.open(fname) as f:
                     reader = csv.reader(io.TextIOWrapper(f, encoding='latin-1'))
@@ -147,7 +147,7 @@ def parse_master_csv(zip_content):
                 break
 
         master_file = None
-        for fname in ['MASTER.txt', 'Master.txt', 'master.txt']:
+        for fname in ['MASTER.txt', 'Master.txt', 'master.txt', 'ReleasableAircraft/MASTER.txt', 'ReleasableAircraft/Master.txt', 'ReleasableAircraft/master.txt']:
             if fname in z.namelist():
                 master_file = fname
                 break
@@ -229,7 +229,7 @@ def upsert_to_supabase(records):
         'Prefer': 'resolution=merge-duplicates'
     }
     
-    batch_size = 500
+    batch_size = 2000
     total = len(records)
     success = 0
     errors = 0
@@ -242,24 +242,23 @@ def upsert_to_supabase(records):
                     f'{SUPABASE_URL}/rest/v1/aircraft',
                     headers=headers,
                     json=batch,
-                    timeout=30
+                    timeout=60
                 )
                 if resp.status_code in (200, 201):
                     success += len(batch)
+                    print(f"  Batch {i//batch_size + 1}: {len(batch)} records uploaded ({success:,}/{total:,})")
                     break
                 elif attempt < 2:
-                    time.sleep(2)
+                    time.sleep(1)
                 else:
                     errors += len(batch)
-                    print(f"  Batch error: {resp.status_code}")
+                    print(f"  Batch error: {resp.status_code} - {resp.text[:200]}")
             except Exception as e:
                 if attempt < 2:
-                    time.sleep(2)
+                    time.sleep(1)
                 else:
                     errors += len(batch)
-        
-        if (i // batch_size) % 100 == 0:
-            print(f"  Progress: {success:,}/{total:,} uploaded, {errors} errors")
+                    print(f"  Batch exception: {str(e)[:100]}")
     
     print(f"Done: {success:,} uploaded, {errors} errors")
     return success
