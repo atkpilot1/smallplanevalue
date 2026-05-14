@@ -6,6 +6,7 @@ Runs weekly via GitHub Actions.
 
 import os
 import io
+import re
 import csv
 import zipfile
 import requests
@@ -67,6 +68,59 @@ def load_local_zip():
         return f.read()
 
 
+def get_google_drive_file_id(url):
+    match = re.search(r'/d/([a-zA-Z0-9_-]+)', url)
+    if match:
+        return match.group(1)
+    match = re.search(r'id=([a-zA-Z0-9_-]+)', url)
+    if match:
+        return match.group(1)
+    return None
+
+
+def get_confirm_token(response):
+    for key, value in response.cookies.items():
+        if key.startswith('download_warning'):
+            return value
+
+    text = response.text
+    match = re.search(r'confirm=([0-9A-Za-z_-]+)', text)
+    if match:
+        return match.group(1)
+    return None
+
+
+def download_google_drive_file(file_id, session, headers):
+    download_url = 'https://drive.google.com/uc?export=download'
+    params = {'id': file_id}
+    response = session.get(download_url, headers=headers, params=params, timeout=180, stream=True)
+    token = get_confirm_token(response)
+    if token:
+        response = session.get(download_url, headers=headers, params={'id': file_id, 'confirm': token}, timeout=180, stream=True)
+
+    if 'text/html' in response.headers.get('content-type', ''):
+        text = response.text
+        if 'Google Drive' in text and 'virus' in text.lower():
+            raise RuntimeError('Google Drive download requires confirmation or is blocked')
+        raise RuntimeError('Google Drive download did not return a ZIP file')
+
+    print(f"Status: {response.status_code}")
+    response.raise_for_status()
+
+    chunks = []
+    total = 0
+    for chunk in response.iter_content(chunk_size=1024*1024):
+        if chunk:
+            chunks.append(chunk)
+            total += len(chunk)
+            if total % (5*1024*1024) == 0:
+                print(f"  Downloaded {total/1024/1024:.0f} MB...")
+
+    content = b''.join(chunks)
+    print(f"Downloaded {len(content)/1024/1024:.1f} MB")
+    return content
+
+
 def download_faa_zip():
     local_zip = load_local_zip()
     if local_zip is not None:
@@ -77,22 +131,27 @@ def download_faa_zip():
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120.0 Safari/537.36',
         'Accept': 'application/zip,application/octet-stream,*/*',
         'Accept-Language': 'en-US,en;q=0.9',
-        'Referer': 'https://registry.faa.gov/aircraftinquiry/',
     }
-    
+
     session = requests.Session()
+    if 'drive.google.com' in FAA_ZIP_URL:
+        file_id = get_google_drive_file_id(FAA_ZIP_URL)
+        if not file_id:
+            raise ValueError('FAA_ZIP_URL is not a valid Google Drive file URL')
+        return download_google_drive_file(file_id, session, headers)
+
     # First visit the main page to get cookies
     try:
         session.get('https://registry.faa.gov/aircraftinquiry/', headers=headers, timeout=30)
         time.sleep(2)
     except Exception:
         pass
-    
+
     # Now download the zip
     resp = session.get(FAA_ZIP_URL, headers=headers, timeout=180, stream=True)
     print(f"Status: {resp.status_code}")
     resp.raise_for_status()
-    
+
     chunks = []
     total = 0
     for chunk in resp.iter_content(chunk_size=1024*1024):
@@ -101,7 +160,7 @@ def download_faa_zip():
             total += len(chunk)
             if total % (5*1024*1024) == 0:
                 print(f"  Downloaded {total/1024/1024:.0f} MB...")
-    
+
     content = b''.join(chunks)
     print(f"Downloaded {len(content)/1024/1024:.1f} MB")
     return content
