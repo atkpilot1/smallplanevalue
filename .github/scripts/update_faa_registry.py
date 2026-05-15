@@ -78,25 +78,18 @@ def get_google_drive_file_id(url):
     return None
 
 
-def get_confirm_token(response):
-    for key, value in response.cookies.items():
-        if key.startswith('download_warning'):
-            return value
-
-    text = response.text
-    match = re.search(r'confirm=([0-9A-Za-z_-]+)', text)
-    if match:
-        return match.group(1)
-    return None
-
-
 def download_google_drive_file(file_id, session, headers):
+    # First try the standard download URL
     download_url = 'https://drive.google.com/uc?export=download'
     params = {'id': file_id}
     response = session.get(download_url, headers=headers, params=params, timeout=180, stream=True)
-    token = get_confirm_token(response)
-    if token:
-        response = session.get(download_url, headers=headers, params={'id': file_id, 'confirm': token}, timeout=180, stream=True)
+
+    # Check if we got a virus scan warning page
+    if 'Virus scan warning' in response.text:
+        # Use the direct download URL that bypasses the warning
+        download_url = 'https://drive.usercontent.google.com/download'
+        params = {'id': file_id, 'export': 'download', 'confirm': 't'}
+        response = session.get(download_url, headers=headers, params=params, timeout=180, stream=True)
 
     content_type = response.headers.get('content-type', '')
     if 'text/html' in content_type:
