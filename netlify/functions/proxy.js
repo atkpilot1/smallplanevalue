@@ -32,7 +32,7 @@ exports.handler = async function(event) {
 
     if (supabaseUrl && supabaseAnonKey) {
       try {
-        const lookupUrl = `${supabaseUrl}/rest/v1/aircraft?nnumber=eq.N${nn}&limit=1`;
+        const lookupUrl = `${supabaseUrl}/rest/v1/aircraft?nnumber=eq.${nn}&limit=1`;
         const dbResp = await fetch(lookupUrl, {
           method: 'GET',
           headers: {
