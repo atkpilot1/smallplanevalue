@@ -81,7 +81,7 @@ exports.handler = async function(event) {
       }
     }
 
-    // For all other N-numbers, use AI with FAA knowledge
+    // Fallback: use AI WITH WEB SEARCH to find real FAA data
     try {
       const aiResp = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -92,80 +92,12 @@ exports.handler = async function(event) {
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-5-20250929',
-          max_tokens: 600,
+          max_tokens: 1500,
+          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
           messages: [{
             role: 'user',
-            content: `You are simulating the FAA aircraft registry. For N-number N${nn}, generate a realistic and plausible FAA registry record based on what this N-number likely is registered as.
+            content: `Look up the REAL FAA a
+git add netlify/functions/proxy.js
+git commit -m "Fix proxy: use web search for real FAA data, pass tools through"
+git push
 
-Return ONLY valid JSON, no markdown:
-{
-  "found": true,
-  "nnumber": "N${nn}",
-  "status": "Valid",
-  "make": "Cessna",
-  "model": "172S Skyhawk",
-  "year": 2003,
-  "serialNumber": "172S9876",
-  "aircraftType": "Fixed wing single engine",
-  "engineType": "Reciprocating",
-  "engineMake": "Lycoming",
-  "engineModel": "IO-360-L2A",
-  "seats": 4,
-  "engines": 1,
-  "certDate": "2003-04-12",
-  "registrationExpiry": "2026-08-31",
-  "registrantName": "John Smith",
-  "city": "Nashville",
-  "state": "TN",
-  "ownerHistory": [
-    {"name": "John Smith", "city": "Nashville", "state": "TN", "from": "2019-03-14", "to": null, "current": true}
-  ],
-  "flags": [
-    {"type": "info", "title": "Registration current", "detail": "Registered through August 2026."}
-  ]
-}`
-          }]
-        })
-      });
-
-      const aiData = await aiResp.json();
-      const txt = aiData.content.map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
-      const parsed = JSON.parse(txt);
-
-      return {
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-        body: JSON.stringify(parsed)
-      };
-
-    } catch(err) {
-      return {
-        statusCode: 200,
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-        body: JSON.stringify({ found: false, nnumber: 'N' + nn, error: err.message })
-      };
-    }
-  }
-
-  // ── ANTHROPIC AI PROXY ───────────────────────────────
-  body.model = 'claude-sonnet-4-5-20250929';
-  body.max_tokens = Math.min(body.max_tokens || 1000, 4000);
-
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': process.env.ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01'
-    },
-    body: JSON.stringify(body)
-  });
-
-  const data = await response.text();
-
-  return {
-    statusCode: response.status,
-    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-    body: data
-  };
-};
