@@ -1376,7 +1376,74 @@ setLoading('nn-spin','nn-btn',false);
 return;
 } catch(e) { console.log('ARLA lookup failed:', e); }
 
-// Fallback: show error with link to FAA
+// Fallback: use Claude to fetch ARLA API (avoids CORS)
+try {
+var arlaProxy = await fetch(API, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+model: MODEL,
+max_tokens: 1500,
+tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+messages: [{ role: 'user', content: 'Fetch this URL and return the JSON response exactly as-is: https://arla.njf.dev/api/v0/faa/registration/N' + raw + '\n\nIf that URL does not work, search for "FAA N-number N' + raw + ' registration" and find the actual aircraft data.\n\nReturn ONLY a JSON object with these fields based on the REAL FAA data (do NOT guess from the N-number):\n{"n_number":"' + raw + '","mfr_name":"...","model":"...","year_mfr":"...","serial_number":"...","type_aircraft":"1 for single engine, 2 for multi","eng_mfr_name":"...","eng_model":"...","no_seats":"...","cert_issue_date":"...","expiration_date":"...","registrant_name":"...","city":"...","state":"...","status":"V"}\n\nReturn ONLY the JSON, no other text.' }]
+})
+});
+var proxyData = await arlaProxy.json();
+var proxyTxt = proxyData.content.map(function(b) { return b.text || ''; }).join('').replace(/```json|```/g, '').trim();
+var proxyMatch = proxyTxt.match(/\{[\s\S]*\}/);
+if (proxyMatch) {
+var arla = JSON.parse(proxyMatch[0]);
+
+var acType = 'Fixed wing single engine';
+var typeAircraft = (arla.type_aircraft||'').toString();
+if (typeAircraft === '2' || typeAircraft === '3') acType = 'Fixed wing multi engine';
+else if (typeAircraft === '4' || typeAircraft === 'H') acType = 'Helicopter';
+
+var status = 'Valid';
+var statusCode = (arla.status||'V').toString().trim();
+if (statusCode === 'V' || statusCode === 'A') status = 'Valid';
+else if (statusCode === 'T' || statusCode === 'M') status = 'Expired';
+else if (statusCode === 'N') status = 'Cancelled';
+
+var make = (arla.mfr_name || arla.name || '').replace(/\b\w+/g, function(w){ return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); });
+var model = arla.model || '';
+var year = arla.year_mfr || '';
+var sn = arla.serial_number || '';
+var engMfr = (arla.eng_mfr_name || '').replace(/\b\w+/g, function(w){ return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); });
+var engModel = arla.eng_model || '';
+var seats = arla.no_seats || '';
+var certDate = arla.cert_issue_date || '';
+var expDate = arla.expiration_date || '';
+var registrant = (arla.registrant_name || arla.name_1 || '').replace(/\b\w+/g, function(w){ return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); });
+var city = (arla.city || '').replace(/\b\w+/g, function(w){ return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); });
+var state = arla.state || '';
+
+var flags = [];
+if (expDate) {
+  var exp = new Date(expDate);
+  var now = new Date();
+  flags.push(exp > now ?
+    {type:'info', title:'Registration current', detail:'Registered through ' + fmtDate(expDate) + '.'} :
+    {type:'warn', title:'Registration may be expired', detail:'Expiry date: ' + fmtDate(expDate) + '. Verify on FAA website.'});
+}
+
+var d = {
+  nnumber: nnumber, status: status, make: make, model: model, year: year,
+  serialNumber: sn, aircraftType: acType, engineMake: engMfr, engineModel: engModel,
+  seats: seats, airworthinessCert: 'Standard', certDate: certDate,
+  registrantName: registrant, city: city, state: state, registrationExpiry: expDate,
+  ownerHistory: [{name: registrant, city: city, state: state, from: certDate, to: null, current: true}],
+  flags: flags
+};
+renderLookup(d);
+if (acType.toLowerCase().indexOf('multi') >= 0) {
+  var engSel = document.getElementById('v-engines');
+  if (engSel) { engSel.value = '2'; toggleEngineFields(); }
+}
+setLoading('nn-spin','nn-btn',false);
+return;
+}
+} catch(e2) { console.log('Proxy lookup also failed:', e2); }
 document.getElementById('nn-result').innerHTML = '<div class="note-box" style="border-color:var(--danger);background:rgba(192,57,43,0.06);margin-top:1rem"><i class="ti ti-alert-circle" style="color:var(--danger);font-size:14px"></i> Could not retrieve FAA data for N' + raw + '. <a href="https://registry.faa.gov/AircraftInquiry/Search/NNumberResult?nNumberTxt=' + raw + '" target="_blank" style="color:var(--sky-light)">Check FAA directly →</a></div>';
 setLoading('nn-spin','nn-btn',false);
 }
