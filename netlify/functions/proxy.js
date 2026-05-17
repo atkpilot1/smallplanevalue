@@ -22,10 +22,16 @@ exports.handler = async function(event) {
     return { statusCode: 400, body: 'Invalid JSON' };
   }
 
-  // ── FAA N-NUMBER LOOKUP ───────────────────────────────
+  // ── FAA N-NUMBER LOOKUP via Supabase ─────────────────
   if (body.type === 'faa_lookup') {
     const nn = (body.nnumber || '').replace(/^N/i, '').trim().toUpperCase();
-    if (!nn) return { statusCode: 400, body: JSON.stringify({ error: 'No N-number provided' }) };
+    if (!nn) {
+      return {
+        statusCode: 400,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+        body: JSON.stringify({ error: 'No N-number provided' })
+      };
+    }
 
     const supabaseUrl = process.env.SUPABASE_URL;
     const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
@@ -37,8 +43,8 @@ exports.handler = async function(event) {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            apikey: supabaseAnonKey,
-            Authorization: `Bearer ${supabaseAnonKey}`
+            'apikey': supabaseAnonKey,
+            'Authorization': `Bearer ${supabaseAnonKey}`
           }
         });
 
@@ -53,7 +59,7 @@ exports.handler = async function(event) {
                 found: true,
                 _realData: true,
                 _source: 'supabase',
-                nnumber: row.nnumber,
+                nnumber: 'N' + row.nnumber,
                 status: row.status || 'Valid',
                 make: row.make,
                 model: row.model,
@@ -63,41 +69,95 @@ exports.handler = async function(event) {
                 engineType: row.engine_type,
                 engineMake: row.engine_make,
                 engineModel: row.engine_model,
+                horsepower: row.horsepower,
                 seats: row.seats,
-                certDate: row.cert_date,
+                speed: row.speed,
+                numEngines: row.num_engines,
+                weightClass: row.weight_class,
+                certDate: row.cert_issue_date,
+                airworthDate: row.airworth_date,
                 registrationExpiry: row.expiry_date,
                 registrantName: row.registrant_name,
-                street: row.street,
                 city: row.city,
                 state: row.state,
-                zip: row.zip,
-                airworthiness: row.airworthiness
+                statusCode: row.status_code,
+                kitMfr: row.kit_mfr,
+                kitModel: row.kit_model
               })
             };
           }
         }
+
+        // No rows found
+        return {
+          statusCode: 200,
+          headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+          body: JSON.stringify({ found: false, nnumber: 'N' + nn })
+        };
+
       } catch (err) {
-        console.error('Supabase FAA lookup failed:', err);
+        console.error('Supabase FAA lookup failed:', err.message);
+        return {
+          statusCode: 500,
+          headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+          body: JSON.stringify({ error: 'Database lookup failed', detail: err.message })
+        };
       }
     }
 
-    // Fallback: use AI WITH WEB SEARCH to find real FAA data
-    try {
-      const aiResp = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': process.env.ANTHROPIC_API_KEY,
-          'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-5-20250929',
-          max_tokens: 1500,
-          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-          messages: [{
-            role: 'user',
-            content: `Look up the REAL FAA a
-git add netlify/functions/proxy.js
-git commit -m "Fix proxy: use web search for real FAA data, pass tools through"
-git push
+    // No Supabase credentials
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ error: 'Database not configured' })
+    };
+  }
 
+  // ── ANTHROPIC API PROXY (valuations, etc.) ───────────
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ error: 'API key not configured' })
+    };
+  }
+
+  try {
+    const apiBody = {
+      model: body.model || 'claude-sonnet-4-5-20250929',
+      max_tokens: body.max_tokens || 4096,
+      messages: body.messages || []
+    };
+
+    // Pass through tools if provided
+    if (body.tools) {
+      apiBody.tools = body.tools;
+    }
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify(apiBody)
+    });
+
+    const data = await resp.json();
+
+    return {
+      statusCode: resp.status,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify(data)
+    };
+
+  } catch (err) {
+    console.error('Anthropic API error:', err.message);
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ error: 'API request failed', detail: err.message })
+    };
+  }
+};
