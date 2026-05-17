@@ -1310,7 +1310,17 @@ setLoading('nn-spin','nn-btn',true);
 document.getElementById('nn-result').innerHTML = '';
 
 try {
-var d = await callClaudeSearch('You are an FAA aircraft registry database. Look up N-number N' + raw + ' and return the registration data.\n\nCRITICAL RULES:\n1. You MUST search the web for "FAA registration N' + raw + ' aircraft owner" before responding.\n2. NEVER guess the aircraft type from the N-number. N737BD is NOT a Boeing 737. N172XX is NOT necessarily a Cessna 172. The N-number tells you NOTHING about the aircraft type.\n3. Only return data you found from actual search results about this specific N-number.\n4. If you cannot find real data, return {"error":"not_found"}\n\nReturn ONLY valid JSON:\n{"nnumber":"N' + raw + '","status":"Valid","make":"...","model":"...","year":"...","serialNumber":"...","aircraftType":"Fixed wing single engine","engineMake":"...","engineModel":"...","seats":"...","airworthinessCert":"Standard","certDate":"...","registrantName":"...","city":"...","state":"...","registrationExpiry":"...","ownerHistory":[{"name":"...","city":"...","state":"...","from":"...","to":null,"current":true}],"flags":[{"type":"info","title":"Registration current","detail":"..."}]}', 1500);
+var resp = await fetch('/.netlify/functions/proxy', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ type: 'faa_lookup', nnumber: raw })
+});
+var d = await resp.json();
+if (!d.found) throw new Error('not_found');
+d.ownerHistory = [{ name: d.registrantName || 'Unknown', city: d.city || '', state: d.state || '', from: d.certDate || '', to: null, current: true }];
+d.flags = [];
+if (d.status === 'Valid') d.flags.push({ type: 'info', title: 'Registration current', detail: 'Status: Valid through ' + (d.registrationExpiry || 'N/A') });
+if (d.status !== 'Valid') d.flags.push({ type: 'warn', title: 'Registration: ' + d.status, detail: 'Status code: ' + (d.statusCode || 'N/A') });
 
 if (d.error) throw new Error(d.error);
 renderLookup(d);
