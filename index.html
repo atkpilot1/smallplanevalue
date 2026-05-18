@@ -1406,7 +1406,30 @@ ${d.adNotes ? `<div style="background:rgba(232,160,32,0.1);border-radius:var(--r
 <div class="note-box" style="margin-top:.75rem">Data sourced from FAA aircraft registry (registry.faa.gov). Owner names are public FAA records.</div>`;
 }
 
+function resetForm() {
+document.getElementById('v-make').value = '';
+document.getElementById('v-model').value = '';
+document.getElementById('v-year').value = '';
+document.getElementById('v-ttaf').value = '';
+var engSel = document.getElementById('v-engines');
+if (engSel) { engSel.value = '1'; toggleEngineFields(); }
+var smoh = document.getElementById('v-smoh'); if (smoh) smoh.value = '';
+var prop = document.getElementById('v-prop1'); if (prop) prop.value = '';
+var sl = document.getElementById('v-smoh-l'); if (sl) sl.value = '';
+var sr = document.getElementById('v-smoh-r'); if (sr) sr.value = '';
+var pl = document.getElementById('v-prop-l'); if (pl) pl.value = '';
+var pr = document.getElementById('v-prop-r'); if (pr) pr.value = '';
+var cond = document.getElementById('v-cond'); if (cond) cond.value = 'Good';
+var cosm = document.getElementById('v-cosm'); if (cosm) cosm.value = 'Average';
+var notes = document.getElementById('v-notes'); if (notes) notes.value = '';
+document.querySelectorAll('input[type="checkbox"][id^="av-"]').forEach(function(cb) { cb.checked = false; });
+document.querySelectorAll('select[id$="-qty"]').forEach(function(s) { s.value = '1'; });
+document.getElementById('v-result').innerHTML = '';
+document.getElementById('nn-result').innerHTML = '';
+}
+
 function prefillVal(make, model, year, aircraftType) {
+resetForm();
 document.getElementById('v-make').value = make;
 document.getElementById('v-model').value = model;
 document.getElementById('v-year').value = year;
