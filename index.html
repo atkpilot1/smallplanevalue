@@ -1012,68 +1012,90 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 </div>
 
 <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:10px;letter-spacing:.03em">AVIONICS &amp; EQUIPMENT</div>
-
-<div style="font-size:11px;font-weight:500;color:var(--sky);margin-bottom:6px;letter-spacing:.04em">PRIMARY FLIGHT DISPLAY / MFD</div>
-<div class="chk-grid" style="margin-bottom:10px">
-<label class="chk-label"><input type="checkbox" id="av-g1000" /> Garmin G1000 / NXi</label>
-<label class="chk-label"><input type="checkbox" id="av-g500txi" /> Garmin G500 TXi</label>
-<label class="chk-label"><input type="checkbox" id="av-g600txi" /> Garmin G600 TXi</label>
-<label class="chk-label"><input type="checkbox" id="av-g3x" /> Garmin G3X Touch</label>
-<label class="chk-label"><input type="checkbox" id="av-avr9" /> Avidyne Entegra R9</label>
-<label class="chk-label"><input type="checkbox" id="av-ifd" /> Avidyne IFD550/540</label>
-<label class="chk-label"><input type="checkbox" id="av-dynon" /> Dynon SkyView HDX</label>
-<label class="chk-label"><input type="checkbox" id="av-aspen" /> Aspen EFD 1000/2000</label>
-<label class="chk-label"><input type="checkbox" id="av-ex500" /> Avidyne EX500/600 MFD</label>
-<label class="chk-label"><input type="checkbox" id="av-steam" /> Steam gauges (analog)</label>
-</div>
-
-<div style="font-size:11px;font-weight:500;color:var(--sky);margin-bottom:6px;letter-spacing:.04em">GPS / NAV / COM</div>
-<div class="chk-grid" style="margin-bottom:10px">
-<label class="chk-label"><input type="checkbox" id="av-gtn750" /> Garmin GTN 750/750Xi</label>
-<label class="chk-label"><input type="checkbox" id="av-gtn650" /> Garmin GTN 650/650Xi</label>
-<label class="chk-label"><input type="checkbox" id="av-gns530" /> Garmin GNS 530W</label>
-<label class="chk-label"><input type="checkbox" id="av-gns430" /> Garmin GNS 430W</label>
-<label class="chk-label"><input type="checkbox" id="av-gns430nw" /> Garmin GNS 430 (non-WAAS)</label>
-<label class="chk-label"><input type="checkbox" id="av-ifd440" /> Avidyne IFD440</label>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 24px">
+<div>
+<div style="font-size:11px;font-weight:600;color:var(--sky);margin-bottom:5px;letter-spacing:.04em">BASIC / LEGACY</div>
+<div style="display:flex;flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-sixpack" /> Standard six pack (steam gauges)</label>
+<label class="chk-label"><input type="checkbox" id="av-nav1" /> Single NAV/COM</label>
+<label class="chk-label"><input type="checkbox" id="av-nav2" /> Dual NAV/COM</label>
+<label class="chk-label"><input type="checkbox" id="av-adf" /> ADF</label>
+<label class="chk-label"><input type="checkbox" id="av-dme" /> DME</label>
 <label class="chk-label"><input type="checkbox" id="av-kx155" /> King KX-155/165</label>
 </div>
-
-<div style="font-size:11px;font-weight:500;color:var(--sky);margin-bottom:6px;letter-spacing:.04em">AUTOPILOT</div>
-<div class="chk-grid" style="margin-bottom:10px">
-<label class="chk-label"><input type="checkbox" id="av-gfc500" /> Garmin GFC 500</label>
-<label class="chk-label"><input type="checkbox" id="av-gfc600" /> Garmin GFC 600</label>
-<label class="chk-label"><input type="checkbox" id="av-gfc700" /> Garmin GFC 700</label>
-<label class="chk-label"><input type="checkbox" id="av-dfc90" /> Avidyne DFC90</label>
-<label class="chk-label"><input type="checkbox" id="av-kfc200" /> King KFC 200/250</label>
+<div style="font-size:11px;font-weight:600;color:var(--sky);margin-bottom:5px;letter-spacing:.04em">GARMIN</div>
+<div style="display:flex;flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-g5" /> G5 (single or dual)</label>
+<label class="chk-label"><input type="checkbox" id="av-gi275" /> GI 275</label>
+<label class="chk-label"><input type="checkbox" id="av-g500" /> G500</label>
+<label class="chk-label"><input type="checkbox" id="av-g500txi" /> G500 TXi</label>
+<label class="chk-label"><input type="checkbox" id="av-g600txi" /> G600 TXi</label>
+<label class="chk-label"><input type="checkbox" id="av-g1000" /> G1000 / G1000 NXi</label>
+<label class="chk-label"><input type="checkbox" id="av-g3x" /> G3X Touch</label>
+<label class="chk-label"><input type="checkbox" id="av-gns430" /> GNS 430/530 (legacy GPS)</label>
+<label class="chk-label"><input type="checkbox" id="av-gtn650" /> GTN 650/750</label>
+<label class="chk-label"><input type="checkbox" id="av-gtnxi" /> GTN 650Xi / 750Xi</label>
+<label class="chk-label"><input type="checkbox" id="av-gps175" /> GPS 175 / GNX 375</label>
+<label class="chk-label"><input type="checkbox" id="av-gfc500" /> GFC 500 autopilot</label>
+<label class="chk-label"><input type="checkbox" id="av-gfc600" /> GFC 600 autopilot</label>
+<label class="chk-label"><input type="checkbox" id="av-gfc700" /> GFC 700 autopilot</label>
+<label class="chk-label"><input type="checkbox" id="av-gma345" /> GMA 345 audio panel</label>
+</div>
+<div style="font-size:11px;font-weight:600;color:var(--sky);margin-bottom:5px;letter-spacing:.04em">ASPEN AVIONICS</div>
+<div style="display:flex;flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-aspen-e5" /> Evolution E5</label>
+<label class="chk-label"><input type="checkbox" id="av-aspen-pro" /> Evolution Pro 1000 MAX PFD</label>
+<label class="chk-label"><input type="checkbox" id="av-aspen-mfd" /> Evolution MFD 500/1000</label>
+<label class="chk-label"><input type="checkbox" id="av-aspen-2500" /> Evolution 2500 MAX (full panel)</label>
+</div>
+</div>
+<div>
+<div style="font-size:11px;font-weight:600;color:var(--sky);margin-bottom:5px;letter-spacing:.04em">AVIDYNE</div>
+<div style="display:flex;flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-avr9" /> Entegra PFD/MFD (R9)</label>
+<label class="chk-label"><input type="checkbox" id="av-ex500" /> EX500/600 MFD</label>
+<label class="chk-label"><input type="checkbox" id="av-ifd440" /> IFD 440</label>
+<label class="chk-label"><input type="checkbox" id="av-ifd550" /> IFD 540/550</label>
+<label class="chk-label"><input type="checkbox" id="av-dfc90" /> DFC 90 autopilot</label>
+<label class="chk-label"><input type="checkbox" id="av-dfc100" /> DFC 100 autopilot</label>
+</div>
+<div style="font-size:11px;font-weight:600;color:var(--sky);margin-bottom:5px;letter-spacing:.04em">OTHER AUTOPILOTS</div>
+<div style="display:flex;flex-direction:column;gap:3px;margin-bottom:12px">
 <label class="chk-label"><input type="checkbox" id="av-stec55" /> S-TEC 55X</label>
 <label class="chk-label"><input type="checkbox" id="av-stec3100" /> S-TEC 3100</label>
+<label class="chk-label"><input type="checkbox" id="av-kfc200" /> King KFC 150/200/225</label>
+<label class="chk-label"><input type="checkbox" id="av-trutrak" /> TruTrak / BendixKing</label>
+<label class="chk-label"><input type="checkbox" id="av-dynon" /> Dynon SkyView HDX</label>
 </div>
-
-<div style="font-size:11px;font-weight:500;color:var(--sky);margin-bottom:6px;letter-spacing:.04em">TRANSPONDER &amp; SURVEILLANCE</div>
-<div class="chk-grid" style="margin-bottom:10px">
-<label class="chk-label"><input type="checkbox" id="av-gtx345" /> Garmin GTX 345 (ADS-B In/Out)</label>
+<div style="font-size:11px;font-weight:600;color:var(--sky);margin-bottom:5px;letter-spacing:.04em">TRANSPONDER / ADS-B</div>
+<div style="display:flex;flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-gtx345" /> GTX 345 (ADS-B In/Out)</label>
 <label class="chk-label"><input type="checkbox" id="av-adsb" /> ADS-B Out (other)</label>
 <label class="chk-label"><input type="checkbox" id="av-tcas" /> Traffic (TAS/TCAD)</label>
 <label class="chk-label"><input type="checkbox" id="av-wx500" /> Stormscope WX-500</label>
 <label class="chk-label"><input type="checkbox" id="av-radar" /> Weather radar</label>
 </div>
-
-<div style="font-size:11px;font-weight:500;color:var(--sky);margin-bottom:6px;letter-spacing:.04em">ENGINE MONITOR &amp; OTHER</div>
-<div class="chk-grid" style="margin-bottom:10px">
-<label class="chk-label"><input type="checkbox" id="av-jpi" /> JPI EDM 730/830/930</label>
-<label class="chk-label"><input type="checkbox" id="av-insight" /> Insight G-Series monitor</label>
-<label class="chk-label"><input type="checkbox" id="av-gma345" /> Garmin GMA 345 audio</label>
+<div style="font-size:11px;font-weight:600;color:var(--sky);margin-bottom:5px;letter-spacing:.04em">ENGINE MONITORS</div>
+<div style="display:flex;flex-direction:column;gap:5px;margin-bottom:12px">
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-ei-cgr" /> EI CGR-30P <select id="av-ei-cgr-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#1a2332;color:#ccc"><option value="1">x1</option><option value="2">x2</option><option value="3">x3</option></select></label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-ei-other" /> EI (other) <select id="av-ei-other-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#1a2332;color:#ccc"><option value="1">x1</option><option value="2">x2</option><option value="3">x3</option></select></label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-jpi" /> JPI EDM 700/800/900 <select id="av-jpi-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#1a2332;color:#ccc"><option value="1">x1</option><option value="2">x2</option><option value="3">x3</option></select></label>
+<label class="chk-label"><input type="checkbox" id="av-garmin-eis" /> Garmin GI 275 EIS / TXi EIS</label>
+</div>
+<div style="font-size:11px;font-weight:600;color:var(--sky);margin-bottom:5px;letter-spacing:.04em">OTHER</div>
+<div style="display:flex;flex-direction:column;gap:3px;margin-bottom:12px">
 <label class="chk-label"><input type="checkbox" id="av-wx" /> XM/SiriusXM weather</label>
 </div>
-
-<div style="font-size:11px;font-weight:500;color:var(--sky);margin-bottom:6px;letter-spacing:.04em">UPGRADES &amp; MODIFICATIONS</div>
-<div class="chk-grid" style="margin-bottom:10px">
-<label class="chk-label"><input type="checkbox" id="av-stc" /> Engine STC / mods</label>
+<div style="font-size:11px;font-weight:600;color:var(--sky);margin-bottom:5px;letter-spacing:.04em">UPGRADES &amp; MODIFICATIONS</div>
+<div style="display:flex;flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-stc" /> Engine STC / conversion</label>
 <label class="chk-label"><input type="checkbox" id="av-3blade" /> 3-blade prop upgrade</label>
 <label class="chk-label"><input type="checkbox" id="av-cies" /> CiES fuel senders</label>
 <label class="chk-label"><input type="checkbox" id="av-led" /> LED lighting upgrade</label>
 <label class="chk-label"><input type="checkbox" id="av-annual" /> Fresh annual inspection</label>
 <label class="chk-label"><input type="checkbox" id="av-oxy" /> Built-in oxygen system</label>
+</div>
+</div>
 </div>
 
 <div class="form-group" style="margin-bottom:0">
