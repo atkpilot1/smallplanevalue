@@ -1502,7 +1502,11 @@ try {
 var prompt='You are an expert aircraft appraiser with current 2025-2026 market knowledge. Provide ACCURATE asking prices — not lowballed.\n\n';
 prompt+='2025-2026 market:\n- Beech Baron D55/E55: $180k-$320k. Fresh matched engines +$40-60k. G500 TXi+GTN 750Xi+GFC 600 adds $30-50k.\n';
 prompt+='- Autopilot: GFC 600 is gold standard (+$15-20k). S-TEC 3100 capable but $25-30k less than GFC 600. S-TEC 55X basic (+$2-4k).\n';
-prompt+='- Cessna 172: $80k-$250k. Cessna 182: $120k-$350k. RV-10: $120k-$200k.\n';\nprompt+='- Cirrus SR20: $150k-$350k (G1-G2 $150-220k, G3+ $220-350k). SR22: $240k-$1M+ (G1-G2 $240-350k, G3 $300-500k, G5-G6 $600k-1M+). SR22T: $350k-$1.1M+.\n';\nprompt+='- Piper Cherokee/Archer: $50k-$150k. Saratoga/Lance: $180k-$400k. Mooney M20: $100k-$350k.\n';
+prompt+='- Cessna 172: $80k-$250k. Cessna 182: $120k-$350k. RV-10: $120k-$200k.
+';
+prompt+='- Cirrus SR20: $150k-$350k (G1-G2 $150-220k, G3+ $220-350k). SR22: $240k-$1M+ (G1-G2 $240-350k, G3 $300-500k, G5-G6 $600k-1M+). SR22T: $350k-$1.1M+.
+';
+prompt+='- Piper Cherokee/Archer: $50k-$150k. Saratoga/Lance: $180k-$400k. Mooney M20: $100k-$350k.\n';
 prompt+='- Avionics: G1000 NXi +$25-35k, G500 TXi +$18-25k, Aspen EFD +$8-12k, GTN 750Xi +$12-18k. Radar on twins +$5-10k.\n';
 prompt+='- Twins: matched engine times=premium. Factory new engines $15-20k more than field OH. 3-blade props +$3-8k.\n\n';
 prompt+='Aircraft: '+(year||'?')+' '+make+' '+model+'\nTTAF: '+(ttaf||'?')+' hrs\n'+engineInfo+'\n';
