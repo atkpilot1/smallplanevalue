@@ -1511,7 +1511,7 @@ prompt+='Aircraft: '+(year||'?')+' '+make+' '+model+'\nTTAF: '+(ttaf||'?')+' hrs
 prompt+='Condition: '+cond+', Paint/Interior: '+cosm+'\nAvionics: '+(avs.length?avs.join(', '):'Standard/basic')+'\nNotes: '+(notes||'none')+'\n';
 prompt+='Discount band: 5%-15% below asking.\nReturn ONLY valid JSON:\n';
 prompt+='{"askLow":NUMBER,"askMid":NUMBER,"askHigh":NUMBER,"likelyPayLow":NUMBER,"likelyPayHigh":NUMBER,"discountBandLow":5,"discountBandHigh":15,"condImpact":"+3%","avImpact":"+7%","engineImpact":"-4%","condVerdict":"Good","avVerdict":"Above average","engineVerdict":"Mid-life","keyFinding":"One sentence.","analysis":"2-3 sentences.","negotiatingTips":["Tip 1","Tip 2","Tip 3"],"confidence":"high"}';
-var v=await callClaude(prompt,1000);
+var v=await callClaudeSearch(prompt,1500);
 renderVal(v,make,model,year);
 } catch(e) { document.getElementById('v-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>'; }
 setLoading('v-spin','v-btn',false);
