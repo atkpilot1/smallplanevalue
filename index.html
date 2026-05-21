@@ -1362,7 +1362,8 @@ body: JSON.stringify({ model: MODEL, max_tokens: maxTokens, tools: [{ type: 'web
 const data = await r.json();
 const txt = data.content.map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
 var m = txt.match(/\{[\s\S]*\}/);
-return m ? JSON.parse(m[0]) : JSON.parse(txt);
+if(m) { try { return JSON.parse(m[0]); } catch(e2) { var m2 = txt.match(/\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/); return m2 ? JSON.parse(m2[0]) : JSON.parse(txt); } }
+return JSON.parse(txt);
 }
 
 function setLoading(spinId, btnId, on) {
