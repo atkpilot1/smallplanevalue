@@ -971,6 +971,16 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 
 <!-- VALUATION -->
 <div class="tab-pane" id="pane-val">
+
+<div style="margin-bottom:16px;padding:14px;background:rgba(19,64,116,0.04);border:1px dashed var(--sky);border-radius:var(--radius)">
+<div style="font-size:12px;font-weight:500;color:var(--sky);margin-bottom:8px;letter-spacing:.03em">PASTE A LISTING (optional)</div>
+<textarea id="v-paste" rows="4" style="width:100%;font-size:13px;margin-bottom:8px" placeholder="Paste an aircraft listing from Controller, Trade-A-Plane, Barnstormers, etc. We will auto-fill all fields and avionics for you..."></textarea>
+<button class="n-lookup-btn" id="paste-btn" onclick="parseListing()" style="width:auto;padding:8px 20px">Auto-fill from listing</button>
+<div class="spin" id="paste-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Parsing listing...</div></div>
+</div>
+
+<div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:12px">or enter details manually</div>
+
 <div class="form-grid-2">
 <div class="form-group"><label>MAKE</label><input type="text" id="v-make" placeholder="Cessna, Piper, Beech, Cirrus..." /></div>
 <div class="form-group"><label>MODEL</label><input type="text" id="v-model" placeholder="172S, Baron D55, SR22, RV-10..." /></div>
@@ -1437,6 +1447,73 @@ ${d.adNotes ? `<div style="background:rgba(232,160,32,0.1);border-radius:var(--r
 <button class="action-btn" onclick="window.open('https://registry.faa.gov/aircraftinquiry/Search/NNumberInquiry?nNumberTxt=${d.nnumber.replace(/^N/,'')}','_blank')"><i class="ti ti-external-link" style="font-size:15px"></i> FAA website</button>
 </div>
 <div class="note-box" style="margin-top:.75rem">Data sourced from FAA aircraft registry (registry.faa.gov). Owner names are public FAA records.</div>`;
+}
+
+async function parseListing() {
+var txt = document.getElementById('v-paste').value.trim();
+if (!txt) { alert('Paste a listing first.'); return; }
+document.getElementById('paste-spin').classList.add('on');
+document.getElementById('paste-btn').disabled = true;
+try {
+var prompt = 'Parse this aircraft listing and extract structured data. Return ONLY valid JSON with these fields (use null for unknown):\n';
+prompt += '{"make":"BEECH","model":"B58","year":1981,"ttaf":4673,"engines":2,"smoh":0,"smohR":0,"propHrs":689,"propHrsR":689,"condition":"Good","cosmetics":"Average","avionics":["GTX345","KFC200","GNS480"],"notes":"RAM engines, Bose LEMO jacks, dual Insight G2 monitors"}\n\n';
+prompt += 'LISTING:\n' + txt;
+var d = await callClaude(prompt, 1000);
+resetForm();
+if (d.make) document.getElementById('v-make').value = d.make;
+if (d.model) document.getElementById('v-model').value = d.model;
+if (d.year) document.getElementById('v-year').value = d.year;
+if (d.ttaf) document.getElementById('v-ttaf').value = d.ttaf;
+if (d.engines == 2) {
+  document.getElementById('v-engines').value = '2';
+  toggleEngineFields();
+  if (d.smoh != null) { var el = document.getElementById('v-smoh-l'); if(el) el.value = d.smoh; }
+  if (d.smohR != null) { var el = document.getElementById('v-smoh-r'); if(el) el.value = d.smohR; }
+  if (d.propHrs != null) { var el = document.getElementById('v-prop-l'); if(el) el.value = d.propHrs; }
+  if (d.propHrsR != null) { var el = document.getElementById('v-prop-r'); if(el) el.value = d.propHrsR; }
+} else {
+  if (d.smoh != null) { var el = document.getElementById('v-smoh'); if(el) el.value = d.smoh; }
+  if (d.propHrs != null) { var el = document.getElementById('v-prop1'); if(el) el.value = d.propHrs; }
+}
+if (d.condition) { var el = document.getElementById('v-cond'); if(el) el.value = d.condition; }
+if (d.cosmetics) { var el = document.getElementById('v-cosm'); if(el) el.value = d.cosmetics; }
+if (d.notes) { var el = document.getElementById('v-notes'); if(el) el.value = d.notes; }
+// Auto-check avionics based on parsed list
+var avMap = {
+  'GTX345':'av-gtx345','GTX 345':'av-gtx345','ADS-B':'av-adsb',
+  'GFC500':'av-gfc500','GFC 500':'av-gfc500','GFC600':'av-gfc600','GFC 600':'av-gfc600','GFC700':'av-gfc700','GFC 700':'av-gfc700',
+  'G1000':'av-g1000','G1000 NXi':'av-g1000nxi','G500':'av-g500','G500 TXi':'av-g500txi','G600 TXi':'av-g600txi',
+  'G3X':'av-g3x','G5':'av-g5','GI 275':'av-gi275','GI275':'av-gi275',
+  'GTN650':'av-gtn650','GTN 650':'av-gtn650','GTN750':'av-gtn750','GTN 750':'av-gtn750',
+  'GTN650Xi':'av-gtn650xi','GTN 650Xi':'av-gtn650xi','GTN750Xi':'av-gtn750xi','GTN 750Xi':'av-gtn750xi',
+  'GNS430':'av-gns430','GNS 430':'av-gns430','GNS430W':'av-gns430w','GNS 430W':'av-gns430w',
+  'GNS530':'av-gns530','GNS 530':'av-gns530','GNS530W':'av-gns530w','GNS 530W':'av-gns530w',
+  'GNS480':'av-gns430w','GPS175':'av-gps175','GNX375':'av-gnx375',
+  'GMA345':'av-gma345','GDL88':'av-gdl88','GDL 88':'av-gdl88',
+  'KFC200':'av-kfc200','KFC 200':'av-kfc200','KFC150':'av-kfc200','KFC 150':'av-kfc200',
+  'STEC55':'av-stec55','S-TEC 55X':'av-stec55','STEC3100':'av-stec3100','S-TEC 3100':'av-stec3100',
+  'DFC90':'av-dfc90','DFC 90':'av-dfc90','DFC100':'av-dfc100','DFC 100':'av-dfc100',
+  'IFD440':'av-ifd440','IFD 440':'av-ifd440','IFD550':'av-ifd550','IFD 550':'av-ifd550',
+  'Entegra':'av-avr9','Stormscope':'av-wx500','WX500':'av-wx500','WX1000':'av-wx500',
+  'Autoland':'av-autoland','HALO':'av-autoland','Safe Return':'av-autoland',
+  'Radar':'av-radar-legacy','GWX':'av-radar-garmin','RDR':'av-radar-bk',
+  'JPI':'av-jpi','EDM':'av-jpi','CGR':'av-ei-cgr','Insight':'av-ei-other',
+  'SkyView HDX':'av-dynon-hdx','SkyView SE':'av-dynon-se','Dynon':'av-dynon-hdx'
+};
+if (d.avionics && Array.isArray(d.avionics)) {
+  d.avionics.forEach(function(av) {
+    for (var key in avMap) {
+      if (av.toUpperCase().indexOf(key.toUpperCase()) >= 0) {
+        var el = document.getElementById(avMap[key]);
+        if (el) el.checked = true;
+        break;
+      }
+    }
+  });
+}
+} catch(e) { console.error('Parse failed:', e); alert('Could not parse listing. Try entering details manually.'); }
+document.getElementById('paste-spin').classList.remove('on');
+document.getElementById('paste-btn').disabled = false;
 }
 
 function resetForm() {
