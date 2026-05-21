@@ -1378,7 +1378,9 @@ var raw = document.getElementById('nn').value.trim().toUpperCase();
 if (!raw) { alert('Enter an N-number.'); return; }
 var nnumber = 'N' + raw;
 setLoading('nn-spin','nn-btn',true);
-// nn-result preserved between lookups
+document.getElementById('nn-result').innerHTML = '';
+resetForm();
+document.getElementById('v-paste').value = '';
 
 try {
 var resp = await fetch('/.netlify/functions/proxy', {
