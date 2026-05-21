@@ -1574,7 +1574,7 @@ if (!make||!model) { alert('Enter make and model.'); return; }
 var ttaf=document.getElementById('v-ttaf').value;
 var cond=document.getElementById('v-cond').value;
 var cosm=document.getElementById('v-cosm').value;
-var notes=document.getElementById('v-notes').value;
+var notes=document.getElementById('v-notes').value.replace(/["'\\]/g, ' ');
 var isTwin = document.getElementById('v-engines') && document.getElementById('v-engines').value === '2';
 var engineInfo = '';
 if (isTwin) {
