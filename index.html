@@ -1541,6 +1541,7 @@ var notes = document.getElementById('v-notes'); if (notes) notes.value = '';
 document.querySelectorAll('input[type="checkbox"][id^="av-"]').forEach(function(cb) { cb.checked = false; });
 document.querySelectorAll('select[id$="-qty"]').forEach(function(s) { s.value = '1'; });
 document.getElementById('v-result').innerHTML = '';
+var vp = document.getElementById('v-paste'); if(vp) vp.value = '';
 // nn-result preserved between lookups
 }
 
