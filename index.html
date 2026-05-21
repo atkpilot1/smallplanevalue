@@ -926,7 +926,7 @@ style="width:100%;height:100%;object-fit:cover;object-position:center top;transi
 <button class="tab-btn active" id="tab-btn-lookup" onclick="switchTab('lookup')">
 <i class="ti ti-id"></i> N-number lookup
 </button>
-<button class="tab-btn" id="tab-btn-val" onclick="switchTab('val')">
+<button class="tab-btn" id="tab-btn-val" onclick="if(window._lastLookup){prefillVal(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.aircraftType||'');}switchTab('val');">
 <i class="ti ti-calculator"></i> Get valuation
 </button>
 <button class="tab-btn" id="tab-btn-comps" onclick="switchTab('comps')">
@@ -1399,6 +1399,7 @@ if (d.status === 'Valid') d.flags.push({ type: 'info', title: 'Registration curr
 if (d.status !== 'Valid') d.flags.push({ type: 'warn', title: 'Registration: ' + d.status, detail: 'Status code: ' + (d.statusCode || 'N/A') });
 
 if (d.error) throw new Error(d.error);
+window._lastLookup = d;
 renderLookup(d);
 if (d.aircraftType && d.aircraftType.toLowerCase().indexOf('multi') >= 0) {
   var engSel = document.getElementById('v-engines');
