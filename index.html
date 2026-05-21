@@ -1527,8 +1527,8 @@ prompt+='- Avionics: G1000 NXi +$25-35k, G500 TXi +$18-25k, Aspen EFD +$8-12k, G
 prompt+='- Twins: matched engine times=premium. Factory new engines $15-20k more than field OH. 3-blade props +$3-8k.\n\n';
 prompt+='Aircraft: '+(year||'?')+' '+make+' '+model+'\nTTAF: '+(ttaf||'?')+' hrs\n'+engineInfo+'\n';
 prompt+='Condition: '+cond+', Paint/Interior: '+cosm+'\nAvionics: '+(avs.length?avs.join(', '):'Standard/basic')+'\nNotes: '+(notes||'none')+'\n';
-prompt+='Discount band: 5%-15% below asking.\nReturn ONLY valid JSON:\n';
-prompt+='{"askLow":NUMBER,"askMid":NUMBER,"askHigh":NUMBER,"likelyPayLow":NUMBER,"likelyPayHigh":NUMBER,"discountBandLow":5,"discountBandHigh":15,"condImpact":"+3%","avImpact":"+7%","engineImpact":"-4%","condVerdict":"Good","avVerdict":"Above average","engineVerdict":"Mid-life","keyFinding":"One sentence.","analysis":"2-3 sentences.","negotiatingTips":["Tip 1","Tip 2","Tip 3"],"confidence":"high"}';
+prompt+='IMPORTANT: Search the web for current listings of this exact make/model to verify your pricing. Keep the spread between seller price and buyer target within 10-15% max.\nReturn ONLY valid JSON:\n';
+prompt+='{"sellerAsk":NUMBER,"fairMarketValue":NUMBER,"buyerTarget":NUMBER,"condImpact":"+3%","avImpact":"+7%","engineImpact":"-4%","condVerdict":"Good","avVerdict":"Above average","engineVerdict":"Mid-life","keyFinding":"One sentence.","analysis":"2-3 sentences.","negotiatingTips":["Tip 1","Tip 2","Tip 3"],"confidence":"high"}';
 var v=await callClaudeSearch(prompt,1500);
 renderVal(v,make,model,year);
 } catch(e) { document.getElementById('v-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>'; }
@@ -1536,37 +1536,50 @@ setLoading('v-spin','v-btn',false);
 }
 
 function renderVal(v, make, model, year) {
-const total = v.askHigh - v.askLow;
-const midPct = total>0 ? Math.round((v.askMid-v.askLow)/total*100) : 50;
-const llPct = total>0 ? Math.max(0,Math.round((v.likelyPayLow-v.askLow)/total*100)) : 10;
-const lhPct = total>0 ? Math.min(100,Math.round((v.likelyPayHigh-v.askLow)/total*100)) : 90;
+// Support both old and new format
+var seller = v.sellerAsk || v.askHigh || 0;
+var fmv = v.fairMarketValue || v.askMid || 0;
+var buyer = v.buyerTarget || v.askLow || 0;
+var total = seller - buyer;
+var fmvPct = total > 0 ? Math.round((fmv - buyer) / total * 100) : 50;
 function ic(s){if(!s)return 'neu';const n=parseFloat(s);return n>0?'up':n<0?'down':'neu';}
 const tips=(v.negotiatingTips||[]).map(t=>`<div class="tip-item"><i class="ti ti-arrow-right"></i><span>${t}</span></div>`).join('');
 document.getElementById('v-result').innerHTML=`
 <div class="result-card">
 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem">
 <div>
-<div style="font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.04em;margin-bottom:4px">ASKING PRICE RANGE</div>
-<div class="result-main-val">${fmt(v.askLow)} – ${fmt(v.askHigh)}</div>
-<div class="result-range">${year||''} ${make} ${model} · typical market ask</div>
+<div style="font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.04em;margin-bottom:4px">AIRCRAFT VALUATION</div>
+<div class="result-main-val">${fmt(fmv)}</div>
+<div class="result-range">${year||''} ${make} ${model} · fair market value</div>
 </div>
 <span class="badge ${v.confidence==='high'?'bg-green':'bg-amber'}"><i class="ti ti-${v.confidence==='high'?'circle-check':'alert-circle'}" style="font-size:12px"></i> ${v.confidence==='high'?'High':'Moderate'} confidence</span>
 </div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:1rem">
+<div style="text-align:center;padding:14px 8px;background:var(--offwhite);border-radius:var(--radius)">
+<div style="font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em;margin-bottom:4px">BUYER TARGET</div>
+<div style="font-size:22px;font-weight:700;color:#27ae60">${fmt(buyer)}</div>
+<div style="font-size:11px;color:var(--muted);margin-top:2px">negotiate to this</div>
+</div>
+<div style="text-align:center;padding:14px 8px;background:var(--sky);border-radius:var(--radius)">
+<div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.7);letter-spacing:.04em;margin-bottom:4px">FAIR MARKET VALUE</div>
+<div style="font-size:22px;font-weight:700;color:#fff">${fmt(fmv)}</div>
+<div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:2px">realistic price</div>
+</div>
+<div style="text-align:center;padding:14px 8px;background:var(--offwhite);border-radius:var(--radius)">
+<div style="font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em;margin-bottom:4px">SELLER ASKING</div>
+<div style="font-size:22px;font-weight:700;color:#c0392b">${fmt(seller)}</div>
+<div style="font-size:11px;color:var(--muted);margin-top:2px">typical list price</div>
+</div>
+</div>
 <div class="price-bar-wrap">
-<div class="pbar-labels"><span>${fmt(v.askLow)}</span><span style="color:var(--muted)">asking range</span><span>${fmt(v.askHigh)}</span></div>
+<div class="pbar-labels"><span>${fmt(buyer)}</span><span style="color:var(--muted)">valuation range</span><span>${fmt(seller)}</span></div>
 <div class="pbar-track">
 <div class="pbar-range"></div>
-<div class="pbar-likely" style="left:${llPct}%;width:${lhPct-llPct}%"></div>
-<div class="pbar-pin" style="left:${midPct}%"><div class="pbar-pin-lbl">${fmt(v.askMid)}</div></div>
-</div>
-<div class="pbar-markers">
-<span>Low ask</span>
-<span style="color:var(--sky-mid);font-weight:500">Likely pay: ${fmt(v.likelyPayLow)} – ${fmt(v.likelyPayHigh)}</span>
-<span>High ask</span>
+<div class="pbar-pin" style="left:${fmvPct}%"><div class="pbar-pin-lbl">${fmt(fmv)}</div></div>
 </div>
 </div>
 <div style="background:var(--offwhite);border-radius:var(--radius);padding:12px 14px;margin:1rem 0;font-size:13px;color:var(--muted)">
-<strong style="color:var(--sky)">How "likely pay" is calculated:</strong> ${v.discountBandLow}–${v.discountBandHigh}% below asking is typical for this category. GA sale prices are not publicly recorded — this reflects negotiated outcomes based on broker experience.
+<strong style="color:var(--sky)">How this works:</strong> Seller Asking is the typical list price. Fair Market Value is what the aircraft is realistically worth. Buyer Target is a strong negotiating position. GA sale prices are not publicly recorded — this reflects current listings and broker experience.
 </div>
 <div class="metric-row">
 <div class="metric"><div class="metric-val">${v.condVerdict}</div><div class="metric-lbl">Condition</div><div class="metric-note ${ic(v.condImpact)}">${v.condImpact||'—'} vs avg</div></div>
