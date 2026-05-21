@@ -1608,7 +1608,7 @@ prompt+='IMPORTANT: Search the web for current listings of this exact make/model
 prompt+='{"sellerAsk":NUMBER,"fairMarketValue":NUMBER,"buyerTarget":NUMBER,"condImpact":"+3%","avImpact":"+7%","engineImpact":"-4%","condVerdict":"Good","avVerdict":"Above average","engineVerdict":"Mid-life","keyFinding":"One sentence.","analysis":"2-3 sentences.","negotiatingTips":["Tip 1","Tip 2","Tip 3"],"confidence":"high"}';
 var v=await callClaudeSearch(prompt,1500);
 renderVal(v,make,model,year);
-} catch(e) { document.getElementById('v-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>'; }
+} catch(e) { console.error('Valuation error:', e); document.getElementById('v-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed: ' + (e.message || e) + '</p>'; }
 setLoading('v-spin','v-btn',false);
 }
 
