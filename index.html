@@ -1459,7 +1459,7 @@ ${d.adNotes ? `<div style="background:rgba(232,160,32,0.1);border-radius:var(--r
 }
 
 async function parseListing() {
-var txt = document.getElementById('v-paste').value.trim();
+var txt = document.getElementById('v-paste').value.trim().replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/g, ' ').replace(/[\r]/g, '').replace(/  +/g, ' ');
 if (!txt) { alert('Paste a listing first.'); return; }
 document.getElementById('paste-spin').classList.add('on');
 document.getElementById('paste-btn').disabled = true;
