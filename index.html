@@ -1714,9 +1714,16 @@ if (!model){alert('Enter a make and model.');return;}
 setLoading('c-spin','c-btn',true);
 document.getElementById('c-result').innerHTML='';
 try {
-const v = await callClaude(`GA aircraft market analyst. Generate asking price data for active listings: ${model}, year range: ${years}. DO NOT include sale prices — GA sale prices are not publicly recorded.
-Return ONLY valid JSON:
-{"summary":"1-2 sentence market overview","askLow":72000,"askMid":88000,"askHigh":110000,"avgDaysListed":52,"activeListings":18,"negotiationNote":"1 sentence about negotiation room right now","listings":[{"year":2001,"ttaf":3400,"smoh":600,"cond":"Good","ask":87000,"avionics":"GTN 650, GFC 500","daysListed":34},{"year":1998,"ttaf":5100,"smoh":200,"cond":"Fair","ask":71000,"avionics":"Basic steam gauges","daysListed":88},{"year":2004,"ttaf":2200,"smoh":2200,"cond":"Excellent","ask":109000,"avionics":"G1000, autopilot","daysListed":12},{"year":1995,"ttaf":4800,"smoh":1100,"cond":"Good","ask":75000,"avionics":"IFR equipped, older","daysListed":61},{"year":2007,"ttaf":1900,"smoh":1900,"cond":"Excellent","ask":118000,"avionics":"G1000, fresh paint","daysListed":8}]}`, 1000);
+const v = await callClaudeSearch(`You are a GA aircraft market analyst. Search Trade-A-Plane, Controller.com, and other listing sites for CURRENT real asking prices for: ${model}, year range: ${years}.
+
+IMPORTANT: Use web search to find ACTUAL current listings and real asking prices. Do NOT guess or use generic values. GA aircraft prices vary enormously by type — a Beechcraft Baron is $150k-$400k, a Cessna 172 is $50k-$250k, a Cirrus SR22 is $180k-$600k. Get the real numbers.
+
+DO NOT include sale prices — GA sale prices are not publicly recorded.
+
+Return ONLY valid JSON (no markdown, no backticks):
+{"summary":"1-2 sentence market overview","askLow":NUMBER,"askMid":NUMBER,"askHigh":NUMBER,"avgDaysListed":NUMBER,"activeListings":NUMBER,"negotiationNote":"1 sentence about negotiation room","listings":[{"year":NUMBER,"ttaf":NUMBER,"smoh":NUMBER,"cond":"Good/Fair/Excellent","ask":NUMBER,"avionics":"description","daysListed":NUMBER}]}
+
+Include 5 realistic sample listings spanning the price range.`, 2000);
 renderComps(v, model);
 } catch(e){document.getElementById('c-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>';}
 setLoading('c-spin','c-btn',false);
