@@ -1406,7 +1406,7 @@ var resp = await fetch('/.netlify/functions/proxy', {
   body: JSON.stringify({ type: 'faa_lookup', nnumber: raw })
 });
 var d = await resp.json();
-if (!d.found) throw new Error('not_found');
+if (!d.found) { document.getElementById('nn-result').innerHTML = '<div class="note-box" style="border-color:var(--warn);background:rgba(230,160,0,0.06);margin-top:1rem"><i class="ti ti-plane-off" style="color:var(--warn);font-size:14px"></i> No aircraft found for N' + raw + '. Check the number and try again, or <a href="https://registry.faa.gov/AircraftInquiry/Search/NNumberResult?nNumberTxt=' + raw + '" target="_blank" style="color:var(--sky-light)">search FAA directly</a>.</div>'; setLoading('nn-spin','nn-btn',false); return; }
 d.ownerHistory = [{ name: d.registrantName || 'Unknown', city: d.city || '', state: d.state || '', from: d.certDate || '', to: null, current: true }];
 d.flags = [];
 if (d.status === 'Valid') d.flags.push({ type: 'info', title: 'Registration current', detail: 'Status: Valid through ' + (d.registrationExpiry || 'N/A') });
