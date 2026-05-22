@@ -1743,7 +1743,7 @@ Use these ranges as guides. Avionics upgrades (G1000, GTN750, GFC600) add $30k-$
 DO NOT include sale prices — GA sale prices are not publicly recorded.
 Return ONLY valid JSON:
 {"summary":"1-2 sentence market overview","askLow":NUMBER,"askMid":NUMBER,"askHigh":NUMBER,"avgDaysListed":NUMBER,"activeListings":NUMBER,"negotiationNote":"1 sentence about negotiation room","listings":[{"year":NUMBER,"ttaf":NUMBER,"smoh":NUMBER,"cond":"Good/Fair/Excellent","ask":NUMBER,"avionics":"description","daysListed":NUMBER}]}
-Include 5 realistic sample listings spanning the full price range for this specific aircraft.`, 1500);
+Include 5 realistic sample listings spanning the full price range. For premium/expensive aircraft (late model, low time, full glass), use "ask":0 to indicate "Call for Price" — this is common for aircraft over $500k.`, 1500);
 renderComps(v, model);
 } catch(e){document.getElementById('c-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>';}
 setLoading('c-spin','c-btn',false);
@@ -1755,7 +1755,7 @@ const rows=(v.listings||[]).map(l=>`<tr style="border-bottom:1px solid rgba(11,3
 <td style="padding:8px 10px;font-size:13px;color:var(--sky)">${l.ttaf?l.ttaf.toLocaleString()+' h':'—'}</td>
 <td style="padding:8px 10px;font-size:13px;color:var(--sky)">${l.smoh?l.smoh.toLocaleString()+' h':'—'}</td>
 <td style="padding:8px 10px;font-size:13px;color:var(--sky)">${l.cond}</td>
-<td style="padding:8px 10px;font-size:13px;font-weight:500;color:var(--sky)">${fmt(l.ask)}</td>
+<td style="padding:8px 10px;font-size:13px;font-weight:500;color:var(--sky)">${l.ask ? fmt(l.ask) : '<span style="color:var(--accent);font-style:italic">Call for price</span>'}</td>
 <td style="padding:8px 10px"><span class="badge ${l.daysListed<30?'bg-green':'bg-amber'}">${l.daysListed}d</span></td>
 </tr>`).join('');
 document.getElementById('c-result').innerHTML=`
