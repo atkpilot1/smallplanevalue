@@ -938,6 +938,9 @@ style="width:100%;height:100%;object-fit:cover;object-position:center top;transi
 <button class="tab-btn" id="tab-btn-sold" onclick="switchTab('sold')">
 <i class="ti ti-currency-dollar"></i> Report a sale
 </button>
+<button class="tab-btn" id="tab-btn-feedback" onclick="switchTab('feedback')">
+<i class="ti ti-message-circle"></i> Feedback
+</button>
 </div>
 
 <!-- N-NUMBER LOOKUP -->
@@ -1175,6 +1178,17 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 </button>
 <div class="spin" id="c-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Pulling active listing ranges...</div></div>
 <div id="c-result"></div>
+</div>
+
+<!-- FEEDBACK -->
+<div class="tab-pane" id="pane-feedback">
+<p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:1rem">Help us improve SmallPlaneValue.</p>
+<div class="form-group"><label>YOUR EMAIL (optional)</label><input type="text" id="fb-email" placeholder="pilot@email.com" /></div>
+<div class="form-group"><label>AIRCRAFT</label><input type="text" id="fb-aircraft" placeholder="e.g. 1981 Beech B58 Baron" /></div>
+<div class="form-group"><label>VALUATION ACCURACY</label><select id="fb-accuracy"><option value="">N/A</option><option value="low">Too low</option><option value="right">About right</option><option value="high">Too high</option></select></div>
+<div class="form-group"><label>YOUR FEEDBACK</label><textarea id="fb-message" rows="4" placeholder="What did we get wrong? What features do you want?"></textarea></div>
+<button class="submit-btn" id="fb-btn" onclick="submitFeedback()"><i class="ti ti-send"></i> Send feedback</button>
+<div id="fb-result"></div>
 </div>
 
 <!-- PRE-BUY CHECKLIST -->
