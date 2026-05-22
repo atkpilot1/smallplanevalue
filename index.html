@@ -1714,16 +1714,36 @@ if (!model){alert('Enter a make and model.');return;}
 setLoading('c-spin','c-btn',true);
 document.getElementById('c-result').innerHTML='';
 try {
-const v = await callClaudeSearch(`You are a GA aircraft market analyst. Search Trade-A-Plane, Controller.com, and other listing sites for CURRENT real asking prices for: ${model}, year range: ${years}.
+const v = await callClaude(`You are an expert GA aircraft appraiser with deep knowledge of the 2025-2026 used aircraft market. Generate ACCURATE asking price data for: ${model}, year range: ${years}.
 
-IMPORTANT: Use web search to find ACTUAL current listings and real asking prices. Do NOT guess or use generic values. GA aircraft prices vary enormously by type — a Beechcraft Baron is $150k-$400k, a Cessna 172 is $50k-$250k, a Cirrus SR22 is $180k-$600k. Get the real numbers.
+CRITICAL PRICING GUIDANCE — get these right:
+- Cessna 150/152: $25k-$65k
+- Cessna 172 (steam): $60k-$180k, (G1000): $200k-$350k
+- Cessna 182: $80k-$300k
+- Cessna 210: $100k-$350k
+- Piper Cherokee 140/160/180: $40k-$120k
+- Piper Arrow: $80k-$200k
+- Piper Comanche: $80k-$180k
+- Beechcraft Bonanza (V-tail): $80k-$350k
+- Beechcraft Bonanza A36: $120k-$400k
+- Beechcraft Baron 55/58: $120k-$425k
+- Piper Seneca: $80k-$250k
+- Cessna 310/340: $80k-$250k
+- Cessna 414/421: $150k-$500k
+- Cirrus SR20: $150k-$400k
+- Cirrus SR22/SR22T: $200k-$650k
+- Mooney M20 series: $80k-$350k
+- Diamond DA40/DA42: $150k-$500k
+- Experimental/RV series: $60k-$250k
+- Piper Cub/Super Cub: $60k-$250k
+- Maule: $80k-$200k
+
+Use these ranges as guides. Avionics upgrades (G1000, GTN750, GFC600) add $30k-$80k. Fresh engines add $20k-$40k. Damage history reduces 15-30%.
 
 DO NOT include sale prices — GA sale prices are not publicly recorded.
-
-Return ONLY valid JSON (no markdown, no backticks):
+Return ONLY valid JSON:
 {"summary":"1-2 sentence market overview","askLow":NUMBER,"askMid":NUMBER,"askHigh":NUMBER,"avgDaysListed":NUMBER,"activeListings":NUMBER,"negotiationNote":"1 sentence about negotiation room","listings":[{"year":NUMBER,"ttaf":NUMBER,"smoh":NUMBER,"cond":"Good/Fair/Excellent","ask":NUMBER,"avionics":"description","daysListed":NUMBER}]}
-
-Include 5 realistic sample listings spanning the price range.`, 2000);
+Include 5 realistic sample listings spanning the full price range for this specific aircraft.`, 1500);
 renderComps(v, model);
 } catch(e){document.getElementById('c-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>';}
 setLoading('c-spin','c-btn',false);
