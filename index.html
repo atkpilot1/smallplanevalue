@@ -1799,10 +1799,7 @@ if (!make||!model){alert('Enter make and model.');return;}
 setLoading('cl-spin','cl-btn',true);
 document.getElementById('cl-result').innerHTML='';
 try {
-const cl = await callClaude(`Expert A&P mechanic. Generate pre-buy inspection checklist for: ${year||'?'} ${make} ${model}, Engine: ${eng}, Buyer: ${exp}, Purpose: ${purpose}, Concerns: ${concerns||'none'}.
-Return ONLY valid JSON:
-{"aircraft":"${year?year+' ':''}${make} ${model}","sections":[{"name":"Documents & records","items":[{"name":"Airworthiness certificate","note":"Must be original, not a copy. Correct category for this aircraft.","critical":true,"criticalReason":"Aircraft cannot legally fly without this"},{"name":"Logbooks — airframe, engine, prop","note":"Verify continuous entries, no unexplained gaps. Check for damage repair entries.","critical":true,"criticalReason":"Missing logs reduce value and may indicate hidden history"}]}]}
-Include 4 sections with 3-4 items each. Items specific to ${make} ${model} — mention known ADs and common failures. Keep response very concise.`, 1000);
+const cl = await callClaude(`You are an A&P mechanic. Return ONLY a JSON object (no other text) for a pre-buy inspection of: ${year||"?"} ${make} ${model}, Engine: ${eng}. Use this exact format: {"aircraft":"${make} ${model}","sections":[{"name":"Section name","items":[{"name":"Item","note":"Brief note","critical":false}]}]} Include 4 sections: Documents & Records, Airframe & Structure, Engine & Propeller, Avionics & Systems. 3-4 items each. Flag known ADs for ${make} ${model}.`, 800);
 renderChecklist(cl);
 } catch(e){document.getElementById('cl-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>';}
 setLoading('cl-spin','cl-btn',false);
