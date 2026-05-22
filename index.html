@@ -1400,6 +1400,7 @@ if (d.status !== 'Valid') d.flags.push({ type: 'warn', title: 'Registration: ' +
 
 if (d.error) throw new Error(d.error);
 window._lastLookup = d;
+window._lastLookup = d;
 renderLookup(d);
 if (d.aircraftType && d.aircraftType.toLowerCase().indexOf('multi') >= 0) {
   var engSel = document.getElementById('v-engines');
