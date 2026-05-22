@@ -1579,6 +1579,15 @@ function prefillCl(make, model, year, eng) {
 document.getElementById('cl-make').value = make;
 document.getElementById('cl-model').value = model;
 document.getElementById('cl-year').value = year;
+if (eng) {
+  var e = eng.toUpperCase();
+  var sel = document.getElementById('cl-eng');
+  if (e.indexOf('LYCOMING') >= 0) sel.value = 'Lycoming';
+  else if (e.indexOf('CONT') >= 0) sel.value = 'Continental';
+  else if (e.indexOf('ROTAX') >= 0) sel.value = 'Rotax (LSA)';
+  else if (e.indexOf('TURB') >= 0 || e.indexOf('PT6') >= 0 || e.indexOf('PRATT') >= 0 || e.indexOf('GARRETT') >= 0) sel.value = 'Turboprop';
+  else sel.value = 'Other / unknown';
+}
 }
 
 /* ── ENGINE TOGGLE ── */
