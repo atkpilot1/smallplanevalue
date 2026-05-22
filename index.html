@@ -1354,7 +1354,7 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 /* ── helpers ── */
 const API = '/.netlify/functions/proxy';
-const MODEL = 'claude-sonnet-4-5-20250929';
+const MODEL = 'claude-sonnet-4-6';
 const fmt = n => '$' + Math.round(n).toLocaleString();
 
 async function callClaude(prompt, maxTokens = 1500) {
