@@ -1802,7 +1802,7 @@ try {
 const cl = await callClaude(`Expert A&P mechanic. Generate pre-buy inspection checklist for: ${year||'?'} ${make} ${model}, Engine: ${eng}, Buyer: ${exp}, Purpose: ${purpose}, Concerns: ${concerns||'none'}.
 Return ONLY valid JSON:
 {"aircraft":"${year?year+' ':''}${make} ${model}","sections":[{"name":"Documents & records","items":[{"name":"Airworthiness certificate","note":"Must be original, not a copy. Correct category for this aircraft.","critical":true,"criticalReason":"Aircraft cannot legally fly without this"},{"name":"Logbooks — airframe, engine, prop","note":"Verify continuous entries, no unexplained gaps. Check for damage repair entries.","critical":true,"criticalReason":"Missing logs reduce value and may indicate hidden history"}]}]}
-Include sections: Documents & records, Airframe & engine, Avionics & electrical, Landing gear & fuel, Test flight. Each section 4-6 items. Items specific to ${make} ${model} — mention known ADs, common failures, model-specific issues. Keep response concise.`, 2000);
+Include 4 sections with 3-4 items each. Items specific to ${make} ${model} — mention known ADs and common failures. Keep response very concise.`, 1000);
 renderChecklist(cl);
 } catch(e){document.getElementById('cl-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>';}
 setLoading('cl-spin','cl-btn',false);
