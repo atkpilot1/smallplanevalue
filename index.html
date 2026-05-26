@@ -1818,7 +1818,7 @@ if (!make||!model){alert('Enter make and model.');return;}
 setLoading('cl-spin','cl-btn',true);
 document.getElementById('cl-result').innerHTML='';
 try {
-var clRaw = await callClaudeFast(`Return ONLY a JSON array of 8 objects. Each object has "name" (string) and "items" (array of objects with "name", "note", "critical"). Generate a thorough pre-buy inspection checklist for: ${year||"?"} ${make} ${model}, Engine: ${eng}.
+var clRaw = await callClaudeFast(`Return ONLY a JSON array of 8 objects. Each object has "name" (string) and "items" (array of objects with "name", "note", "critical"). Generate a thorough pre-buy inspection checklist for: ${year||"?"} ${make} ${model}, Engine: ${eng}. Buyer experience: ${exp}. Purpose: ${purpose}. Known concerns: ${concerns||"none"}. ADDRESS THE CONCERNS SPECIFICALLY in your checklist items.
 
 The 8 sections with 5-7 items each:
 1. Documents & Records (logbooks, ADs, 337s, airworthiness cert, registration, weight & balance, STCs)
