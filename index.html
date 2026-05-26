@@ -1372,6 +1372,21 @@ if(m) { try { return JSON.parse(m[0]); } catch(e2) { var m2 = txt.match(/\{[^{}]
 return JSON.parse(txt);
 }
 
+async function callClaudeFast(prompt, maxTokens = 800) {
+const r = await fetch(API, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] })
+});
+const data = await r.json();
+if(data.error) throw new Error(data.error.message || 'API error');
+if(!data.content) throw new Error('No response - try again');
+const txt = data.content.map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
+var m = txt.match(/\{[\s\S]*\}/);
+if(m) { try { return JSON.parse(m[0]); } catch(e2) { var m2 = txt.match(/\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/); return m2 ? JSON.parse(m2[0]) : JSON.parse(txt); } }
+return JSON.parse(txt);
+}
+
 async function callClaudeSearch(prompt, maxTokens = 1500) {
 const r = await fetch(API, {
 method: 'POST',
@@ -1803,7 +1818,7 @@ if (!make||!model){alert('Enter make and model.');return;}
 setLoading('cl-spin','cl-btn',true);
 document.getElementById('cl-result').innerHTML='';
 try {
-const cl = await callClaude(`You are an A&P mechanic. Return ONLY a JSON object (no other text) for a pre-buy inspection of: ${year||"?"} ${make} ${model}, Engine: ${eng}. Use this exact format: {"aircraft":"${make} ${model}","sections":[{"name":"Section name","items":[{"name":"Item","note":"Brief note","critical":false}]}]} Include 4 sections: Documents & Records, Airframe & Structure, Engine & Propeller, Avionics & Systems. 3-4 items each. Flag known ADs for ${make} ${model}.`, 800);
+const cl = await callClaudeFast(`You are an A&P mechanic. Return ONLY a JSON object (no other text) for a pre-buy inspection of: ${year||"?"} ${make} ${model}, Engine: ${eng}. Use this exact format: {"aircraft":"${make} ${model}","sections":[{"name":"Section name","items":[{"name":"Item","note":"Brief note","critical":false}]}]} Include 4 sections: Documents & Records, Airframe & Structure, Engine & Propeller, Avionics & Systems. 3-4 items each. Flag known ADs for ${make} ${model}.`, 800);
 renderChecklist(cl);
 } catch(e){document.getElementById('cl-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>';}
 setLoading('cl-spin','cl-btn',false);
