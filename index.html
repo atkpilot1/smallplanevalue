@@ -1411,6 +1411,10 @@ document.getElementById(btnId).disabled = on;
 function tryN(v) { document.getElementById('nn').value = v; doLookup(); }
 
 async function doLookup() {
+document.getElementById('cl-result').innerHTML='';
+window._engModel='';
+window._acType='';
+window._numEng='';
 var raw = document.getElementById('nn').value.trim().toUpperCase();
 if (!raw) { alert('Enter an N-number.'); return; }
 var nnumber = 'N' + raw;
