@@ -1818,7 +1818,19 @@ if (!make||!model){alert('Enter make and model.');return;}
 setLoading('cl-spin','cl-btn',true);
 document.getElementById('cl-result').innerHTML='';
 try {
-var clRaw = await callClaudeFast(`Return ONLY a JSON array of 4 objects. Each object has "name" (string) and "items" (array of objects with "name", "note", "critical"). Generate a pre-buy inspection checklist for: ${year||"?"} ${make} ${model}, Engine: ${eng}. The 4 sections: Documents & Records, Airframe & Structure, Engine & Propeller, Avionics & Systems. 3-4 items per section. Flag known ADs for ${make} ${model}. Return ONLY the JSON array, nothing else.`, 800);
+var clRaw = await callClaudeFast(`Return ONLY a JSON array of 8 objects. Each object has "name" (string) and "items" (array of objects with "name", "note", "critical"). Generate a thorough pre-buy inspection checklist for: ${year||"?"} ${make} ${model}, Engine: ${eng}.
+
+The 8 sections with 5-7 items each:
+1. Documents & Records (logbooks, ADs, 337s, airworthiness cert, registration, weight & balance, STCs)
+2. Airframe & Structure (corrosion, spar carry-through, skin condition, belly, wing attach, control surfaces)
+3. Engine & Powerplant (compression, oil analysis, case cracks, mounts, baffles, exhaust, hoses, SMOH status)
+4. Propeller (blade condition, hub, governor, logs, AD compliance, TBO status)
+5. Landing Gear (squat switch, gear doors, tires, brakes, struts, retract mechanism, emergency extension)
+6. Fuel System (tanks, caps, vents, selectors, lines, fuel pumps, drains)
+7. Avionics & Electrical (radios, transponder, GPS, autopilot, alternator, battery, wiring, pitot-static)
+8. Cockpit & Test Flight (instruments, vacuum system, trim, flight controls, engine run-up, in-flight checks)
+
+Be specific to ${make} ${model} — mention known ADs, service bulletins, common failure points, and model-specific issues. Return ONLY the JSON array.`, 2500);
 var clSections = Array.isArray(clRaw) ? clRaw : (clRaw.sections || [clRaw]);
 renderChecklist({aircraft: (year||"") + " " + make + " " + model, sections: clSections});
 } catch(e){document.getElementById('cl-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>';}
