@@ -1818,11 +1818,9 @@ if (!make||!model){alert('Enter make and model.');return;}
 setLoading('cl-spin','cl-btn',true);
 document.getElementById('cl-result').innerHTML='';
 try {
-const cl = await callClaudeFast(`You are an A&P mechanic. Return ONLY valid JSON. The JSON MUST start with {"aircraft" and contain a "sections" array. Example structure:
-{"aircraft":"Cessna 172","sections":[{"name":"Documents","items":[{"name":"Logbooks","note":"Check for gaps","critical":true}]}]}
-Generate a pre-buy checklist for: ${year||"?"} ${make} ${model}, Engine: ${eng}. Include 4 sections: Documents & Records, Airframe & Structure, Engine & Propeller, Avionics & Systems. 3-4 items each. Flag known ADs for ${make} ${model}. Return ONLY the JSON object.`, 800);
-if(!cl.sections && !cl.aircraft) { cl = {aircraft:"${make} ${model}", sections: Array.isArray(cl) ? cl : [cl]}; }
-renderChecklist(cl);
+var clRaw = await callClaudeFast(`Return ONLY a JSON array of 4 objects. Each object has "name" (string) and "items" (array of objects with "name", "note", "critical"). Generate a pre-buy inspection checklist for: ${year||"?"} ${make} ${model}, Engine: ${eng}. The 4 sections: Documents & Records, Airframe & Structure, Engine & Propeller, Avionics & Systems. 3-4 items per section. Flag known ADs for ${make} ${model}. Return ONLY the JSON array, nothing else.`, 800);
+var clSections = Array.isArray(clRaw) ? clRaw : (clRaw.sections || [clRaw]);
+renderChecklist({aircraft: (year||"") + " " + make + " " + model, sections: clSections});
 } catch(e){document.getElementById('cl-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>';}
 setLoading('cl-spin','cl-btn',false);
 }
