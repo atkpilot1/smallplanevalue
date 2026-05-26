@@ -1364,7 +1364,11 @@ headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({ model: MODEL, max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] })
 });
 const data = await r.json();
+if(data.error) throw new Error(data.error.message || 'API error');
+if(!data.content) throw new Error('No response - try again');
 const txt = data.content.map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
+var m = txt.match(/\{[\s\S]*\}/);
+if(m) { try { return JSON.parse(m[0]); } catch(e2) { var m2 = txt.match(/\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/); return m2 ? JSON.parse(m2[0]) : JSON.parse(txt); } }
 return JSON.parse(txt);
 }
 
