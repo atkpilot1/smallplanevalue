@@ -933,7 +933,7 @@ style="width:100%;height:100%;object-fit:cover;object-position:center top;transi
 <button class="tab-btn" id="tab-btn-comps" onclick="switchTab('comps')">
 <i class="ti ti-search"></i> Market listings
 </button>
-<button class="tab-btn" id="tab-btn-checklist" onclick="if(window._lastLookup){prefillCl(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.engineMake||'',window._lastLookup.engineModel||'');}switchTab('checklist')">
+<button class="tab-btn" id="tab-btn-checklist" onclick="if(window._lastLookup){prefillCl(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.engineMake||'',window._lastLookup.engineModel||'',window._lastLookup.aircraftType||'',window._lastLookup.numEngines||'');}switchTab('checklist')">
 <i class="ti ti-clipboard-check"></i> Pre-buy checklist
 </button>
 <button class="tab-btn highlight" id="tab-btn-sold" onclick="switchTab('sold')">
@@ -1488,7 +1488,7 @@ ${owners}
 ${d.adNotes ? `<div style="background:rgba(232,160,32,0.1);border-radius:var(--radius);padding:10px 14px;margin-bottom:1rem;display:flex;gap:10px;align-items:flex-start"><i class="ti ti-tool" style="font-size:16px;color:var(--warn);flex-shrink:0"></i><div style="font-size:13px;color:var(--sky)"><strong>ADs to verify:</strong> ${d.adNotes}</div></div>` : ''}
 <div class="action-row-3">
 <button class="action-btn" onclick="prefillVal('${d.make}','${d.model}','${d.year}','${d.aircraftType||""}');switchTab('val')"><i class="ti ti-calculator" style="font-size:15px"></i> Get valuation</button>
-<button class="action-btn" onclick="prefillCl('${d.make}','${d.model}','${d.year}','${d.engineMake}','${d.engineModel}');switchTab('checklist')"><i class="ti ti-clipboard-check" style="font-size:15px"></i> Pre-buy checklist</button>
+<button class="action-btn" onclick="prefillCl('${d.make}','${d.model}','${d.year}','${d.engineMake}','${d.engineModel}','${d.aircraftType||""}',' ${d.numEngines||""}');switchTab('checklist')"><i class="ti ti-clipboard-check" style="font-size:15px"></i> Pre-buy checklist</button>
 <button class="action-btn" onclick="window.open('https://registry.faa.gov/aircraftinquiry/Search/NNumberInquiry?nNumberTxt=${d.nnumber.replace(/^N/,'')}','_blank')"><i class="ti ti-external-link" style="font-size:15px"></i> FAA website</button>
 </div>
 <div class="note-box" style="margin-top:.75rem">Data sourced from FAA aircraft registry (registry.faa.gov). Owner names are public FAA records.</div>`;
@@ -1594,8 +1594,10 @@ var sel = document.getElementById('v-engines');
 if (sel) { sel.value = '2'; toggleEngineFields(); }
 }
 }
-function prefillCl(make, model, year, eng, engModel) {
+function prefillCl(make, model, year, eng, engModel, acType, numEng) {
 window._engModel = engModel || '';
+window._acType = acType || '';
+window._numEng = numEng || '';
 document.getElementById('cl-make').value = make;
 document.getElementById('cl-model').value = model;
 document.getElementById('cl-year').value = year;
