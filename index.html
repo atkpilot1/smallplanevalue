@@ -1525,7 +1525,7 @@ document.getElementById('paste-btn').disabled = true;
 try {
 var prompt = 'Parse this aircraft listing and extract structured data. Return ONLY valid JSON with these fields (use null for unknown):\n';
 prompt += '{"make":"BEECH","model":"B58","year":1981,"ttaf":4673,"engines":2,"smoh":0,"smohR":0,"propHrs":689,"propHrsR":689,"condition":"Good","cosmetics":"Average","avionics":["GTX345","KFC200","GNS480"],"notes":"RAM engines, Bose LEMO jacks, dual Insight G2 monitors"}\n\n';
-prompt += 'LISTING:\n' + txt.substring(0, 2000);
+prompt += 'LISTING:\n' + txt.substring(0, 5000);
 var d = await callClaudeFast(prompt, 1000);
 resetForm();
 if (d.make) document.getElementById('v-make').value = d.make;
