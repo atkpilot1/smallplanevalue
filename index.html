@@ -1824,15 +1824,115 @@ const purpose=document.getElementById('cl-purpose').value;
 if (!make||!model){alert('Enter make and model.');return;}
 setLoading('cl-spin','cl-btn',true);
 document.getElementById('cl-result').innerHTML='';
+
+var isRetract = (window._acType||'').toLowerCase().indexOf('fixed') < 0 && model.match(/arrow|210|baron|bonanza|saratoga|seneca|310|340|414|421|mooney|lance|comanche|centurion/i);
+var isMulti = (window._numEng||'') > 1 || model.match(/baron|seneca|310|340|414|421|twin|duchess|seminole|apache|aztec|navajo|chieftain/i);
+
+var base = [
+{name:"Documents and Records", items:[
+{name:"Airworthiness certificate",note:"Must be original, displayed in aircraft. Verify it matches registration and aircraft serial number.",critical:true},
+{name:"Registration",note:"Must be in aircraft, match N-number markings and serial number. Confirm name and current address of registered owner.",critical:true},
+{name:"POH / Flight Manual",note:"Must be appropriate to this specific aircraft model and serial number. Check for all supplements for installed equipment.",critical:true},
+{name:"Weight and balance",note:"Must be current with all modifications reflected. Calculate several typical loading scenarios to verify within limits.",critical:true},
+{name:"Airframe logbooks since manufacture",note:"Verify continuous entries with no unexplained gaps. Compare total airframe time to advertised and to tachometer/Hobbs meter.",critical:true},
+{name:"Latest annual inspection",note:"Confirm date and proper sign-off. Check who performed it and if any discrepancies were noted.",critical:true},
+{name:"24-month pitot-static and transponder checks",note:"Confirm currency and expiration dates for both inspections. Required for IFR flight.",critical:true},
+{name:"ELT battery",note:"Check current ELT battery and confirm replacement date is within limits.",critical:false},
+{name:"STCs, 337s, and yellow tags",note:"Confirm all Forms 337, STCs, and yellow tags match logbook entries for all installed equipment and modifications.",critical:true},
+{name:"Damage history",note:"Verify any damage history with documentation of repair. Cross-check NTSB records for accident history.",critical:true},
+{name:"Aircraft title search",note:"Conduct title search to verify clear title, no liens, and ownership history matches logbooks.",critical:true}
+]},
+{name:"Engine Logbook and History", items:[
+{name:"Engine time and calendar since overhaul",note:"Compare total engine time, calendar years since overhaul, and time since top overhaul to advertised and to tach/Hobbs.",critical:true},
+{name:"Compression test history",note:"Review trends in cylinder differential compression checks over the last several annuals. Look for declining trends in any cylinder.",critical:true},
+{name:"Oil analysis history",note:"If oil analysis was performed, check frequency, results and trends. Look for elevated metals indicating wear: iron, copper, aluminum.",critical:true},
+{name:"Engine STCs and 337s",note:"Check all Forms 337, yellow tags and logbook entries for engine equipment and modifications.",critical:false},
+{name:"Overhaul shop and specs",note:"Verify who performed the overhaul, whether it was to new limits, and if a factory reman or field overhaul.",critical:true},
+{name:"Alternator bearing age",note:"For engines with gear-driven alternators, check whether alternator has been rebuilt with bearing change within last 500 operating hours.",critical:false},
+{name:"Vacuum/pneumatic pump age",note:"Check whether dry pneumatic pump has been overhauled or replaced within last 500 operating hours.",critical:false}
+]},
+{name:"Engine Compartment Inspection", items:[
+{name:"Cylinder condition",note:"Check cylinders for leaks or cracks, especially around injector nozzles (fuel injected) and spark plug holes. Look for evidence of overheating.",critical:true},
+{name:"Crankcase inspection",note:"Check for cracks on top of the crankcase and at cylinder base bolts. Check rear case for leaks that may indicate a crankcase crack.",critical:true},
+{name:"Engine mounts",note:"Check rubber engine mounts for sagging, cracking, or deterioration. Check heat deflectors for wear and cutting into mount legs.",critical:true},
+{name:"Baffles",note:"Check condition of all baffles, especially hard, cracked, or missing pieces. Proper baffling is critical for cooling.",critical:false},
+{name:"Hoses, clamps and brackets",note:"Check all hoses for cracks, kinks, age, or bulging. Check clamps and brackets for broken, loose or missing items. Check fuel injector line grommets.",critical:true},
+{name:"Exhaust system",note:"Check for cracks, leaks, or dents. Check for missing mounting nuts or studs. Look for loose, bent, or collapsed clamps. Check for corrosion throughout.",critical:true},
+{name:"Muffler condition",note:"Check exterior for dents, heat warp, holes or cracks. Check for missing or distorted flame cones. Inspect tailpipe hangers at firewall.",critical:true},
+{name:"Oil leaks and stains",note:"Check for any unexplained fuel or oil leaks or stains. Look for evidence of oil from alternator vent tube.",critical:false},
+{name:"Magnetos and ignition",note:"Visually inspect magnetos, ignition harness, and spark plug leads for condition and security.",critical:false}
+]},
+{name:"Propeller", items:[
+{name:"Propeller time since overhaul",note:"Compare propeller time and years since overhaul to advertised and tach/Hobbs. Check for overhaul or re-lube within last six years.",critical:true},
+{name:"Blade condition",note:"Check propeller blades for nicks, cracks, erosion, corrosion, or other damage. Check blade security.",critical:true},
+{name:"Spinner and bulkhead",note:"Check spinner for cracks, dents or damage. Check spinner bulkhead/backplate for cracks, dents or damage.",critical:false},
+{name:"Governor",note:"Verify governor operation and check for leaks. Confirm governor has been overhauled at or before propeller overhaul.",critical:false},
+{name:"Prop strike cross-check",note:"Cross-check any prop strike history against engine logs for teardown evidence, and airframe logs for gear collapse or gear-up landing.",critical:true}
+]},
+{name:"Landing Gear", items:[
+{name:"Tires",note:"Check for cupping, sidewall cracks, excessively worn tread, flat spots, or cord showing. Check tire pressures.",critical:true},
+{name:"Brakes",note:"Check for grooves in brake discs and condition of brake pads. Look for hard, stiff, kinked or leaking brake hoses.",critical:true},
+{name:"Struts and hardware",note:"Check for leaks, visible corrosion or rust on struts. Check for pitting or corrosion on chromed surfaces. Check for looseness in mountings.",critical:true},
+{name:"Nose gear",note:"Check shimmy damper for security, bends or leaks. Check tow pin area for damage. Check steering mechanism.",critical:false}
+]},
+{name:"Wings and Tail", items:[
+{name:"Wing surface inspection",note:"Sight across top and bottom of wing checking for dents, wrinkles, or paint blistering (may indicate corrosion of internal structure).",critical:true},
+{name:"Wing attach fittings",note:"Check wing attach bolt fittings for corrosion, standing water, or evidence of past water. Check bathtub fitting covers and drain holes.",critical:true},
+{name:"Control surfaces",note:"Inspect ailerons, elevator, and rudder for dents, wrinkles, corrosion. Check that control surfaces were properly balanced after any paint.",critical:true},
+{name:"Fuel system",note:"Check for evidence of fuel leaks on top and bottom of wing. Check fuel caps, vents, and fuel selector valve operation through all positions including off.",critical:true},
+{name:"Tail surfaces",note:"Check fuselage tail area for wrinkles, dents, loose rivets, corrosion. Check trim tabs flush with surfaces when indicators at neutral.",critical:false},
+{name:"Rivet condition",note:"Check for ground-down rivet heads which may indicate damage from sanding if airplane was not stripped before repainting.",critical:false}
+]},
+{name:"Cabin and Interior", items:[
+{name:"Windows and doors",note:"Check for crazed or cracked windows. Check forward door fit and hinge condition. Look for signs of interior leaks around door and window seals.",critical:false},
+{name:"Corrosion check",note:"Check cabin sidewalls for corrosion under windows, doors, and pilot storm window. This is a common hidden problem area.",critical:true},
+{name:"Seats and restraints",note:"Check proper installation and operation of seat belts, shoulder harnesses, seats and adjustment mechanisms.",critical:true},
+{name:"Emergency exits",note:"Check proper operation of all emergency exits.",critical:true},
+{name:"Fuel selector",note:"Verify fuel selector valve moves easily between all positions. Check proper operation of off-position safety stops.",critical:true}
+]},
+{name:"Warm Engine Checks", items:[
+{name:"Borescope all cylinders",note:"Conduct borescope inspection of all cylinders. Look for scoring, corrosion, deposits, cracked valves, and cam lobe wear indicators.",critical:true},
+{name:"Differential compression",note:"Conduct differential compression check on all cylinders. Record specific numbers. Minimum 60/80 with no more than 5 PSI variance between cylinders.",critical:true},
+{name:"Oil filter and screen",note:"Cut open oil filter and inspect oil screen for metal contamination. Any metal requires further investigation.",critical:true}
+]},
+{name:"Flight Check", items:[
+{name:"Manifold pressure before start",note:"Check manifold pressure gauge reads ambient pressure before engine start.",critical:false},
+{name:"Instrument check",note:"Check all instruments against tolerance for IFR flight after start and during taxi.",critical:true},
+{name:"Takeoff performance",note:"Confirm expected manifold pressure and RPM at full throttle takeoff. Check fuel flow is at or above redline.",critical:true},
+{name:"Cruise performance",note:"Compute true airspeed at cruise and compare to POH expectations for altitude and power setting.",critical:true},
+{name:"Avionics operational check",note:"Systematically check all instruments, avionics and indicators. Check magnetic compass for proper fluid and operation.",critical:true},
+{name:"Autopilot check",note:"Functionally check the autopilot system and all methods of disconnect per POH supplement procedures.",critical:false},
+{name:"VOR accuracy",note:"Conduct VOR check and compare to 30-day VOR check log entry.",critical:false}
+]}
+];
+
+if (isRetract) {
+var gearIdx = base.findIndex(function(s){return s.name==='Landing Gear';});
+base[gearIdx].items.push(
+{name:"Gear retraction test",note:"Conduct full gear retraction test. Check transit speed (14V: 11-13 sec, 28V: 4-8 sec). Check all position indicators.",critical:true},
+{name:"Gear rigging",note:"Check rigging tolerances including down tensions, free play in gear box, uplock clearance. Check for bent extension arms.",critical:true},
+{name:"Gear doors and uplocks",note:"Check outer gear doors for security, cracks or loose rivets. Check uplock cable condition and roller freedom. Check inner doors retract fully.",critical:true},
+{name:"Emergency gear extension",note:"Verify manual gear extension crank is accessible, snaps into cranking position, and restows properly.",critical:true}
+);
+}
+
+if (isMulti) {
+var flightIdx = base.findIndex(function(s){return s.name==='Flight Check';});
+base[flightIdx].items.push(
+{name:"Single engine performance",note:"Verify Vmc and single-engine climb performance. Check feathering operation if applicable.",critical:true},
+{name:"Engine synchronization",note:"Check prop sync system operation. Verify both engines produce matching performance at same power settings.",critical:false}
+);
+}
+
 try {
-var ac = (year||"?") + " " + make + " " + model;
-var engFull = eng + " " + (window._engModel||"");
-var acInfo = "Aircraft type: " + (window._acType||"unknown") + ". Engines: " + (window._numEng||"unknown");
-var clRaw = await callClaudeFast("Return ONLY a JSON array of 7 objects. Each has name (string) and items (array of objects with name, note, critical). THOROUGH pre-buy for: " + ac + ", Engine: " + engFull + ". " + acInfo + ". Buyer: " + exp + ". Concerns: " + (concerns||"none") + ". IMPORTANT: If fixed gear, do NOT include retractable gear items. If single engine, do NOT include multi-engine items. ADDRESS the buyers concerns. The 7 sections: 1. Documents and Records (certs, registration, POH, W&B, logbooks since manufacture, total time vs tach, annual sign-off, pitot-static/transponder checks, ELT, STCs/337s, damage history, title search, 6-8 items) 2. Engine History and Records (time and calendar since overhaul, top overhaul history, compression test trends, oil analysis history and trends, AD compliance for this specific engine, service bulletins, 5-7 items) 3. Engine Compartment Inspection (crankcase cracks top and cylinder base, rear case leaks, cylinder cracks at injector nozzles and spark plugs, magnetos and timing, alternator and bearing age, vacuum pump age, all hoses and clamps, baffles, engine mounts, exhaust system, muffler, 7-9 items) 4. Propeller and Landing Gear (prop time since overhaul, blade condition, governor, prop strike cross-check. Then gear items appropriate for this aircraft type, 5-7 items) 5. Airframe Wings and Tail (wing surface condition, spar and attach fittings for corrosion, fuel system tanks caps vents lines selectors, control surfaces and balance, trim tabs, tail condition, 5-7 items) 6. Avionics Electrical and Cabin (radios, transponder, GPS, autopilot, alternator output, battery, wiring, windows, doors, seats, 5-6 items) 7. Engine Run and Flight Check (borescope all cylinders, differential compression all cylinders with numbers, oil filter cut for metal, MP before start, expected MP RPM fuel flow at takeoff, cruise TAS vs POH, autopilot check, 5-7 items). Be specific to " + make + " " + model + " with actual AD numbers and known issues. Return ONLY the JSON array.", 2500);
-var clSections = Array.isArray(clRaw) ? clRaw : (clRaw.sections || [clRaw]);
-renderChecklist({aircraft: ac, sections: clSections});
-document.getElementById('cl-result').insertAdjacentHTML('afterbegin', '<div style="background:var(--offwhite);border-radius:var(--radius);padding:12px 16px;margin-bottom:1rem;font-size:13px;color:var(--muted);line-height:1.6"><i class="ti ti-info-circle" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>This is a starting point for your pre-buy inspection. More in-depth checklists can be obtained from your A&P mechanic and your aircraft\'s respective type club or pilot owners association (e.g. ABS, COPA, CPA, MMOPA).</div>');
-} catch(e){document.getElementById('cl-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>';}
+var specific = await callClaudeFast('For a ' + (year||'') + ' ' + make + ' ' + model + ' with ' + eng + ' ' + (window._engModel||'') + ' engine, list 5-8 MODEL-SPECIFIC pre-buy items that a general checklist would miss. Include specific AD numbers, known failure points, and common issues unique to this exact aircraft. Buyer concerns: ' + (concerns||'none') + '. Return ONLY a JSON array of objects with name, note, and critical fields. Example: [{"name":"AD 2004-10-14 Wing Spar","note":"Check carry-through spar for corrosion per AD","critical":true}]', 800);
+var specItems = Array.isArray(specific) ? specific : [specific];
+base.push({name: make + ' ' + model + ' Specific Items', items: specItems});
+} catch(e) { console.log('Model-specific items failed, using base checklist'); }
+
+var ac = (year||'') + ' ' + make + ' ' + model;
+renderChecklist({aircraft: ac.trim(), sections: base});
+document.getElementById('cl-result').insertAdjacentHTML('afterbegin', '<div style="background:var(--offwhite);border-radius:var(--radius);padding:12px 16px;margin-bottom:1rem;font-size:13px;color:var(--muted);line-height:1.6"><i class="ti ti-info-circle" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i><strong>This is a starting point for your pre-buy inspection.</strong> More in-depth checklists can be obtained from your A&P mechanic and your aircraft\'s respective type club or pilot owners association (<a href="https://www.bonanza.org" target="_blank" style="color:var(--sky)">ABS</a>, <a href="https://www.cirruspilots.org" target="_blank" style="color:var(--sky)">COPA</a>, <a href="https://www.cessnapilots.org" target="_blank" style="color:var(--sky)">CPA</a>, <a href="https://www.mmopa.com" target="_blank" style="color:var(--sky)">MMOPA</a>, <a href="https://www.piperowner.org" target="_blank" style="color:var(--sky)">POA</a>).</div>');
 setLoading('cl-spin','cl-btn',false);
 }
 
