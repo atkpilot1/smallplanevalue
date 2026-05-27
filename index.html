@@ -930,7 +930,7 @@ style="width:100%;height:100%;object-fit:cover;object-position:center top;transi
 <button class="tab-btn highlight" id="tab-btn-val" onclick="if(window._lastLookup){prefillVal(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.aircraftType||'',window._lastLookup.numEngines||'');}switchTab('val');">
 <i class="ti ti-calculator"></i> Get valuation
 </button>
-<button class="tab-btn" id="tab-btn-comps" onclick="switchTab('comps')">
+<button class="tab-btn" id="tab-btn-comps" onclick="if(window._lastLookup){document.getElementById('comp-input').value=window._lastLookup.make+' '+window._lastLookup.model;}switchTab('comps')">
 <i class="ti ti-search"></i> Market listings
 </button>
 <button class="tab-btn" id="tab-btn-checklist" onclick="if(window._lastLookup){prefillCl(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.engineMake||'',window._lastLookup.engineModel||'',window._lastLookup.aircraftType||'',window._lastLookup.numEngines||'');}switchTab('checklist')">
@@ -1949,7 +1949,7 @@ base.push({name: make + ' ' + model + ' Specific Items', items: specItems});
 
 var ac = (year||'') + ' ' + make + ' ' + model;
 renderChecklist({aircraft: ac.trim(), sections: base});
-document.getElementById('cl-result').insertAdjacentHTML('afterbegin', '<div style="background:var(--offwhite);border-radius:var(--radius);padding:12px 16px;margin-bottom:1rem;font-size:13px;color:var(--muted);line-height:1.6"><i class="ti ti-info-circle" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i><strong>This is a starting point for your pre-buy inspection.</strong> More in-depth checklists can be obtained from your A&P mechanic and your aircraft\'s respective type club or pilot owners association (<a href="https://www.bonanza.org" target="_blank" style="color:var(--sky)">ABS</a>, <a href="https://www.cirruspilots.org" target="_blank" style="color:var(--sky)">COPA</a>, <a href="https://www.cessna.org" target="_blank" style="color:var(--sky)">Cessna Owner Organization</a>, <a href="https://www.mmopa.com" target="_blank" style="color:var(--sky)">MMOPA</a>, <a href="https://www.piperowner.org" target="_blank" style="color:var(--sky)">POA</a>).</div>');
+document.getElementById('cl-result').insertAdjacentHTML('afterbegin', '<div style="background:var(--offwhite);border-radius:var(--radius);padding:12px 16px;margin-bottom:1rem;font-size:13px;color:var(--muted);line-height:1.6"><i class="ti ti-info-circle" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i><strong>This is a starting point for your pre-buy inspection.</strong> More in-depth checklists can be obtained from your A&P mechanic and your aircraft\'s respective type club or pilot owners association (<a href="https://www.bonanza.org" target="_blank" style="color:var(--sky)">ABS</a>, <a href="https://www.cirruspilots.org" target="_blank" style="color:var(--sky)">COPA</a>, <a href="https://cessnaowner.org" target="_blank" style="color:var(--sky)">Cessna Owner Organization</a>, <a href="https://www.mmopa.com" target="_blank" style="color:var(--sky)">MMOPA</a>, <a href="https://www.piperowner.org" target="_blank" style="color:var(--sky)">POA</a>).</div>');
 setLoading('cl-spin','cl-btn',false);
 }
 
