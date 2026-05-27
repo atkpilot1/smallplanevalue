@@ -991,6 +991,7 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 </div>
 <div class="form-grid-3">
 <div class="form-group"><label>YEAR</label><input type="number" id="v-year" placeholder="e.g. 1969" min="1930" max="2026" /></div>
+<div class="form-group"><label>LAST ANNUAL</label><input type="month" id="v-annual" style="font-size:13px" /></div>
 <div class="form-group"><label>ENGINE</label><input type="text" id="v-engine-display" placeholder="From N-number lookup" readonly style="background:var(--offwhite);color:var(--muted)" /></div>
 <div class="form-group"><label>TOTAL TIME (TTAF HRS)</label><input type="number" id="v-ttaf" placeholder="e.g. 3200" /></div>
 <div class="form-group"><label>ENGINES</label>
@@ -1565,7 +1566,7 @@ var avMap = {
   'Autoland':'av-autoland','HALO':'av-autoland','Safe Return':'av-autoland',
   'Radar':'av-radar-legacy','GWX':'av-radar-garmin','RDR':'av-radar-bk',
   'JPI':'av-jpi','EDM':'av-jpi','CGR':'av-ei-cgr','Insight':'av-ei-other',
-  'SkyView HDX':'av-dynon-hdx','SkyView SE':'av-dynon-se','Dynon':'av-dynon-hdx'
+  'SkyView HDX':'av-dynon-hdx','SkyView SE':'av-dynon-se','Dynon':'av-dynon-hdx','STEC 65':'av-stec55','STEC65':'av-stec55','S-TEC 65':'av-stec55','Skywatch':'av-tcas','TCAS':'av-tcas','TAS':'av-tcas','EDM 830':'av-jpi','EDM 760':'av-jpi','EDM 900':'av-jpi','EDM830':'av-jpi','WX 500':'av-wx500','BFG':'av-wx500','Flight Stream':'av-adsb','CNX 80':'av-gns430w','CNX80':'av-gns430w','GNS 480':'av-gns480','speed brakes':'av-stc','IO-550':'av-stc','3-blade':'av-3blade','3 blade':'av-3blade','LED':'av-led','CiES':'av-cies','tip tank':'av-stc'
 };
 if (d.avionics && Array.isArray(d.avionics)) {
   d.avionics.forEach(function(av) {
@@ -1657,6 +1658,8 @@ var ttaf=document.getElementById('v-ttaf').value;
 var cond=document.getElementById('v-cond').value;
 var cosm=document.getElementById('v-cosm').value;
 var notes=document.getElementById('v-notes').value.replace(/["'\\]/g, ' ');
+var annualEl=document.getElementById('v-annual');var annualInfo='';
+if(annualEl&&annualEl.value){var ad=new Date(annualEl.value+'-01');var now=new Date();var months=Math.round((now-ad)/(1000*60*60*24*30));var pct=Math.min(100,Math.round(months/12*100));annualInfo='Annual inspection done '+months+' months ago ('+pct+'% through annual cycle). ';}
 var isTwin = document.getElementById('v-engines') && document.getElementById('v-engines').value === '2';
 var engineInfo = '';
 if (isTwin) {
@@ -1685,7 +1688,7 @@ prompt+='- Piper Cherokee/Archer: $50k-$150k. Saratoga/Lance: $180k-$400k. Moone
 prompt+='- Avionics: G1000 NXi +$25-35k, G500 TXi +$18-25k, Aspen EFD +$8-12k, GTN 750Xi +$12-18k. Radar on twins +$5-10k.\n';
 prompt+='- Twins: matched engine times=premium. Factory new engines $15-20k more than field OH. 3-blade props +$3-8k.\n\n';
 prompt+='Aircraft: '+(year||'?')+' '+make+' '+model+'\nTTAF: '+(ttaf||'?')+' hrs\n'+engineInfo+'\n';
-prompt+='Condition: '+cond+', Paint/Interior: '+cosm+'\nAvionics: '+(avs.length?avs.join(', '):'Standard/basic')+'\nNotes: '+(notes||'none')+'\n';
+prompt+='Annual: '+(annualInfo||'Unknown')+'. Condition: '+cond+', Paint/Interior: '+cosm+'\nAvionics: '+(avs.length?avs.join(', '):'Standard/basic')+'\nNotes: '+(notes||'none')+'\n';
 prompt+='IMPORTANT: Search the web for current listings of this exact make/model to verify your pricing. Keep the spread between seller price and buyer target within 10-15% max.\nReturn ONLY valid JSON:\n';
 prompt+='{"sellerAsk":NUMBER,"fairMarketValue":NUMBER,"buyerTarget":NUMBER,"condImpact":"+3%","avImpact":"+7%","engineImpact":"-4%","condVerdict":"Good","avVerdict":"Above average","engineVerdict":"Mid-life","keyFinding":"One sentence.","analysis":"2-3 sentences.","negotiatingTips":["Tip 1","Tip 2","Tip 3"],"confidence":"high"}';
 var v=await callClaudeSearch(prompt,1500);
