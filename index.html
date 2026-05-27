@@ -1689,7 +1689,7 @@ prompt+='- Avionics: G1000 NXi +$25-35k, G500 TXi +$18-25k, Aspen EFD +$8-12k, G
 prompt+='- Twins: matched engine times=premium. Factory new engines $15-20k more than field OH. 3-blade props +$3-8k.\n\n';
 prompt+='Aircraft: '+(year||'?')+' '+make+' '+model+'\nTTAF: '+(ttaf||'?')+' hrs\n'+engineInfo+'\n';
 prompt+='Annual: '+(annualInfo||'Unknown')+'. Condition: '+cond+', Paint/Interior: '+cosm+'\nAvionics: '+(avs.length?avs.join(', '):'Standard/basic')+'\nNotes: '+(notes||'none')+'\n';
-prompt+='IMPORTANT: Search the web for current listings of this exact make/model to verify your pricing. Keep the spread between seller price and buyer target within 10-15% max.\nReturn ONLY valid JSON:\n';
+prompt+='CRITICAL: Your fair market value should NEVER exceed the asking price. Year matters hugely - a 1976 is worth much less than a 2006. High airframe time reduces value. Engine conversions add 25-40k max. Older avionics add modest value. Keep spread between seller and buyer target within 10-15%.\nReturn ONLY valid JSON:\n';
 prompt+='{"sellerAsk":NUMBER,"fairMarketValue":NUMBER,"buyerTarget":NUMBER,"condImpact":"+3%","avImpact":"+7%","engineImpact":"-4%","condVerdict":"Good","avVerdict":"Above average","engineVerdict":"Mid-life","keyFinding":"One sentence.","analysis":"2-3 sentences.","negotiatingTips":["Tip 1","Tip 2","Tip 3"],"confidence":"high"}';
 var v=await callClaude(prompt,1500);
 renderVal(v,make,model,year);
