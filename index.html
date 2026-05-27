@@ -1689,7 +1689,8 @@ prompt+='- Avionics: G1000 NXi +$25-35k, G500 TXi +$18-25k, Aspen EFD +$8-12k, G
 prompt+='- Twins: matched engine times=premium. Factory new engines $15-20k more than field OH. 3-blade props +$3-8k.\n\n';
 prompt+='Aircraft: '+(year||'?')+' '+make+' '+model+'\nTTAF: '+(ttaf||'?')+' hrs\n'+engineInfo+'\n';
 prompt+='Annual: '+(annualInfo||'Unknown')+'. Condition: '+cond+', Paint/Interior: '+cosm+'\nAvionics: '+(avs.length?avs.join(', '):'Standard/basic')+'\nNotes: '+(notes||'none')+'\n';
-prompt+='IMPORTANT: Search the web for current listings of this exact make/model to verify your pricing. Keep the spread between seller price and buyer target within 10-15% max.\nReturn ONLY valid JSON:\n';
+prompt+='CRITICAL RULES: 1) Your valuation should NEVER exceed the sellers asking price - if a seller is asking 299k, fair market is AT or BELOW that number. 2) Year matters enormously - a 1976 airplane is worth significantly less than a 2006 of the same model regardless of upgrades. 3) High airframe time (4000+ hrs) reduces value. 4) Engine conversions (like IO-550) add 25-40k, not more. 5) Older avionics (Apollo, KI-525, STEC) add modest value vs modern glass.
+IMPORTANT: Search the web for current listings of this exact make/model to verify your pricing. Keep the spread between seller price and buyer target within 10-15% max.\nReturn ONLY valid JSON:\n';
 prompt+='{"sellerAsk":NUMBER,"fairMarketValue":NUMBER,"buyerTarget":NUMBER,"condImpact":"+3%","avImpact":"+7%","engineImpact":"-4%","condVerdict":"Good","avVerdict":"Above average","engineVerdict":"Mid-life","keyFinding":"One sentence.","analysis":"2-3 sentences.","negotiatingTips":["Tip 1","Tip 2","Tip 3"],"confidence":"high"}';
 var v=await callClaude(prompt,1500);
 renderVal(v,make,model,year);
