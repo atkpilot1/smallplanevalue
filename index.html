@@ -927,7 +927,7 @@ style="width:100%;height:100%;object-fit:cover;object-position:center top;transi
 <button class="tab-btn active" id="tab-btn-lookup" onclick="switchTab('lookup')">
 <i class="ti ti-id"></i> N-number lookup
 </button>
-<button class="tab-btn highlight" id="tab-btn-val" onclick="if(window._lastLookup){prefillVal(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.aircraftType||'');}switchTab('val');">
+<button class="tab-btn highlight" id="tab-btn-val" onclick="if(window._lastLookup){prefillVal(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.aircraftType||'',window._lastLookup.numEngines||'');}switchTab('val');">
 <i class="ti ti-calculator"></i> Get valuation
 </button>
 <button class="tab-btn" id="tab-btn-comps" onclick="switchTab('comps')">
@@ -939,7 +939,7 @@ style="width:100%;height:100%;object-fit:cover;object-position:center top;transi
 <button class="tab-btn highlight" id="tab-btn-sold" onclick="switchTab('sold')">
 <i class="ti ti-currency-dollar"></i> Report a sale
 </button>
-<button class="tab-btn" id="tab-btn-feedback" onclick="switchTab('feedback')">
+<button class="tab-btn" id="tab-btn-feedback" onclick="switchTab('feedback')" style="font-weight:600">
 <i class="ti ti-message-circle"></i> Feedback
 </button>
 </div>
@@ -1190,6 +1190,23 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 <div class="form-group"><label>YOUR FEEDBACK</label><textarea id="fb-message" rows="4" placeholder="What did we get wrong? What features do you want?"></textarea></div>
 <button class="submit-btn" id="fb-btn" onclick="submitFeedback()"><i class="ti ti-send"></i> Send feedback</button>
 <div id="fb-result"></div>
+<script>
+function submitFeedback() {
+var email = document.getElementById('fb-email').value.trim();
+var aircraft = document.getElementById('fb-aircraft').value.trim();
+var accuracy = document.getElementById('fb-accuracy').value;
+var message = document.getElementById('fb-message').value.trim();
+if (!message && !accuracy) { alert('Please enter feedback or select accuracy.'); return; }
+var fb = JSON.parse(localStorage.getItem('spv_feedback') || '[]');
+fb.push({email:email,aircraft:aircraft,accuracy:accuracy,message:message,date:new Date().toISOString()});
+localStorage.setItem('spv_feedback', JSON.stringify(fb));
+document.getElementById('fb-result').innerHTML = '<p style="color:var(--success);font-size:14px;margin-top:1rem;font-weight:600">Thank you for your feedback! This helps us improve SmallPlaneValue.</p>';
+document.getElementById('fb-email').value='';
+document.getElementById('fb-aircraft').value='';
+document.getElementById('fb-accuracy').value='';
+document.getElementById('fb-message').value='';
+}
+</script>
 </div>
 
 <!-- PRE-BUY CHECKLIST -->
@@ -1491,7 +1508,7 @@ ${owners}
 </div>
 ${d.adNotes ? `<div style="background:rgba(232,160,32,0.1);border-radius:var(--radius);padding:10px 14px;margin-bottom:1rem;display:flex;gap:10px;align-items:flex-start"><i class="ti ti-tool" style="font-size:16px;color:var(--warn);flex-shrink:0"></i><div style="font-size:13px;color:var(--sky)"><strong>ADs to verify:</strong> ${d.adNotes}</div></div>` : ''}
 <div class="action-row-3">
-<button class="action-btn" onclick="prefillVal('${d.make}','${d.model}','${d.year}','${d.aircraftType||""}');switchTab('val')"><i class="ti ti-calculator" style="font-size:15px"></i> Get valuation</button>
+<button class="action-btn" onclick="prefillVal('${d.make}','${d.model}','${d.year}','${d.aircraftType||""}',' ${d.numEngines||""}');switchTab('val')"><i class="ti ti-calculator" style="font-size:15px"></i> Get valuation</button>
 <button class="action-btn" onclick="prefillCl('${d.make}','${d.model}','${d.year}','${d.engineMake}','${d.engineModel}','${d.aircraftType||""}',' ${d.numEngines||""}');switchTab('checklist')"><i class="ti ti-clipboard-check" style="font-size:15px"></i> Pre-buy checklist</button>
 <button class="action-btn" onclick="window.open('https://registry.faa.gov/aircraftinquiry/Search/NNumberInquiry?nNumberTxt=${d.nnumber.replace(/^N/,'')}','_blank')"><i class="ti ti-external-link" style="font-size:15px"></i> FAA website</button>
 </div>
@@ -1588,12 +1605,12 @@ var vp = document.getElementById('v-paste'); if(vp) vp.value = '';
 // nn-result preserved between lookups
 }
 
-function prefillVal(make, model, year, aircraftType) {
+function prefillVal(make, model, year, aircraftType, numEngines) {
 resetForm();
 document.getElementById('v-make').value = make;
 document.getElementById('v-model').value = model;
 document.getElementById('v-year').value = year;
-if (aircraftType && aircraftType.toLowerCase().indexOf('multi') >= 0) {
+if ((aircraftType && aircraftType.toLowerCase().indexOf('multi') >= 0) || numEngines > 1) {
 var sel = document.getElementById('v-engines');
 if (sel) { sel.value = '2'; toggleEngineFields(); }
 }
@@ -1932,7 +1949,7 @@ base.push({name: make + ' ' + model + ' Specific Items', items: specItems});
 
 var ac = (year||'') + ' ' + make + ' ' + model;
 renderChecklist({aircraft: ac.trim(), sections: base});
-document.getElementById('cl-result').insertAdjacentHTML('afterbegin', '<div style="background:var(--offwhite);border-radius:var(--radius);padding:12px 16px;margin-bottom:1rem;font-size:13px;color:var(--muted);line-height:1.6"><i class="ti ti-info-circle" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i><strong>This is a starting point for your pre-buy inspection.</strong> More in-depth checklists can be obtained from your A&P mechanic and your aircraft\'s respective type club or pilot owners association (<a href="https://www.bonanza.org" target="_blank" style="color:var(--sky)">ABS</a>, <a href="https://www.cirruspilots.org" target="_blank" style="color:var(--sky)">COPA</a>, <a href="https://www.cessnapilots.org" target="_blank" style="color:var(--sky)">CPA</a>, <a href="https://www.mmopa.com" target="_blank" style="color:var(--sky)">MMOPA</a>, <a href="https://www.piperowner.org" target="_blank" style="color:var(--sky)">POA</a>).</div>');
+document.getElementById('cl-result').insertAdjacentHTML('afterbegin', '<div style="background:var(--offwhite);border-radius:var(--radius);padding:12px 16px;margin-bottom:1rem;font-size:13px;color:var(--muted);line-height:1.6"><i class="ti ti-info-circle" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i><strong>This is a starting point for your pre-buy inspection.</strong> More in-depth checklists can be obtained from your A&P mechanic and your aircraft\'s respective type club or pilot owners association (<a href="https://www.bonanza.org" target="_blank" style="color:var(--sky)">ABS</a>, <a href="https://www.cirruspilots.org" target="_blank" style="color:var(--sky)">COPA</a>, <a href="https://www.cessna.org" target="_blank" style="color:var(--sky)">Cessna Owner Organization</a>, <a href="https://www.mmopa.com" target="_blank" style="color:var(--sky)">MMOPA</a>, <a href="https://www.piperowner.org" target="_blank" style="color:var(--sky)">POA</a>).</div>');
 setLoading('cl-spin','cl-btn',false);
 }
 
