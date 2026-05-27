@@ -1508,7 +1508,7 @@ ${owners}
 </div>
 ${d.adNotes ? `<div style="background:rgba(232,160,32,0.1);border-radius:var(--radius);padding:10px 14px;margin-bottom:1rem;display:flex;gap:10px;align-items:flex-start"><i class="ti ti-tool" style="font-size:16px;color:var(--warn);flex-shrink:0"></i><div style="font-size:13px;color:var(--sky)"><strong>ADs to verify:</strong> ${d.adNotes}</div></div>` : ''}
 <div class="action-row-3">
-<button class="action-btn" onclick="prefillVal('${d.make}','${d.model}','${d.year}','${d.aircraftType||""}',' ${d.numEngines||""}');switchTab('val')"><i class="ti ti-calculator" style="font-size:15px"></i> Get valuation</button>
+<button class="action-btn" onclick="prefillVal('${d.make}','${d.model}','${d.year}','${d.aircraftType||""}',' ${d.numEngines||""}','${d.engineMake||""}','${d.engineModel||""}');switchTab('val')"><i class="ti ti-calculator" style="font-size:15px"></i> Get valuation</button>
 <button class="action-btn" onclick="prefillCl('${d.make}','${d.model}','${d.year}','${d.engineMake}','${d.engineModel}','${d.aircraftType||""}',' ${d.numEngines||""}');switchTab('checklist')"><i class="ti ti-clipboard-check" style="font-size:15px"></i> Pre-buy checklist</button>
 <button class="action-btn" onclick="window.open('https://registry.faa.gov/aircraftinquiry/Search/NNumberInquiry?nNumberTxt=${d.nnumber.replace(/^N/,'')}','_blank')"><i class="ti ti-external-link" style="font-size:15px"></i> FAA website</button>
 </div>
