@@ -991,6 +991,7 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 </div>
 <div class="form-grid-3">
 <div class="form-group"><label>YEAR</label><input type="number" id="v-year" placeholder="e.g. 1969" min="1930" max="2026" /></div>
+<div class="form-group"><label>ENGINE</label><input type="text" id="v-engine-display" placeholder="From N-number lookup" readonly style="background:var(--offwhite);color:var(--muted)" /></div>
 <div class="form-group"><label>TOTAL TIME (TTAF HRS)</label><input type="number" id="v-ttaf" placeholder="e.g. 3200" /></div>
 <div class="form-group"><label>ENGINES</label>
 <select id="v-engines" onchange="toggleEngineFields()">
@@ -1607,6 +1608,7 @@ var vp = document.getElementById('v-paste'); if(vp) vp.value = '';
 
 function prefillVal(make, model, year, aircraftType, numEngines, engMake, engModel) {
 window._valEngMake = engMake || "";window._valEngModel = engModel || "";
+var ed=document.getElementById("v-engine-display");if(ed)ed.value=(engMake||"")+" "+(engModel||"");
 resetForm();
 document.getElementById('v-make').value = make;
 document.getElementById('v-model').value = model;
