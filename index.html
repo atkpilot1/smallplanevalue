@@ -1701,7 +1701,7 @@ setLoading('v-spin','v-btn',false);
 
 function renderVal(v, make, model, year) {
 // Support both old and new format
-var seller = (askPrice ? parseInt(askPrice) : false) || v.sellerAsk || v.askHigh || 0;
+var apEl=document.getElementById("v-asking");var seller = (apEl&&apEl.value ? parseInt(apEl.value) : 0) || v.sellerAsk || v.askHigh || 0;
 var fmv = v.fairMarketValue || v.askMid || 0;
 var buyer = v.buyerTarget || v.askLow || 0;
 var total = seller - buyer;
