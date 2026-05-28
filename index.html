@@ -993,6 +993,7 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 <div class="form-group"><label>YEAR</label><input type="number" id="v-year" placeholder="e.g. 1969" min="1930" max="2026" /></div>
 <div class="form-group"><label>LAST ANNUAL</label><input type="month" id="v-annual" style="font-size:13px" /></div>
 <div class="form-group"><label>ENGINE</label><input type="text" id="v-engine-display" placeholder="From N-number lookup" readonly style="background:var(--offwhite);color:var(--muted)" /></div>
+<div class="form-group"><label>ASKING PRICE ($)</label><input type="number" id="v-asking" placeholder="e.g. 299000" /></div>
 <div class="form-group"><label>TOTAL TIME (TTAF HRS)</label><input type="number" id="v-ttaf" placeholder="e.g. 3200" /></div>
 <div class="form-group"><label>ENGINES</label>
 <select id="v-engines" onchange="toggleEngineFields()">
@@ -1687,6 +1688,7 @@ prompt+='- Cirrus SR20: $150k-$350k (G1-G2 $150-220k, G3+ $220-350k). SR22: $240
 prompt+='- Piper Cherokee/Archer: $50k-$150k. Saratoga/Lance: $180k-$400k. Mooney M20: $100k-$350k.\n';
 prompt+='- Avionics: G1000 NXi +$25-35k, G500 TXi +$18-25k, Aspen EFD +$8-12k, GTN 750Xi +$12-18k. Radar on twins +$5-10k.\n';
 prompt+='- Twins: matched engine times=premium. Factory new engines $15-20k more than field OH. 3-blade props +$3-8k.\n\n';
+var askPrice=document.getElementById('v-asking')?document.getElementById('v-asking').value:'';
 prompt+='Aircraft: '+(year||'?')+' '+make+' '+model+'\nTTAF: '+(ttaf||'?')+' hrs\n'+engineInfo+'\n';
 prompt+='Annual: '+(annualInfo||'Unknown')+'. Condition: '+cond+', Paint/Interior: '+cosm+'\nAvionics: '+(avs.length?avs.join(', '):'Standard/basic')+'\nNotes: '+(notes||'none')+'\n';
 prompt+='CRITICAL PRICING RULES: 1) Fair market value MUST be 8-15% BELOW the asking price - buyers NEVER pay full ask. 2) A 1970s airplane is worth 30-40% less than the same model from the 1990s. 3) A 1976 A36 Bonanza with 4000+ hours and older avionics (Apollo, STEC, King KI-525) has a fair value of $240-290k even with an IO-550 conversion. 4) Only modern glass cockpit A36s (G500/G1000, 1990s+, low time) reach $350k+. Year matters hugely - a 1976 is worth much less than a 2006. High airframe time reduces value. Engine conversions add 25-40k max. Older avionics add modest value. Keep spread between seller and buyer target within 10-15%.\nReturn ONLY valid JSON:\n';
