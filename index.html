@@ -1002,6 +1002,7 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 </select>
 </div>
 </div>
+<div class="form-group"><label>ENGINE CONVERSION / STC <span style="color:var(--muted);font-weight:400">(optional)</span></label><input type="text" id="v-eng-conv" placeholder="e.g. IO-550 conversion, RAM, tip tanks, 3-blade prop..." /></div>
 
 <!-- Single engine fields -->
 <div id="single-eng-fields">
@@ -1117,6 +1118,7 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 <div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> OTHER AUTOPILOTS</div>
 <div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
 <label class="chk-label"><input type="checkbox" id="av-stec55" /> S-TEC 55X</label>
+<label class="chk-label"><input type="checkbox" id="av-stec65" /> S-TEC 65</label>
 <label class="chk-label"><input type="checkbox" id="av-stec3100" /> S-TEC 3100</label>
 <label class="chk-label"><input type="checkbox" id="av-kfc200" /> King KFC 150/200/225</label>
 <label class="chk-label"><input type="checkbox" id="av-trutrak" /> TruTrak / BendixKing</label>
@@ -1194,20 +1196,41 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 <button class="submit-btn" id="fb-btn" onclick="submitFeedback()"><i class="ti ti-send"></i> Send feedback</button>
 <div id="fb-result"></div>
 <script>
-function submitFeedback() {
+async function submitFeedback() {
 var email = document.getElementById('fb-email').value.trim();
 var aircraft = document.getElementById('fb-aircraft').value.trim();
 var accuracy = document.getElementById('fb-accuracy').value;
 var message = document.getElementById('fb-message').value.trim();
 if (!message && !accuracy) { alert('Please enter feedback or select accuracy.'); return; }
-var fb = JSON.parse(localStorage.getItem('spv_feedback') || '[]');
-fb.push({email:email,aircraft:aircraft,accuracy:accuracy,message:message,date:new Date().toISOString()});
-localStorage.setItem('spv_feedback', JSON.stringify(fb));
+
+var btn = document.getElementById('fb-btn');
+var origHtml = btn.innerHTML;
+btn.disabled = true;
+btn.innerHTML = '<i class="ti ti-loader-2"></i> Sending...';
+
+var entry = { email:email, aircraft:aircraft, accuracy:accuracy, message:message, ts:new Date().toISOString() };
+
+// Local safety-net backup so feedback is never lost, even if the network fails.
+try { var fb = JSON.parse(localStorage.getItem('spv_feedback') || '[]'); fb.push(entry); localStorage.setItem('spv_feedback', JSON.stringify(fb)); } catch(e) {}
+
+var ok = false;
+try {
+  var resp = await fetch('/.netlify/functions/proxy', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'feedback', email:email, aircraft:aircraft, accuracy:accuracy, message:message })
+  });
+  var d = await resp.json().catch(function(){ return {}; });
+  ok = resp.ok && !d.error;
+} catch(e) { ok = false; }
+
 document.getElementById('fb-result').innerHTML = '<p style="color:var(--success);font-size:14px;margin-top:1rem;font-weight:600">Thank you for your feedback! This helps us improve SmallPlaneValue.</p>';
 document.getElementById('fb-email').value='';
 document.getElementById('fb-aircraft').value='';
 document.getElementById('fb-accuracy').value='';
 document.getElementById('fb-message').value='';
+btn.disabled = false;
+btn.innerHTML = origHtml;
 }
 </script>
 </div>
@@ -1567,7 +1590,7 @@ var avMap = {
   'Autoland':'av-autoland','HALO':'av-autoland','Safe Return':'av-autoland',
   'Radar':'av-radar-legacy','GWX':'av-radar-garmin','RDR':'av-radar-bk',
   'JPI':'av-jpi','EDM':'av-jpi','CGR':'av-ei-cgr','Insight':'av-ei-other',
-  'SkyView HDX':'av-dynon-hdx','SkyView SE':'av-dynon-se','Dynon':'av-dynon-hdx','STEC 65':'av-stec55','STEC65':'av-stec55','S-TEC 65':'av-stec55','Skywatch':'av-tcas','TCAS':'av-tcas','TAS':'av-tcas','EDM 830':'av-jpi','EDM 760':'av-jpi','EDM 900':'av-jpi','EDM830':'av-jpi','WX 500':'av-wx500','BFG':'av-wx500','Flight Stream':'av-adsb','CNX 80':'av-gns430w','CNX80':'av-gns430w','GNS 480':'av-gns480','speed brakes':'av-stc','IO-550':'av-stc','3-blade':'av-3blade','3 blade':'av-3blade','LED':'av-led','CiES':'av-cies','tip tank':'av-stc'
+  'SkyView HDX':'av-dynon-hdx','SkyView SE':'av-dynon-se','Dynon':'av-dynon-hdx','STEC 65':'av-stec65','STEC65':'av-stec65','S-TEC 65':'av-stec65','Skywatch':'av-tcas','TCAS':'av-tcas','TAS':'av-tcas','EDM 830':'av-jpi','EDM 760':'av-jpi','EDM 900':'av-jpi','EDM830':'av-jpi','WX 500':'av-wx500','BFG':'av-wx500','Flight Stream':'av-adsb','CNX 80':'av-gns430w','CNX80':'av-gns430w','GNS 480':'av-gns480','speed brakes':'av-stc','IO-550':'av-stc','3-blade':'av-3blade','3 blade':'av-3blade','LED':'av-led','CiES':'av-cies','tip tank':'av-stc'
 };
 if (d.avionics && Array.isArray(d.avionics)) {
   d.avionics.forEach(function(av) {
@@ -1601,6 +1624,10 @@ var pr = document.getElementById('v-prop-r'); if (pr) pr.value = '';
 var cond = document.getElementById('v-cond'); if (cond) cond.value = 'Good';
 var cosm = document.getElementById('v-cosm'); if (cosm) cosm.value = 'Average';
 var notes = document.getElementById('v-notes'); if (notes) notes.value = '';
+var engDisp = document.getElementById('v-engine-display'); if (engDisp) engDisp.value = '';
+var asking = document.getElementById('v-asking'); if (asking) asking.value = '';
+var annual = document.getElementById('v-annual'); if (annual) annual.value = '';
+var engConv = document.getElementById('v-eng-conv'); if (engConv) engConv.value = '';
 document.querySelectorAll('input[type="checkbox"][id^="av-"]').forEach(function(cb) { cb.checked = false; });
 document.querySelectorAll('select[id$="-qty"]').forEach(function(s) { s.value = '1'; });
 document.getElementById('v-result').innerHTML = '';
@@ -1610,8 +1637,8 @@ var vp = document.getElementById('v-paste'); if(vp) vp.value = '';
 
 function prefillVal(make, model, year, aircraftType, numEngines, engMake, engModel) {
 window._valEngMake = engMake || "";window._valEngModel = engModel || "";
-var ed=document.getElementById("v-engine-display");if(ed)ed.value=(engMake||"")+" "+(engModel||"");
 resetForm();
+var ed=document.getElementById("v-engine-display");if(ed)ed.value=((engMake||"")+" "+(engModel||"")).trim();
 document.getElementById('v-make').value = make;
 document.getElementById('v-model').value = model;
 document.getElementById('v-year').value = year;
@@ -1674,7 +1701,9 @@ var smoh=document.getElementById('v-smoh')?document.getElementById('v-smoh').val
 var prop=document.getElementById('v-prop1')?document.getElementById('v-prop1').value:'';
 engineInfo='Single engine. Engine: ' + (window._valEngMake||'') + ' ' + (window._valEngModel||'') + '. SMOH: '+(smoh||'?')+' hrs, Prop TSOH: '+(prop||'?')+' hrs';
 }
-var avIds={'av-sixpack':'Standard six pack','av-nav1':'Single NAV/COM','av-nav2':'Dual NAV/COM','av-adf':'ADF','av-dme':'DME','av-kx155':'King KX-155/165','av-g5':'Garmin G5','av-gi275':'Garmin GI 275','av-g500':'Garmin G500','av-g500txi':'Garmin G500 TXi','av-g600txi':'Garmin G600 TXi','av-g1000':'Garmin G1000','av-g1000nxi':'Garmin G1000 NXi','av-g3x':'Garmin G3X Touch','av-gns430':'GNS 430(non WAAS)','av-gns430w':'GNS 430W WAAS','av-gns530':'GNS 530 non-WAAS','av-gns530w':'GNS 530W WAAS','av-gns480':'GNS 480 WAAS','av-gtn650':'GTN 650','av-gtn750':'GTN 750','av-gtn650xi':'GTN 650Xi','av-gtn750xi':'GTN 750Xi','av-gps175':'Garmin GPS 175','av-gnx375':'Garmin GNX 375','av-gnc255':'Garmin GNC 255','av-gtr205':'Garmin GTR 205','av-gfc500':'Garmin GFC 500','av-gfc600':'Garmin GFC 600','av-gfc700':'Garmin GFC 700','av-autoland':'Garmin Autoland (emergency autoland)','av-gma345':'GMA 345 audio','av-pma8000':'PS Engineering PMA 8000','av-mx20':'Garmin MX20 MFD','av-gmx200':'Garmin GMX 200 MFD','av-aspen-e5':'Aspen E5','av-aspen-pro':'Aspen Pro 1000 MAX','av-aspen-mfd':'Aspen MFD 500/1000','av-aspen-2500':'Aspen 2500 MAX','av-avr9':'Avidyne Entegra R9','av-ex500':'Avidyne EX500/600','av-ifd440':'Avidyne IFD 440','av-ifd550':'Avidyne IFD 540/550','av-dfc90':'Avidyne DFC 90','av-dfc100':'Avidyne DFC 100','av-stec55':'S-TEC 55X','av-stec3100':'S-TEC 3100','av-kfc200':'King KFC 150/200/225','av-trutrak':'TruTrak/BendixKing','av-dynon-hdx':'Dynon SkyView HDX','av-dynon-se':'Dynon SkyView SE','av-dynon-d10':'Dynon D10A/D100','av-dynon-ap':'Dynon SV-AP autopilot','av-dynon-gps':'Dynon SkyView GPS','av-gtx345':'GTX 345 ADS-B','av-adsb':'ADS-B Out','av-tcas':'Traffic TAS','av-wx500':'Stormscope','av-gdl88':'Garmin GDL 88','av-radar-garmin':'Garmin GWX radar','av-radar-bk':'BendixKing RDR 2000/2100 radar','av-radar-legacy':'Legacy radar','av-ei-cgr':'EI CGR-30P','av-ei-other':'EI monitor','av-jpi':'JPI EDM','av-garmin-eis':'Garmin EIS','av-wx':'XM weather','av-stc':'Engine STC','av-3blade':'3-blade prop','av-cies':'CiES senders','av-led':'LED lighting','av-annual':'Fresh annual','av-oxy':'Oxygen system'};
+var engConvEl=document.getElementById('v-eng-conv');
+if(engConvEl&&engConvEl.value.trim()){engineInfo+='. Engine conversion/STC: '+engConvEl.value.trim().replace(/["'\\]/g,' ');}
+var avIds={'av-sixpack':'Standard six pack','av-nav1':'Single NAV/COM','av-nav2':'Dual NAV/COM','av-adf':'ADF','av-dme':'DME','av-kx155':'King KX-155/165','av-g5':'Garmin G5','av-gi275':'Garmin GI 275','av-g500':'Garmin G500','av-g500txi':'Garmin G500 TXi','av-g600txi':'Garmin G600 TXi','av-g1000':'Garmin G1000','av-g1000nxi':'Garmin G1000 NXi','av-g3x':'Garmin G3X Touch','av-gns430':'GNS 430(non WAAS)','av-gns430w':'GNS 430W WAAS','av-gns530':'GNS 530 non-WAAS','av-gns530w':'GNS 530W WAAS','av-gns480':'GNS 480 WAAS','av-gtn650':'GTN 650','av-gtn750':'GTN 750','av-gtn650xi':'GTN 650Xi','av-gtn750xi':'GTN 750Xi','av-gps175':'Garmin GPS 175','av-gnx375':'Garmin GNX 375','av-gnc255':'Garmin GNC 255','av-gtr205':'Garmin GTR 205','av-gfc500':'Garmin GFC 500','av-gfc600':'Garmin GFC 600','av-gfc700':'Garmin GFC 700','av-autoland':'Garmin Autoland (emergency autoland)','av-gma345':'GMA 345 audio','av-pma8000':'PS Engineering PMA 8000','av-mx20':'Garmin MX20 MFD','av-gmx200':'Garmin GMX 200 MFD','av-aspen-e5':'Aspen E5','av-aspen-pro':'Aspen Pro 1000 MAX','av-aspen-mfd':'Aspen MFD 500/1000','av-aspen-2500':'Aspen 2500 MAX','av-avr9':'Avidyne Entegra R9','av-ex500':'Avidyne EX500/600','av-ifd440':'Avidyne IFD 440','av-ifd550':'Avidyne IFD 540/550','av-dfc90':'Avidyne DFC 90','av-dfc100':'Avidyne DFC 100','av-stec55':'S-TEC 55X','av-stec65':'S-TEC 65','av-stec3100':'S-TEC 3100','av-kfc200':'King KFC 150/200/225','av-trutrak':'TruTrak/BendixKing','av-dynon-hdx':'Dynon SkyView HDX','av-dynon-se':'Dynon SkyView SE','av-dynon-d10':'Dynon D10A/D100','av-dynon-ap':'Dynon SV-AP autopilot','av-dynon-gps':'Dynon SkyView GPS','av-gtx345':'GTX 345 ADS-B','av-adsb':'ADS-B Out','av-tcas':'Traffic TAS','av-wx500':'Stormscope','av-gdl88':'Garmin GDL 88','av-radar-garmin':'Garmin GWX radar','av-radar-bk':'BendixKing RDR 2000/2100 radar','av-radar-legacy':'Legacy radar','av-ei-cgr':'EI CGR-30P','av-ei-other':'EI monitor','av-jpi':'JPI EDM','av-garmin-eis':'Garmin EIS','av-wx':'XM weather','av-stc':'Engine STC','av-3blade':'3-blade prop','av-cies':'CiES senders','av-led':'LED lighting','av-annual':'Fresh annual','av-oxy':'Oxygen system'};
 var avs=[];for(var id in avIds){var el=document.getElementById(id);if(el&&el.checked)avs.push(avIds[id]);}
 var band=BANDS['Piston single'];
 setLoading('v-spin','v-btn',true);
@@ -1682,7 +1711,7 @@ document.getElementById('v-result').innerHTML='';
 try {
 var prompt='You are an expert aircraft appraiser with current 2025-2026 market knowledge. Provide ACCURATE asking prices — not lowballed.\n\n';
 prompt+='2025-2026 market:\n- Beech Baron D55/E55: $180k-$320k. Fresh matched engines +$40-60k. G500 TXi+GTN 750Xi+GFC 600 adds $30-50k.\n';
-prompt+='- Autopilot: GFC 600 is gold standard (+$15-20k). S-TEC 3100 capable but $25-30k less than GFC 600. S-TEC 55X basic (+$2-4k).\n';
+prompt+='- Autopilot: GFC 600 is gold standard (+$15-20k). S-TEC 3100 capable but $25-30k less than GFC 600. S-TEC 55X basic (+$2-4k). S-TEC 65 is an older rate-based unit, less capable than the 55X (+$1-2k).\n';
 prompt+='- Cessna 172: $80k-$250k. Cessna 182: $120k-$350k. RV-10: $260k-$530k (older/basic $260-330k, newer/loaded $400-530k).\n';
 prompt+='- Cirrus SR20: $150k-$350k (G1-G2 $150-220k, G3+ $220-350k). SR22: $240k-$1M+ (G1-G2 $240-350k, G3 $300-500k, G5-G6 $600k-1M+). SR22T: $350k-$1.1M+.\n';
 prompt+='- Piper Cherokee/Archer: $50k-$150k. Saratoga/Lance: $180k-$400k. Mooney M20: $100k-$350k.\n';
