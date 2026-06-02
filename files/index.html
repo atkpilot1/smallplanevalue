@@ -927,19 +927,19 @@ style="width:100%;height:100%;object-fit:cover;object-position:center top;transi
 <button class="tab-btn active" id="tab-btn-lookup" onclick="switchTab('lookup')">
 <i class="ti ti-id"></i> N-number lookup
 </button>
-<button class="tab-btn highlight" id="tab-btn-val" onclick="if(window._lastLookup){prefillVal(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.aircraftType||'');}switchTab('val');">
+<button class="tab-btn highlight" id="tab-btn-val" onclick="if(window._lastLookup){prefillVal(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.aircraftType||'',window._lastLookup.numEngines||'',window._lastLookup.engineMake||'',window._lastLookup.engineModel||'');}switchTab('val');">
 <i class="ti ti-calculator"></i> Get valuation
 </button>
-<button class="tab-btn" id="tab-btn-comps" onclick="switchTab('comps')">
+<button class="tab-btn" id="tab-btn-comps" onclick="if(window._lastLookup){document.getElementById('comp-input').value=window._lastLookup.make+' '+window._lastLookup.model;}switchTab('comps')">
 <i class="ti ti-search"></i> Market listings
 </button>
-<button class="tab-btn" id="tab-btn-checklist" onclick="switchTab('checklist')">
+<button class="tab-btn" id="tab-btn-checklist" onclick="if(window._lastLookup){prefillCl(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.engineMake||'',window._lastLookup.engineModel||'',window._lastLookup.aircraftType||'',window._lastLookup.numEngines||'');}switchTab('checklist')">
 <i class="ti ti-clipboard-check"></i> Pre-buy checklist
 </button>
 <button class="tab-btn highlight" id="tab-btn-sold" onclick="switchTab('sold')">
 <i class="ti ti-currency-dollar"></i> Report a sale
 </button>
-<button class="tab-btn" id="tab-btn-feedback" onclick="switchTab('feedback')">
+<button class="tab-btn" id="tab-btn-feedback" onclick="switchTab('feedback')" style="font-weight:600">
 <i class="ti ti-message-circle"></i> Feedback
 </button>
 </div>
@@ -991,6 +991,9 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 </div>
 <div class="form-grid-3">
 <div class="form-group"><label>YEAR</label><input type="number" id="v-year" placeholder="e.g. 1969" min="1930" max="2026" /></div>
+<div class="form-group"><label>LAST ANNUAL</label><input type="month" id="v-annual" style="font-size:13px" /></div>
+<div class="form-group"><label>ENGINE</label><input type="text" id="v-engine-display" placeholder="From N-number lookup" readonly style="background:var(--offwhite);color:var(--muted)" /></div>
+<div class="form-group"><label>ASKING PRICE ($)</label><input type="number" id="v-asking" placeholder="e.g. 299000" /></div>
 <div class="form-group"><label>TOTAL TIME (TTAF HRS)</label><input type="number" id="v-ttaf" placeholder="e.g. 3200" /></div>
 <div class="form-group"><label>ENGINES</label>
 <select id="v-engines" onchange="toggleEngineFields()">
@@ -999,6 +1002,7 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 </select>
 </div>
 </div>
+<div class="form-group"><label>ENGINE CONVERSION / STC <span style="color:var(--muted);font-weight:400">(optional)</span></label><input type="text" id="v-eng-conv" placeholder="e.g. IO-550 conversion, RAM, tip tanks, 3-blade prop..." /></div>
 
 <!-- Single engine fields -->
 <div id="single-eng-fields">
@@ -1060,7 +1064,8 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 <label class="chk-label"><input type="checkbox" id="av-g600txi" /> G600 TXi</label>
 <label class="chk-label"><input type="checkbox" id="av-g1000" /> G1000</label>
 <label class="chk-label"><input type="checkbox" id="av-g1000nxi" /> G1000 NXi</label>
-<label class="chk-label"><input type="checkbox" id="av-g3x" /> G3X Touch</label>
+<label class="chk-label"><input type="checkbox" id="av-g3x-pfd" /> G3X Touch 10&Prime; PFD</label>
+<label class="chk-label"><input type="checkbox" id="av-g3x-mfd" /> G3X Touch 7&Prime; MFD</label>
 <label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gns430" /> GNS 430(non WAAS) <select id="av-gns430-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
 <label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gns430w" /> GNS 430W (WAAS) <select id="av-gns430w-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
 <label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gns530" /> GNS 530 (non-WAAS) <select id="av-gns530-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
@@ -1114,6 +1119,7 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 <div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> OTHER AUTOPILOTS</div>
 <div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
 <label class="chk-label"><input type="checkbox" id="av-stec55" /> S-TEC 55X</label>
+<label class="chk-label"><input type="checkbox" id="av-stec65" /> S-TEC 65</label>
 <label class="chk-label"><input type="checkbox" id="av-stec3100" /> S-TEC 3100</label>
 <label class="chk-label"><input type="checkbox" id="av-kfc200" /> King KFC 150/200/225</label>
 <label class="chk-label"><input type="checkbox" id="av-trutrak" /> TruTrak / BendixKing</label>
@@ -1190,6 +1196,44 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 <div class="form-group"><label>YOUR FEEDBACK</label><textarea id="fb-message" rows="4" placeholder="What did we get wrong? What features do you want?"></textarea></div>
 <button class="submit-btn" id="fb-btn" onclick="submitFeedback()"><i class="ti ti-send"></i> Send feedback</button>
 <div id="fb-result"></div>
+<script>
+async function submitFeedback() {
+var email = document.getElementById('fb-email').value.trim();
+var aircraft = document.getElementById('fb-aircraft').value.trim();
+var accuracy = document.getElementById('fb-accuracy').value;
+var message = document.getElementById('fb-message').value.trim();
+if (!message && !accuracy) { alert('Please enter feedback or select accuracy.'); return; }
+
+var btn = document.getElementById('fb-btn');
+var origHtml = btn.innerHTML;
+btn.disabled = true;
+btn.innerHTML = '<i class="ti ti-loader-2"></i> Sending...';
+
+var entry = { email:email, aircraft:aircraft, accuracy:accuracy, message:message, ts:new Date().toISOString() };
+
+// Local safety-net backup so feedback is never lost, even if the network fails.
+try { var fb = JSON.parse(localStorage.getItem('spv_feedback') || '[]'); fb.push(entry); localStorage.setItem('spv_feedback', JSON.stringify(fb)); } catch(e) {}
+
+var ok = false;
+try {
+  var resp = await fetch('/.netlify/functions/proxy', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'feedback', email:email, aircraft:aircraft, accuracy:accuracy, message:message })
+  });
+  var d = await resp.json().catch(function(){ return {}; });
+  ok = resp.ok && !d.error;
+} catch(e) { ok = false; }
+
+document.getElementById('fb-result').innerHTML = '<p style="color:var(--success);font-size:14px;margin-top:1rem;font-weight:600">Thank you for your feedback! This helps us improve SmallPlaneValue.</p>';
+document.getElementById('fb-email').value='';
+document.getElementById('fb-aircraft').value='';
+document.getElementById('fb-accuracy').value='';
+document.getElementById('fb-message').value='';
+btn.disabled = false;
+btn.innerHTML = origHtml;
+}
+</script>
 </div>
 
 <!-- PRE-BUY CHECKLIST -->
@@ -1354,33 +1398,64 @@ document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 /* ── helpers ── */
 const API = '/.netlify/functions/proxy';
-const MODEL = 'claude-sonnet-4-5-20250929';
+const MODEL = 'claude-sonnet-4-6';
 const fmt = n => '$' + Math.round(n).toLocaleString();
 
-async function callClaude(prompt, maxTokens = 1500) {
-const r = await fetch(API, {
+// Shared POST to the proxy: aborts at timeoutMs, retries once on failure/timeout.
+async function apiFetch(body, opts) {
+opts = opts || {};
+var timeoutMs = opts.timeoutMs || 25000;
+var retries = (opts.retries == null) ? 1 : opts.retries;
+var lastErr;
+for (var attempt = 0; attempt <= retries; attempt++) {
+var ctrl = new AbortController();
+var timer = setTimeout(function(){ ctrl.abort(); }, timeoutMs);
+try {
+var r = await fetch(API, {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({ model: MODEL, max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] })
+body: JSON.stringify(body),
+signal: ctrl.signal
 });
-const data = await r.json();
-const txt = data.content.map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
+clearTimeout(timer);
+var data = await r.json();
+if (data.error) throw new Error(data.error.message || 'API error');
+if (!data.content) throw new Error('no-content');
+return data;
+} catch (e) {
+clearTimeout(timer);
+lastErr = e;
+// Don't burn a retry on a clear client/validation error.
+if (e.message && e.message !== 'no-content' && e.name !== 'AbortError' && /invalid|required|400/i.test(e.message)) break;
+}
+}
+if (lastErr && lastErr.name === 'AbortError') throw new Error('The request timed out. Please try again.');
+if (lastErr && lastErr.message === 'no-content') throw new Error('No response from server. Please try again.');
+throw new Error((lastErr && lastErr.message) || 'Request failed. Please try again.');
+}
+
+// Pull the JSON object out of a model response.
+function parseModelJSON(data) {
+var txt = data.content.map(function(b){ return b.text || ''; }).join('').replace(/```json|```/g, '').trim();
+var m = txt.match(/\{[\s\S]*\}/);
+if (m) { try { return JSON.parse(m[0]); } catch(e2) { var m2 = txt.match(/\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/); return m2 ? JSON.parse(m2[0]) : JSON.parse(txt); } }
 return JSON.parse(txt);
 }
 
+async function callClaude(prompt, maxTokens = 800) {
+var data = await apiFetch({ model: MODEL, max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] });
+return parseModelJSON(data);
+}
+
+async function callClaudeFast(prompt, maxTokens = 800) {
+var data = await apiFetch({ model: 'claude-haiku-4-5-20251001', max_tokens: maxTokens, messages: [{ role: 'user', content: prompt }] });
+return parseModelJSON(data);
+}
+
 async function callClaudeSearch(prompt, maxTokens = 1500) {
-const r = await fetch(API, {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({ model: MODEL, max_tokens: maxTokens, tools: [{ type: 'web_search_20250305', name: 'web_search' }], messages: [{ role: 'user', content: prompt }] })
-});
-const data = await r.json();
-if(data.error) throw new Error(data.error.message || 'API error');
-if(!data.content) throw new Error('No response - try again');
-const txt = data.content.map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
-var m = txt.match(/\{[\s\S]*\}/);
-if(m) { try { return JSON.parse(m[0]); } catch(e2) { var m2 = txt.match(/\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/); return m2 ? JSON.parse(m2[0]) : JSON.parse(txt); } }
-return JSON.parse(txt);
+// Web search adds tool round-trips, so give it the full 26s budget and no retry.
+var data = await apiFetch({ model: MODEL, max_tokens: maxTokens, tools: [{ type: 'web_search_20250305', name: 'web_search' }], messages: [{ role: 'user', content: prompt }] }, { timeoutMs: 26000, retries: 0 });
+return parseModelJSON(data);
 }
 
 function setLoading(spinId, btnId, on) {
@@ -1392,6 +1467,10 @@ document.getElementById(btnId).disabled = on;
 function tryN(v) { document.getElementById('nn').value = v; doLookup(); }
 
 async function doLookup() {
+document.getElementById('cl-result').innerHTML='';
+window._engModel='';
+window._acType='';
+window._numEng='';
 var raw = document.getElementById('nn').value.trim().toUpperCase();
 if (!raw) { alert('Enter an N-number.'); return; }
 var nnumber = 'N' + raw;
@@ -1468,31 +1547,47 @@ ${owners}
 </div>
 ${d.adNotes ? `<div style="background:rgba(232,160,32,0.1);border-radius:var(--radius);padding:10px 14px;margin-bottom:1rem;display:flex;gap:10px;align-items:flex-start"><i class="ti ti-tool" style="font-size:16px;color:var(--warn);flex-shrink:0"></i><div style="font-size:13px;color:var(--sky)"><strong>ADs to verify:</strong> ${d.adNotes}</div></div>` : ''}
 <div class="action-row-3">
-<button class="action-btn" onclick="prefillVal('${d.make}','${d.model}','${d.year}','${d.aircraftType||""}');switchTab('val')"><i class="ti ti-calculator" style="font-size:15px"></i> Get valuation</button>
-<button class="action-btn" onclick="prefillCl('${d.make}','${d.model}','${d.year}','${d.engineMake}');switchTab('checklist')"><i class="ti ti-clipboard-check" style="font-size:15px"></i> Pre-buy checklist</button>
+<button class="action-btn" onclick="prefillVal('${d.make}','${d.model}','${d.year}','${d.aircraftType||""}',' ${d.numEngines||""}','${d.engineMake||""}','${d.engineModel||""}');switchTab('val')"><i class="ti ti-calculator" style="font-size:15px"></i> Get valuation</button>
+<button class="action-btn" onclick="prefillCl('${d.make}','${d.model}','${d.year}','${d.engineMake}','${d.engineModel}','${d.aircraftType||""}',' ${d.numEngines||""}');switchTab('checklist')"><i class="ti ti-clipboard-check" style="font-size:15px"></i> Pre-buy checklist</button>
 <button class="action-btn" onclick="window.open('https://registry.faa.gov/aircraftinquiry/Search/NNumberInquiry?nNumberTxt=${d.nnumber.replace(/^N/,'')}','_blank')"><i class="ti ti-external-link" style="font-size:15px"></i> FAA website</button>
 </div>
 <div class="note-box" style="margin-top:.75rem">Data sourced from FAA aircraft registry (registry.faa.gov). Owner names are public FAA records.</div>`;
 }
 
 async function parseListing() {
-var txt = document.getElementById('v-paste').value.trim().replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/g, ' ').replace(/[\r]/g, '').replace(/  +/g, ' ');
+var txt = document.getElementById('v-paste').value.trim().replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/g, ' ').replace(/[\r]/g, '').replace(/[\u2022]/g, '- ').replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"').replace(/[\u2013\u2014]/g, '-').replace(/  +/g, ' ');
 if (!txt) { alert('Paste a listing first.'); return; }
 document.getElementById('paste-spin').classList.add('on');
 document.getElementById('paste-btn').disabled = true;
 try {
 var prompt = 'Parse this aircraft listing and extract structured data. Return ONLY valid JSON with these fields (use null for unknown):\n';
 prompt += '{"make":"BEECH","model":"B58","year":1981,"ttaf":4673,"engines":2,"smoh":0,"smohR":0,"propHrs":689,"propHrsR":689,"condition":"Good","cosmetics":"Average","avionics":["GTX345","KFC200","GNS480"],"notes":"RAM engines, Bose LEMO jacks, dual Insight G2 monitors"}\n\n';
-prompt += 'LISTING:\n' + txt;
-var d = await callClaude(prompt, 1000);
+prompt += 'LISTING:\n' + txt.substring(0, 5000);
+var d = await callClaudeFast(prompt, 1000);
 resetForm();
+// Preserve identity from the N-number lookup; listing values overlay on top
+var L = window._lastLookup || {};
+if (L.make) document.getElementById('v-make').value = L.make;
+if (L.model) document.getElementById('v-model').value = L.model;
+if (L.year) document.getElementById('v-year').value = L.year;
+window._valEngMake = L.engineMake || window._valEngMake || '';
+window._valEngModel = L.engineModel || window._valEngModel || '';
+var edp = document.getElementById('v-engine-display');
+if (edp) edp.value = ((window._valEngMake||'') + ' ' + (window._valEngModel||'')).trim();
+if ((L.aircraftType && L.aircraftType.toLowerCase().indexOf('multi') >= 0) || L.numEngines == 2) {
+  var esel = document.getElementById('v-engines'); if (esel) { esel.value = '2'; toggleEngineFields(); }
+}
 if (d.make) document.getElementById('v-make').value = d.make;
 if (d.model) document.getElementById('v-model').value = d.model;
 if (d.year) document.getElementById('v-year').value = d.year;
 if (d.ttaf) document.getElementById('v-ttaf').value = d.ttaf;
-if (d.engines == 2) {
-  document.getElementById('v-engines').value = '2';
+// Determine engine count: listing wins if it reported one, else keep lookup-derived value
+if (d.engines == 2 || d.engines == 1) {
+  document.getElementById('v-engines').value = (d.engines == 2) ? '2' : '1';
   toggleEngineFields();
+}
+var isTwinFill = document.getElementById('v-engines').value === '2';
+if (isTwinFill) {
   if (d.smoh != null) { var el = document.getElementById('v-smoh-l'); if(el) el.value = d.smoh; }
   if (d.smohR != null) { var el = document.getElementById('v-smoh-r'); if(el) el.value = d.smohR; }
   if (d.propHrs != null) { var el = document.getElementById('v-prop-l'); if(el) el.value = d.propHrs; }
@@ -1503,13 +1598,13 @@ if (d.engines == 2) {
 }
 if (d.condition) { var el = document.getElementById('v-cond'); if(el) el.value = d.condition; }
 if (d.cosmetics) { var el = document.getElementById('v-cosm'); if(el) el.value = d.cosmetics; }
-if (d.notes) { var el = document.getElementById('v-notes'); if(el) el.value = d.notes; }
+if (d.notes) { var el = document.getElementById('v-notes'); if(el) el.value = (d.notes||'').substring(0, 200); }
 // Auto-check avionics based on parsed list
 var avMap = {
   'GTX345':'av-gtx345','GTX 345':'av-gtx345','ADS-B':'av-adsb',
   'GFC500':'av-gfc500','GFC 500':'av-gfc500','GFC600':'av-gfc600','GFC 600':'av-gfc600','GFC700':'av-gfc700','GFC 700':'av-gfc700',
   'G1000':'av-g1000','G1000 NXi':'av-g1000nxi','G500':'av-g500','G500 TXi':'av-g500txi','G600 TXi':'av-g600txi',
-  'G3X':'av-g3x','G5':'av-g5','GI 275':'av-gi275','GI275':'av-gi275',
+  'G3X':'av-g3x-pfd','G5':'av-g5','GI 275':'av-gi275','GI275':'av-gi275',
   'GTN650':'av-gtn650','GTN 650':'av-gtn650','GTN750':'av-gtn750','GTN 750':'av-gtn750',
   'GTN650Xi':'av-gtn650xi','GTN 650Xi':'av-gtn650xi','GTN750Xi':'av-gtn750xi','GTN 750Xi':'av-gtn750xi',
   'GNS430':'av-gns430','GNS 430':'av-gns430','GNS430W':'av-gns430w','GNS 430W':'av-gns430w',
@@ -1524,7 +1619,7 @@ var avMap = {
   'Autoland':'av-autoland','HALO':'av-autoland','Safe Return':'av-autoland',
   'Radar':'av-radar-legacy','GWX':'av-radar-garmin','RDR':'av-radar-bk',
   'JPI':'av-jpi','EDM':'av-jpi','CGR':'av-ei-cgr','Insight':'av-ei-other',
-  'SkyView HDX':'av-dynon-hdx','SkyView SE':'av-dynon-se','Dynon':'av-dynon-hdx'
+  'SkyView HDX':'av-dynon-hdx','SkyView SE':'av-dynon-se','Dynon':'av-dynon-hdx','STEC 65':'av-stec65','STEC65':'av-stec65','S-TEC 65':'av-stec65','Skywatch':'av-tcas','TCAS':'av-tcas','TAS':'av-tcas','EDM 830':'av-jpi','EDM 760':'av-jpi','EDM 900':'av-jpi','EDM830':'av-jpi','WX 500':'av-wx500','BFG':'av-wx500','Flight Stream':'av-adsb','CNX 80':'av-gns430w','CNX80':'av-gns430w','GNS 480':'av-gns480','speed brakes':'av-stc','IO-550':'av-stc','3-blade':'av-3blade','3 blade':'av-3blade','LED':'av-led','CiES':'av-cies','tip tank':'av-stc'
 };
 if (d.avionics && Array.isArray(d.avionics)) {
   d.avionics.forEach(function(av) {
@@ -1558,6 +1653,10 @@ var pr = document.getElementById('v-prop-r'); if (pr) pr.value = '';
 var cond = document.getElementById('v-cond'); if (cond) cond.value = 'Good';
 var cosm = document.getElementById('v-cosm'); if (cosm) cosm.value = 'Average';
 var notes = document.getElementById('v-notes'); if (notes) notes.value = '';
+var engDisp = document.getElementById('v-engine-display'); if (engDisp) engDisp.value = '';
+var asking = document.getElementById('v-asking'); if (asking) asking.value = '';
+var annual = document.getElementById('v-annual'); if (annual) annual.value = '';
+var engConv = document.getElementById('v-eng-conv'); if (engConv) engConv.value = '';
 document.querySelectorAll('input[type="checkbox"][id^="av-"]').forEach(function(cb) { cb.checked = false; });
 document.querySelectorAll('select[id$="-qty"]').forEach(function(s) { s.value = '1'; });
 document.getElementById('v-result').innerHTML = '';
@@ -1565,17 +1664,22 @@ var vp = document.getElementById('v-paste'); if(vp) vp.value = '';
 // nn-result preserved between lookups
 }
 
-function prefillVal(make, model, year, aircraftType) {
+function prefillVal(make, model, year, aircraftType, numEngines, engMake, engModel) {
+window._valEngMake = engMake || "";window._valEngModel = engModel || "";
 resetForm();
+var ed=document.getElementById("v-engine-display");if(ed)ed.value=((engMake||"")+" "+(engModel||"")).trim();
 document.getElementById('v-make').value = make;
 document.getElementById('v-model').value = model;
 document.getElementById('v-year').value = year;
-if (aircraftType && aircraftType.toLowerCase().indexOf('multi') >= 0) {
+if ((aircraftType && aircraftType.toLowerCase().indexOf('multi') >= 0) || numEngines > 1) {
 var sel = document.getElementById('v-engines');
 if (sel) { sel.value = '2'; toggleEngineFields(); }
 }
 }
-function prefillCl(make, model, year, eng) {
+function prefillCl(make, model, year, eng, engModel, acType, numEng) {
+window._engModel = engModel || '';
+window._acType = acType || '';
+window._numEng = numEng || '';
 document.getElementById('cl-make').value = make;
 document.getElementById('cl-model').value = model;
 document.getElementById('cl-year').value = year;
@@ -1611,6 +1715,8 @@ var ttaf=document.getElementById('v-ttaf').value;
 var cond=document.getElementById('v-cond').value;
 var cosm=document.getElementById('v-cosm').value;
 var notes=document.getElementById('v-notes').value.replace(/["'\\]/g, ' ');
+var annualEl=document.getElementById('v-annual');var annualInfo='';
+if(annualEl&&annualEl.value){var ad=new Date(annualEl.value+'-01');var now=new Date();var months=Math.round((now-ad)/(1000*60*60*24*30));var pct=Math.min(100,Math.round(months/12*100));annualInfo='Annual inspection done '+months+' months ago ('+pct+'% through annual cycle). ';}
 var isTwin = document.getElementById('v-engines') && document.getElementById('v-engines').value === '2';
 var engineInfo = '';
 if (isTwin) {
@@ -1618,31 +1724,34 @@ var sl=document.getElementById('v-smoh-l')?document.getElementById('v-smoh-l').v
 var sr2=document.getElementById('v-smoh-r')?document.getElementById('v-smoh-r').value:'';
 var pl=document.getElementById('v-prop-l')?document.getElementById('v-prop-l').value:'';
 var pr=document.getElementById('v-prop-r')?document.getElementById('v-prop-r').value:'';
-engineInfo='Twin engine. Left SMOH: '+(sl||'?')+' hrs, Right SMOH: '+(sr2||'?')+' hrs, Left prop: '+(pl||'?')+' hrs, Right prop: '+(pr||'?')+' hrs';
+engineInfo='Twin engine. Engine: ' + (window._valEngMake||'') + ' ' + (window._valEngModel||'') + '. Left SMOH: '+(sl||'?')+' hrs, Right SMOH: '+(sr2||'?')+' hrs, Left prop: '+(pl||'?')+' hrs, Right prop: '+(pr||'?')+' hrs';
 } else {
 var smoh=document.getElementById('v-smoh')?document.getElementById('v-smoh').value:'';
 var prop=document.getElementById('v-prop1')?document.getElementById('v-prop1').value:'';
-engineInfo='Single engine. SMOH: '+(smoh||'?')+' hrs, Prop TSOH: '+(prop||'?')+' hrs';
+engineInfo='Single engine. Engine: ' + (window._valEngMake||'') + ' ' + (window._valEngModel||'') + '. SMOH: '+(smoh||'?')+' hrs, Prop TSOH: '+(prop||'?')+' hrs';
 }
-var avIds={'av-sixpack':'Standard six pack','av-nav1':'Single NAV/COM','av-nav2':'Dual NAV/COM','av-adf':'ADF','av-dme':'DME','av-kx155':'King KX-155/165','av-g5':'Garmin G5','av-gi275':'Garmin GI 275','av-g500':'Garmin G500','av-g500txi':'Garmin G500 TXi','av-g600txi':'Garmin G600 TXi','av-g1000':'Garmin G1000','av-g1000nxi':'Garmin G1000 NXi','av-g3x':'Garmin G3X Touch','av-gns430':'GNS 430(non WAAS)','av-gns430w':'GNS 430W WAAS','av-gns530':'GNS 530 non-WAAS','av-gns530w':'GNS 530W WAAS','av-gns480':'GNS 480 WAAS','av-gtn650':'GTN 650','av-gtn750':'GTN 750','av-gtn650xi':'GTN 650Xi','av-gtn750xi':'GTN 750Xi','av-gps175':'Garmin GPS 175','av-gnx375':'Garmin GNX 375','av-gnc255':'Garmin GNC 255','av-gtr205':'Garmin GTR 205','av-gfc500':'Garmin GFC 500','av-gfc600':'Garmin GFC 600','av-gfc700':'Garmin GFC 700','av-autoland':'Garmin Autoland (emergency autoland)','av-gma345':'GMA 345 audio','av-pma8000':'PS Engineering PMA 8000','av-mx20':'Garmin MX20 MFD','av-gmx200':'Garmin GMX 200 MFD','av-aspen-e5':'Aspen E5','av-aspen-pro':'Aspen Pro 1000 MAX','av-aspen-mfd':'Aspen MFD 500/1000','av-aspen-2500':'Aspen 2500 MAX','av-avr9':'Avidyne Entegra R9','av-ex500':'Avidyne EX500/600','av-ifd440':'Avidyne IFD 440','av-ifd550':'Avidyne IFD 540/550','av-dfc90':'Avidyne DFC 90','av-dfc100':'Avidyne DFC 100','av-stec55':'S-TEC 55X','av-stec3100':'S-TEC 3100','av-kfc200':'King KFC 150/200/225','av-trutrak':'TruTrak/BendixKing','av-dynon-hdx':'Dynon SkyView HDX','av-dynon-se':'Dynon SkyView SE','av-dynon-d10':'Dynon D10A/D100','av-dynon-ap':'Dynon SV-AP autopilot','av-dynon-gps':'Dynon SkyView GPS','av-gtx345':'GTX 345 ADS-B','av-adsb':'ADS-B Out','av-tcas':'Traffic TAS','av-wx500':'Stormscope','av-gdl88':'Garmin GDL 88','av-radar-garmin':'Garmin GWX radar','av-radar-bk':'BendixKing RDR 2000/2100 radar','av-radar-legacy':'Legacy radar','av-ei-cgr':'EI CGR-30P','av-ei-other':'EI monitor','av-jpi':'JPI EDM','av-garmin-eis':'Garmin EIS','av-wx':'XM weather','av-stc':'Engine STC','av-3blade':'3-blade prop','av-cies':'CiES senders','av-led':'LED lighting','av-annual':'Fresh annual','av-oxy':'Oxygen system'};
-var avs=[];for(var id in avIds){var el=document.getElementById(id);if(el&&el.checked)avs.push(avIds[id]);}
+var engConvEl=document.getElementById('v-eng-conv');
+if(engConvEl&&engConvEl.value.trim()){engineInfo+='. Engine conversion/STC: '+engConvEl.value.trim().replace(/["'\\]/g,' ');}
+var avIds={'av-sixpack':'Standard six pack','av-nav1':'Single NAV/COM','av-nav2':'Dual NAV/COM','av-adf':'ADF','av-dme':'DME','av-kx155':'King KX-155/165','av-g5':'Garmin G5','av-gi275':'Garmin GI 275','av-g500':'Garmin G500','av-g500txi':'Garmin G500 TXi','av-g600txi':'Garmin G600 TXi','av-g1000':'Garmin G1000','av-g1000nxi':'Garmin G1000 NXi','av-g3x-pfd':'Garmin G3X Touch 10-inch PFD','av-g3x-mfd':'Garmin G3X Touch 7-inch MFD','av-gns430':'GNS 430(non WAAS)','av-gns430w':'GNS 430W WAAS','av-gns530':'GNS 530 non-WAAS','av-gns530w':'GNS 530W WAAS','av-gns480':'GNS 480 WAAS','av-gtn650':'GTN 650','av-gtn750':'GTN 750','av-gtn650xi':'GTN 650Xi','av-gtn750xi':'GTN 750Xi','av-gps175':'Garmin GPS 175','av-gnx375':'Garmin GNX 375','av-gnc255':'Garmin GNC 255','av-gtr205':'Garmin GTR 205','av-gfc500':'Garmin GFC 500','av-gfc600':'Garmin GFC 600','av-gfc700':'Garmin GFC 700','av-autoland':'Garmin Autoland (emergency autoland)','av-gma345':'GMA 345 audio','av-pma8000':'PS Engineering PMA 8000','av-mx20':'Garmin MX20 MFD','av-gmx200':'Garmin GMX 200 MFD','av-aspen-e5':'Aspen E5','av-aspen-pro':'Aspen Pro 1000 MAX','av-aspen-mfd':'Aspen MFD 500/1000','av-aspen-2500':'Aspen 2500 MAX','av-avr9':'Avidyne Entegra R9','av-ex500':'Avidyne EX500/600','av-ifd440':'Avidyne IFD 440','av-ifd550':'Avidyne IFD 540/550','av-dfc90':'Avidyne DFC 90','av-dfc100':'Avidyne DFC 100','av-stec55':'S-TEC 55X','av-stec65':'S-TEC 65','av-stec3100':'S-TEC 3100','av-kfc200':'King KFC 150/200/225','av-trutrak':'TruTrak/BendixKing','av-dynon-hdx':'Dynon SkyView HDX','av-dynon-se':'Dynon SkyView SE','av-dynon-d10':'Dynon D10A/D100','av-dynon-ap':'Dynon SV-AP autopilot','av-dynon-gps':'Dynon SkyView GPS','av-gtx345':'GTX 345 ADS-B','av-adsb':'ADS-B Out','av-tcas':'Traffic TAS','av-wx500':'Stormscope','av-gdl88':'Garmin GDL 88','av-radar-garmin':'Garmin GWX radar','av-radar-bk':'BendixKing RDR 2000/2100 radar','av-radar-legacy':'Legacy radar','av-ei-cgr':'EI CGR-30P','av-ei-other':'EI monitor','av-jpi':'JPI EDM','av-garmin-eis':'Garmin EIS','av-wx':'XM weather','av-stc':'Engine STC','av-3blade':'3-blade prop','av-cies':'CiES senders','av-led':'LED lighting','av-annual':'Fresh annual','av-oxy':'Oxygen system'};
+var avs=[];for(var id in avIds){var el=document.getElementById(id);if(el&&el.checked){var qtyEl=document.getElementById(id+"-qty");var qty=qtyEl?parseInt(qtyEl.value)||1:1;avs.push(qty>1?avIds[id]+" x"+qty:avIds[id]);}}
 var band=BANDS['Piston single'];
 setLoading('v-spin','v-btn',true);
 document.getElementById('v-result').innerHTML='';
 try {
 var prompt='You are an expert aircraft appraiser with current 2025-2026 market knowledge. Provide ACCURATE asking prices — not lowballed.\n\n';
 prompt+='2025-2026 market:\n- Beech Baron D55/E55: $180k-$320k. Fresh matched engines +$40-60k. G500 TXi+GTN 750Xi+GFC 600 adds $30-50k.\n';
-prompt+='- Autopilot: GFC 600 is gold standard (+$15-20k). S-TEC 3100 capable but $25-30k less than GFC 600. S-TEC 55X basic (+$2-4k).\n';
+prompt+='- Autopilot: GFC 600 is gold standard (+$15-20k). S-TEC 3100 capable but $25-30k less than GFC 600. S-TEC 55X basic (+$2-4k). S-TEC 65 is an older rate-based unit, less capable than the 55X (+$1-2k).\n';
 prompt+='- Cessna 172: $80k-$250k. Cessna 182: $120k-$350k. RV-10: $260k-$530k (older/basic $260-330k, newer/loaded $400-530k).\n';
 prompt+='- Cirrus SR20: $150k-$350k (G1-G2 $150-220k, G3+ $220-350k). SR22: $240k-$1M+ (G1-G2 $240-350k, G3 $300-500k, G5-G6 $600k-1M+). SR22T: $350k-$1.1M+.\n';
 prompt+='- Piper Cherokee/Archer: $50k-$150k. Saratoga/Lance: $180k-$400k. Mooney M20: $100k-$350k.\n';
 prompt+='- Avionics: G1000 NXi +$25-35k, G500 TXi +$18-25k, Aspen EFD +$8-12k, GTN 750Xi +$12-18k. Radar on twins +$5-10k.\n';
 prompt+='- Twins: matched engine times=premium. Factory new engines $15-20k more than field OH. 3-blade props +$3-8k.\n\n';
+var askPrice=document.getElementById('v-asking')?document.getElementById('v-asking').value:'';
 prompt+='Aircraft: '+(year||'?')+' '+make+' '+model+'\nTTAF: '+(ttaf||'?')+' hrs\n'+engineInfo+'\n';
-prompt+='Condition: '+cond+', Paint/Interior: '+cosm+'\nAvionics: '+(avs.length?avs.join(', '):'Standard/basic')+'\nNotes: '+(notes||'none')+'\n';
-prompt+='IMPORTANT: Search the web for current listings of this exact make/model to verify your pricing. Keep the spread between seller price and buyer target within 10-15% max.\nReturn ONLY valid JSON:\n';
+prompt+='Annual: '+(annualInfo||'Unknown')+'. Condition: '+cond+', Paint/Interior: '+cosm+'\nAvionics: '+(avs.length?avs.join(', '):'Standard/basic')+'\nNotes: '+(notes||'none')+'\n';
+prompt+='CRITICAL PRICING RULES: 1) Fair market value MUST be 8-15% BELOW the asking price - buyers NEVER pay full ask. 2) A 1970s airplane is worth 30-40% less than the same model from the 1990s. 3) A 1976 A36 Bonanza with 4000+ hours and older avionics (Apollo, STEC, King KI-525) has a fair value of $240-290k even with an IO-550 conversion. 4) Only modern glass cockpit A36s (G500/G1000, 1990s+, low time) reach $350k+. Year matters hugely - a 1976 is worth much less than a 2006. High airframe time reduces value. Engine conversions add 25-40k max. Older avionics add modest value. Keep spread between seller and buyer target within 10-15%.\nReturn ONLY valid JSON:\n';
 prompt+='{"sellerAsk":NUMBER,"fairMarketValue":NUMBER,"buyerTarget":NUMBER,"condImpact":"+3%","avImpact":"+7%","engineImpact":"-4%","condVerdict":"Good","avVerdict":"Above average","engineVerdict":"Mid-life","keyFinding":"One sentence.","analysis":"2-3 sentences.","negotiatingTips":["Tip 1","Tip 2","Tip 3"],"confidence":"high"}';
-var v=await callClaudeSearch(prompt,1500);
+var v=await callClaude(prompt,800);
 renderVal(v,make,model,year);
 } catch(e) { console.error('Valuation error:', e); document.getElementById('v-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed: ' + (e.message || e) + '</p>'; }
 setLoading('v-spin','v-btn',false);
@@ -1650,7 +1759,7 @@ setLoading('v-spin','v-btn',false);
 
 function renderVal(v, make, model, year) {
 // Support both old and new format
-var seller = v.sellerAsk || v.askHigh || 0;
+var apEl=document.getElementById("v-asking");var askInput = (apEl&&apEl.value ? parseInt(apEl.value.replace(/[^0-9.]/g,'')) : 0); var seller = askInput || v.sellerAsk || v.askHigh || 0;
 var fmv = v.fairMarketValue || v.askMid || 0;
 var buyer = v.buyerTarget || v.askLow || 0;
 var total = seller - buyer;
@@ -1714,9 +1823,36 @@ if (!model){alert('Enter a make and model.');return;}
 setLoading('c-spin','c-btn',true);
 document.getElementById('c-result').innerHTML='';
 try {
-const v = await callClaude(`GA aircraft market analyst. Generate asking price data for active listings: ${model}, year range: ${years}. DO NOT include sale prices — GA sale prices are not publicly recorded.
+const v = await callClaude(`You are an expert GA aircraft appraiser with deep knowledge of the 2025-2026 used aircraft market. Generate ACCURATE asking price data for: ${model}, year range: ${years}.
+
+CRITICAL PRICING GUIDANCE — get these right:
+- Cessna 150/152: $25k-$65k
+- Cessna 172 (steam): $60k-$180k, (G1000): $200k-$350k
+- Cessna 182: $80k-$300k
+- Cessna 210: $100k-$350k
+- Piper Cherokee 140/160/180: $40k-$120k
+- Piper Arrow: $80k-$200k
+- Piper Comanche: $80k-$180k
+- Beechcraft Bonanza (V-tail): $80k-$350k
+- Beechcraft Bonanza A36/G36: $120k-$700k
+- Beechcraft Baron 55 (older): $120k-$300k, Baron 58/G58: $200k-$950k+
+- Piper Seneca: $80k-$250k
+- Cessna 310/340: $80k-$250k
+- Cessna 414/421: $150k-$650k
+- Cirrus SR20: $150k-$400k
+- Cirrus SR22/SR22T: $200k-$850k
+- Mooney M20 series: $80k-$350k
+- Diamond DA40/DA42: $150k-$500k
+- Experimental/RV series: $60k-$250k
+- Piper Cub/Super Cub: $60k-$250k
+- Maule: $80k-$200k
+
+Use these ranges as guides. Avionics upgrades (G1000, GTN750, GFC600) add $30k-$80k. Fresh engines add $20k-$40k. Damage history reduces 15-30%.
+
+DO NOT include sale prices — GA sale prices are not publicly recorded.
 Return ONLY valid JSON:
-{"summary":"1-2 sentence market overview","askLow":72000,"askMid":88000,"askHigh":110000,"avgDaysListed":52,"activeListings":18,"negotiationNote":"1 sentence about negotiation room right now","listings":[{"year":2001,"ttaf":3400,"smoh":600,"cond":"Good","ask":87000,"avionics":"GTN 650, GFC 500","daysListed":34},{"year":1998,"ttaf":5100,"smoh":200,"cond":"Fair","ask":71000,"avionics":"Basic steam gauges","daysListed":88},{"year":2004,"ttaf":2200,"smoh":2200,"cond":"Excellent","ask":109000,"avionics":"G1000, autopilot","daysListed":12},{"year":1995,"ttaf":4800,"smoh":1100,"cond":"Good","ask":75000,"avionics":"IFR equipped, older","daysListed":61},{"year":2007,"ttaf":1900,"smoh":1900,"cond":"Excellent","ask":118000,"avionics":"G1000, fresh paint","daysListed":8}]}`, 1000);
+{"summary":"1-2 sentence market overview","askLow":NUMBER,"askMid":NUMBER,"askHigh":NUMBER,"avgDaysListed":NUMBER,"activeListings":NUMBER,"negotiationNote":"1 sentence about negotiation room","listings":[{"year":NUMBER,"ttaf":NUMBER,"smoh":NUMBER,"cond":"Good/Fair/Excellent","ask":NUMBER,"avionics":"description","daysListed":NUMBER}]}
+Include 5 realistic sample listings spanning the full price range. For premium/expensive aircraft (late model, low time, full glass), use "ask":0 to indicate "Call for Price" — this is common for aircraft over $500k.`, 1500);
 renderComps(v, model);
 } catch(e){document.getElementById('c-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>';}
 setLoading('c-spin','c-btn',false);
@@ -1728,7 +1864,7 @@ const rows=(v.listings||[]).map(l=>`<tr style="border-bottom:1px solid rgba(11,3
 <td style="padding:8px 10px;font-size:13px;color:var(--sky)">${l.ttaf?l.ttaf.toLocaleString()+' h':'—'}</td>
 <td style="padding:8px 10px;font-size:13px;color:var(--sky)">${l.smoh?l.smoh.toLocaleString()+' h':'—'}</td>
 <td style="padding:8px 10px;font-size:13px;color:var(--sky)">${l.cond}</td>
-<td style="padding:8px 10px;font-size:13px;font-weight:500;color:var(--sky)">${fmt(l.ask)}</td>
+<td style="padding:8px 10px;font-size:13px;font-weight:500;color:var(--sky)">${l.ask ? fmt(l.ask) : '<span style="color:var(--accent);font-style:italic">Call for price</span>'}</td>
 <td style="padding:8px 10px"><span class="badge ${l.daysListed<30?'bg-green':'bg-amber'}">${l.daysListed}d</span></td>
 </tr>`).join('');
 document.getElementById('c-result').innerHTML=`
@@ -1771,13 +1907,115 @@ const purpose=document.getElementById('cl-purpose').value;
 if (!make||!model){alert('Enter make and model.');return;}
 setLoading('cl-spin','cl-btn',true);
 document.getElementById('cl-result').innerHTML='';
+
+var isRetract = (window._acType||'').toLowerCase().indexOf('fixed') < 0 && model.match(/arrow|210|baron|bonanza|saratoga|seneca|310|340|414|421|mooney|lance|comanche|centurion/i);
+var isMulti = (window._numEng||'') > 1 || model.match(/baron|seneca|310|340|414|421|twin|duchess|seminole|apache|aztec|navajo|chieftain/i);
+
+var base = [
+{name:"Documents and Records", items:[
+{name:"Airworthiness certificate",note:"Must be original, displayed in aircraft. Verify it matches registration and aircraft serial number.",critical:true},
+{name:"Registration",note:"Must be in aircraft, match N-number markings and serial number. Confirm name and current address of registered owner.",critical:true},
+{name:"POH / Flight Manual",note:"Must be appropriate to this specific aircraft model and serial number. Check for all supplements for installed equipment.",critical:true},
+{name:"Weight and balance",note:"Must be current with all modifications reflected. Calculate several typical loading scenarios to verify within limits.",critical:true},
+{name:"Airframe logbooks since manufacture",note:"Verify continuous entries with no unexplained gaps. Compare total airframe time to advertised and to tachometer/Hobbs meter.",critical:true},
+{name:"Latest annual inspection",note:"Confirm date and proper sign-off. Check who performed it and if any discrepancies were noted.",critical:true},
+{name:"24-month pitot-static and transponder checks",note:"Confirm currency and expiration dates for both inspections. Required for IFR flight.",critical:true},
+{name:"ELT battery",note:"Check current ELT battery and confirm replacement date is within limits.",critical:false},
+{name:"STCs, 337s, and yellow tags",note:"Confirm all Forms 337, STCs, and yellow tags match logbook entries for all installed equipment and modifications.",critical:true},
+{name:"Damage history",note:"Verify any damage history with documentation of repair. Cross-check NTSB records for accident history.",critical:true},
+{name:"Aircraft title search",note:"Conduct title search to verify clear title, no liens, and ownership history matches logbooks.",critical:true}
+]},
+{name:"Engine Logbook and History", items:[
+{name:"Engine time and calendar since overhaul",note:"Compare total engine time, calendar years since overhaul, and time since top overhaul to advertised and to tach/Hobbs.",critical:true},
+{name:"Compression test history",note:"Review trends in cylinder differential compression checks over the last several annuals. Look for declining trends in any cylinder.",critical:true},
+{name:"Oil analysis history",note:"If oil analysis was performed, check frequency, results and trends. Look for elevated metals indicating wear: iron, copper, aluminum.",critical:true},
+{name:"Engine STCs and 337s",note:"Check all Forms 337, yellow tags and logbook entries for engine equipment and modifications.",critical:false},
+{name:"Overhaul shop and specs",note:"Verify who performed the overhaul, whether it was to new limits, and if a factory reman or field overhaul.",critical:true},
+{name:"Alternator bearing age",note:"For engines with gear-driven alternators, check whether alternator has been rebuilt with bearing change within last 500 operating hours.",critical:false},
+{name:"Vacuum/pneumatic pump age",note:"Check whether dry pneumatic pump has been overhauled or replaced within last 500 operating hours.",critical:false}
+]},
+{name:"Engine Compartment Inspection", items:[
+{name:"Cylinder condition",note:"Check cylinders for leaks or cracks, especially around injector nozzles (fuel injected) and spark plug holes. Look for evidence of overheating.",critical:true},
+{name:"Crankcase inspection",note:"Check for cracks on top of the crankcase and at cylinder base bolts. Check rear case for leaks that may indicate a crankcase crack.",critical:true},
+{name:"Engine mounts",note:"Check rubber engine mounts for sagging, cracking, or deterioration. Check heat deflectors for wear and cutting into mount legs.",critical:true},
+{name:"Baffles",note:"Check condition of all baffles, especially hard, cracked, or missing pieces. Proper baffling is critical for cooling.",critical:false},
+{name:"Hoses, clamps and brackets",note:"Check all hoses for cracks, kinks, age, or bulging. Check clamps and brackets for broken, loose or missing items. Check fuel injector line grommets.",critical:true},
+{name:"Exhaust system",note:"Check for cracks, leaks, or dents. Check for missing mounting nuts or studs. Look for loose, bent, or collapsed clamps. Check for corrosion throughout.",critical:true},
+{name:"Muffler condition",note:"Check exterior for dents, heat warp, holes or cracks. Check for missing or distorted flame cones. Inspect tailpipe hangers at firewall.",critical:true},
+{name:"Oil leaks and stains",note:"Check for any unexplained fuel or oil leaks or stains. Look for evidence of oil from alternator vent tube.",critical:false},
+{name:"Magnetos and ignition",note:"Visually inspect magnetos, ignition harness, and spark plug leads for condition and security.",critical:false}
+]},
+{name:"Propeller", items:[
+{name:"Propeller time since overhaul",note:"Compare propeller time and years since overhaul to advertised and tach/Hobbs. Check for overhaul or re-lube within last six years.",critical:true},
+{name:"Blade condition",note:"Check propeller blades for nicks, cracks, erosion, corrosion, or other damage. Check blade security.",critical:true},
+{name:"Spinner and bulkhead",note:"Check spinner for cracks, dents or damage. Check spinner bulkhead/backplate for cracks, dents or damage.",critical:false},
+{name:"Governor",note:"Verify governor operation and check for leaks. Confirm governor has been overhauled at or before propeller overhaul.",critical:false},
+{name:"Prop strike cross-check",note:"Cross-check any prop strike history against engine logs for teardown evidence, and airframe logs for gear collapse or gear-up landing.",critical:true}
+]},
+{name:"Landing Gear", items:[
+{name:"Tires",note:"Check for cupping, sidewall cracks, excessively worn tread, flat spots, or cord showing. Check tire pressures.",critical:true},
+{name:"Brakes",note:"Check for grooves in brake discs and condition of brake pads. Look for hard, stiff, kinked or leaking brake hoses.",critical:true},
+{name:"Struts and hardware",note:"Check for leaks, visible corrosion or rust on struts. Check for pitting or corrosion on chromed surfaces. Check for looseness in mountings.",critical:true},
+{name:"Nose gear",note:"Check shimmy damper for security, bends or leaks. Check tow pin area for damage. Check steering mechanism.",critical:false}
+]},
+{name:"Wings and Tail", items:[
+{name:"Wing surface inspection",note:"Sight across top and bottom of wing checking for dents, wrinkles, or paint blistering (may indicate corrosion of internal structure).",critical:true},
+{name:"Wing attach fittings",note:"Check wing attach bolt fittings for corrosion, standing water, or evidence of past water. Check bathtub fitting covers and drain holes.",critical:true},
+{name:"Control surfaces",note:"Inspect ailerons, elevator, and rudder for dents, wrinkles, corrosion. Check that control surfaces were properly balanced after any paint.",critical:true},
+{name:"Fuel system",note:"Check for evidence of fuel leaks on top and bottom of wing. Check fuel caps, vents, and fuel selector valve operation through all positions including off.",critical:true},
+{name:"Tail surfaces",note:"Check fuselage tail area for wrinkles, dents, loose rivets, corrosion. Check trim tabs flush with surfaces when indicators at neutral.",critical:false},
+{name:"Rivet condition",note:"Check for ground-down rivet heads which may indicate damage from sanding if airplane was not stripped before repainting.",critical:false}
+]},
+{name:"Cabin and Interior", items:[
+{name:"Windows and doors",note:"Check for crazed or cracked windows. Check forward door fit and hinge condition. Look for signs of interior leaks around door and window seals.",critical:false},
+{name:"Corrosion check",note:"Check cabin sidewalls for corrosion under windows, doors, and pilot storm window. This is a common hidden problem area.",critical:true},
+{name:"Seats and restraints",note:"Check proper installation and operation of seat belts, shoulder harnesses, seats and adjustment mechanisms.",critical:true},
+{name:"Emergency exits",note:"Check proper operation of all emergency exits.",critical:true},
+{name:"Fuel selector",note:"Verify fuel selector valve moves easily between all positions. Check proper operation of off-position safety stops.",critical:true}
+]},
+{name:"Warm Engine Checks", items:[
+{name:"Borescope all cylinders",note:"Conduct borescope inspection of all cylinders. Look for scoring, corrosion, deposits, cracked valves, and cam lobe wear indicators.",critical:true},
+{name:"Differential compression",note:"Conduct differential compression check on all cylinders. Record specific numbers. Minimum 60/80 with no more than 5 PSI variance between cylinders.",critical:true},
+{name:"Oil filter and screen",note:"Cut open oil filter and inspect oil screen for metal contamination. Any metal requires further investigation.",critical:true}
+]},
+{name:"Flight Check", items:[
+{name:"Manifold pressure before start",note:"Check manifold pressure gauge reads ambient pressure before engine start.",critical:false},
+{name:"Instrument check",note:"Check all instruments against tolerance for IFR flight after start and during taxi.",critical:true},
+{name:"Takeoff performance",note:"Confirm expected manifold pressure and RPM at full throttle takeoff. Check fuel flow is at or above redline.",critical:true},
+{name:"Cruise performance",note:"Compute true airspeed at cruise and compare to POH expectations for altitude and power setting.",critical:true},
+{name:"Avionics operational check",note:"Systematically check all instruments, avionics and indicators. Check magnetic compass for proper fluid and operation.",critical:true},
+{name:"Autopilot check",note:"Functionally check the autopilot system and all methods of disconnect per POH supplement procedures.",critical:false},
+{name:"VOR accuracy",note:"Conduct VOR check and compare to 30-day VOR check log entry.",critical:false}
+]}
+];
+
+if (isRetract) {
+var gearIdx = base.findIndex(function(s){return s.name==='Landing Gear';});
+base[gearIdx].items.push(
+{name:"Gear retraction test",note:"Conduct full gear retraction test. Check transit speed (14V: 11-13 sec, 28V: 4-8 sec). Check all position indicators.",critical:true},
+{name:"Gear rigging",note:"Check rigging tolerances including down tensions, free play in gear box, uplock clearance. Check for bent extension arms.",critical:true},
+{name:"Gear doors and uplocks",note:"Check outer gear doors for security, cracks or loose rivets. Check uplock cable condition and roller freedom. Check inner doors retract fully.",critical:true},
+{name:"Emergency gear extension",note:"Verify manual gear extension crank is accessible, snaps into cranking position, and restows properly.",critical:true}
+);
+}
+
+if (isMulti) {
+var flightIdx = base.findIndex(function(s){return s.name==='Flight Check';});
+base[flightIdx].items.push(
+{name:"Single engine performance",note:"Verify Vmc and single-engine climb performance. Check feathering operation if applicable.",critical:true},
+{name:"Engine synchronization",note:"Check prop sync system operation. Verify both engines produce matching performance at same power settings.",critical:false}
+);
+}
+
 try {
-const cl = await callClaude(`Expert A&P mechanic. Generate pre-buy inspection checklist for: ${year||'?'} ${make} ${model}, Engine: ${eng}, Buyer: ${exp}, Purpose: ${purpose}, Concerns: ${concerns||'none'}.
-Return ONLY valid JSON:
-{"aircraft":"${year?year+' ':''}${make} ${model}","sections":[{"name":"Documents & records","items":[{"name":"Airworthiness certificate","note":"Must be original, not a copy. Correct category for this aircraft.","critical":true,"criticalReason":"Aircraft cannot legally fly without this"},{"name":"Logbooks — airframe, engine, prop","note":"Verify continuous entries, no unexplained gaps. Check for damage repair entries.","critical":true,"criticalReason":"Missing logs reduce value and may indicate hidden history"}]}]}
-Include sections: Documents & records, Airframe & structure, Engine & powerplant, Propeller, Landing gear, Flight controls, Avionics & instruments, Electrical system, Fuel system, Interior & cabin, Test flight. Each section 5-9 items. Items specific to ${make} ${model} — mention known ADs, common failures, model-specific issues.`, 4000);
-renderChecklist(cl);
-} catch(e){document.getElementById('cl-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>';}
+var specific = await callClaudeFast('For a ' + (year||'') + ' ' + make + ' ' + model + ' with ' + eng + ' ' + (window._engModel||'') + ' engine, list 5-8 MODEL-SPECIFIC pre-buy items that a general checklist would miss. Include specific AD numbers, known failure points, and common issues unique to this exact aircraft. Buyer concerns: ' + (concerns||'none') + '. Return ONLY a JSON array of objects with name, note, and critical fields. Example: [{"name":"AD 2004-10-14 Wing Spar","note":"Check carry-through spar for corrosion per AD","critical":true}]', 800);
+var specItems = Array.isArray(specific) ? specific : [specific];
+base.push({name: make + ' ' + model + ' Specific Items', items: specItems});
+} catch(e) { console.log('Model-specific items failed, using base checklist'); }
+
+var ac = (year||'') + ' ' + make + ' ' + model;
+renderChecklist({aircraft: ac.trim(), sections: base});
+document.getElementById('cl-result').insertAdjacentHTML('afterbegin', '<div style="background:var(--offwhite);border-radius:var(--radius);padding:12px 16px;margin-bottom:1rem;font-size:13px;color:var(--muted);line-height:1.6"><i class="ti ti-info-circle" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i><strong>This is a starting point for your pre-buy inspection.</strong> More in-depth checklists can be obtained from your A&P mechanic and your aircraft\'s respective type club or pilot owners association (<a href="https://www.bonanza.org" target="_blank" style="color:var(--sky)">ABS</a>, <a href="https://www.cirruspilots.org" target="_blank" style="color:var(--sky)">COPA</a>, <a href="https://cessnaowner.org" target="_blank" style="color:var(--sky)">Cessna Owner Organization</a>, <a href="https://www.mmopa.com" target="_blank" style="color:var(--sky)">MMOPA</a>, <a href="https://www.piperowner.org" target="_blank" style="color:var(--sky)">POA</a>).</div>');
 setLoading('cl-spin','cl-btn',false);
 }
 
@@ -1790,7 +2028,7 @@ cl.sections.forEach((sec,si)=>sec.items.forEach(item=>clItems.push({...item,id:i
 let html=`
 <div style="display:flex;align-items:center;justify-content:space-between;margin:1.5rem 0 .75rem;flex-wrap:wrap;gap:8px">
 <div style="font-size:16px;font-weight:500;color:var(--sky)">${cl.aircraft}</div>
-<div class="cl-stats" id="cl-stats-row"></div>
+<div style="display:flex;align-items:center;gap:8px"><button onclick="window.print()" style="padding:6px 14px;font-size:13px;border:1px solid rgba(11,37,69,0.15);border-radius:6px;background:var(--offwhite);color:var(--sky);cursor:pointer;display:flex;align-items:center;gap:5px"><i class="ti ti-printer" style="font-size:15px"></i> Print</button><div class="cl-stats" id="cl-stats-row"></div></div>
 </div>
 <div class="progress-bar"><div class="prog-fill" id="cl-prog" style="width:0%"></div></div>`;
 cl.sections.forEach((sec,si)=>{
@@ -1908,10 +2146,10 @@ function doSoldSubmit() {
     const entry = {
       id: Date.now(),
       make, model, year: parseInt(year),
-      price: parseInt(price),
-      ask: ask ? parseInt(ask) : null,
-      ttaf: ttaf ? parseInt(ttaf) : null,
-      smoh: smoh ? parseInt(smoh) : null,
+      price: parseInt(String(price).replace(/[^0-9.]/g,'')),
+      ask: ask ? parseInt(String(ask).replace(/[^0-9.]/g,'')) : null,
+      ttaf: ttaf ? parseInt(String(ttaf).replace(/[^0-9.]/g,'')) : null,
+      smoh: smoh ? parseInt(String(smoh).replace(/[^0-9.]/g,'')) : null,
       saleDate: saleDate || null,
       region: region || null,
       avionics: avionics || null,
