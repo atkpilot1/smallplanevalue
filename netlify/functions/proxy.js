@@ -139,7 +139,8 @@ exports.handler = async function(event) {
           email: body.email || null,
           aircraft: body.aircraft || null,
           accuracy: body.accuracy || null,
-          message: body.message || null
+          message: body.message || null,
+          user_agent: body.user_agent || null
         })
       });
 
