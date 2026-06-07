@@ -1736,9 +1736,16 @@ prompt+='- Twins: matched engine times=premium. Factory new engines $15-20k more
 var askPrice=document.getElementById('v-asking')?document.getElementById('v-asking').value:'';
 prompt+='Aircraft: '+(year||'?')+' '+make+' '+model+'\nTTAF: '+(ttaf||'?')+' hrs\n'+engineInfo+'\n';
 prompt+='Annual: '+(annualInfo||'Unknown')+'. Condition: '+cond+', Paint/Interior: '+cosm+'\nAvionics: '+(avs.length?avs.join(', '):'Standard/basic')+'\nNotes: '+(notes||'none')+'\n';
-prompt+='CRITICAL PRICING RULES: 1) Fair market value MUST be 8-15% BELOW the asking price - buyers NEVER pay full ask. 2) A 1970s airplane is worth 30-40% less than the same model from the 1990s. 3) A 1976 A36 Bonanza with 4000+ hours and older avionics (Apollo, STEC, King KI-525) has a fair value of $240-290k even with an IO-550 conversion. 4) Only modern glass cockpit A36s (G500/G1000, 1990s+, low time) reach $350k+. Year matters hugely - a 1976 is worth much less than a 2006. High airframe time reduces value. Engine conversions add 25-40k max. Older avionics add modest value. Keep spread between seller and buyer target within 10-15%.\nReturn ONLY valid JSON:\n';
+prompt+='CRITICAL PRICING RULES: 1) Fair market value MUST be 8-15% BELOW the asking price - buyers NEVER pay full ask. 2) A 1970s airplane is worth 30-40% less than the same model from the 1990s. 3) A 1976 A36 Bonanza with 4000+ hours and older avionics (Apollo, STEC, King KI-525) has a fair value of $240-290k even with an IO-550 conversion. 4) Only modern glass cockpit A36s (G500/G1000, 1990s+, low time) reach $350k+. Year matters hugely - a 1976 is worth much less than a 2006. High airframe time reduces value. Engine conversions add 25-40k max. Older avionics add modest value. Keep spread between seller and buyer target within 10-15%.\n\n';
+prompt+='MANDATORY — GROUND YOUR ESTIMATE IN REAL EVIDENCE BEFORE PRICING:\n';
+prompt+='1. You MUST use the web_search tool to find CURRENT, ACTIVE listings and recent sold prices for this exact make/model/year. Do NOT price from memory. Searching is not optional.\n';
+prompt+='2. Keep searching until you have found solid, usable data — run multiple searches with different queries if your first attempts come up short (try variations like "'+(year||'')+' '+make+' '+model+' for sale price", "'+make+' '+model+' asking price", "'+make+' '+model+' sold price", and aircraft marketplaces like Controller, Trade-A-Plane, Aircraft For Sale, Barnstormers).\n';
+prompt+='3. Try very hard to find at least 3-5 comparable real-world listings/sales. Only fall back to general market knowledge if repeated searches genuinely return nothing useful — and if so, lower confidence and note it in keyFinding.\n';
+prompt+='4. Base sellerAsk, fairMarketValue and buyerTarget DIRECTLY on the actual prices you found online. Every number you output should be defensible by the real listings you located, not invented.\n';
+prompt+='5. Keep the spread between seller price and buyer target within 10-15% max.\n\n';
+prompt+='Return ONLY valid JSON:\n';
 prompt+='{"sellerAsk":NUMBER,"fairMarketValue":NUMBER,"buyerTarget":NUMBER,"condImpact":"+3%","avImpact":"+7%","engineImpact":"-4%","condVerdict":"Good","avVerdict":"Above average","engineVerdict":"Mid-life","keyFinding":"One sentence.","analysis":"2-3 sentences.","negotiatingTips":["Tip 1","Tip 2","Tip 3"],"confidence":"high"}';
-var v=await callClaude(prompt,1500);
+var v=await callClaudeSearch(prompt,1500);
 renderVal(v,make,model,year);
 } catch(e) { console.error('Valuation error:', e); document.getElementById('v-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed: ' + (e.message || e) + '</p>'; }
 setLoading('v-spin','v-btn',false);
