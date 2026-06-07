@@ -930,7 +930,7 @@ style="width:100%;height:100%;object-fit:cover;object-position:center top;transi
 <button class="tab-btn highlight" id="tab-btn-val" onclick="if(window._lastLookup){prefillVal(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.aircraftType||'',window._lastLookup.numEngines||'',window._lastLookup.engineMake||'',window._lastLookup.engineModel||'');}switchTab('val');">
 <i class="ti ti-calculator"></i> Get valuation
 </button>
-<button class="tab-btn" id="tab-btn-comps" onclick="if(window._lastLookup){document.getElementById('comp-input').value=window._lastLookup.make+' '+window._lastLookup.model;}switchTab('comps')">
+<button class="tab-btn" id="tab-btn-comps" onclick="if(window._lastLookup){var ci=document.getElementById('c-model');if(ci)ci.value=window._lastLookup.make+' '+window._lastLookup.model;}switchTab('comps')">
 <i class="ti ti-search"></i> Market listings
 </button>
 <button class="tab-btn" id="tab-btn-checklist" onclick="if(window._lastLookup){prefillCl(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.engineMake||'',window._lastLookup.engineModel||'',window._lastLookup.aircraftType||'',window._lastLookup.numEngines||'');}switchTab('checklist')">

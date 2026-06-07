@@ -1857,7 +1857,6 @@ renderComps(v, model);
 } catch(e){document.getElementById('c-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>';}
 setLoading('c-spin','c-btn',false);
 }
-
 function renderComps(v, model) {
 const rows=(v.listings||[]).map(l=>`<tr style="border-bottom:1px solid rgba(11,37,69,0.06)">
 <td style="padding:8px 10px;font-size:13px;color:var(--sky)">${l.year}</td>
@@ -1867,6 +1866,41 @@ const rows=(v.listings||[]).map(l=>`<tr style="border-bottom:1px solid rgba(11,3
 <td style="padding:8px 10px;font-size:13px;font-weight:500;color:var(--sky)">${l.ask ? fmt(l.ask) : '<span style="color:var(--accent);font-style:italic">Call for price</span>'}</td>
 <td style="padding:8px 10px"><span class="badge ${l.daysListed<30?'bg-green':'bg-amber'}">${l.daysListed}d</span></td>
 </tr>`).join('');
+
+// Pre-filtered marketplace search links built from the model name
+const q = encodeURIComponent((model + ' for sale').trim());
+const marketHtml = [
+  ['Trade-A-Plane', 'https://www.google.com/search?q=site:trade-a-plane.com+' + q],
+  ['Controller',    'https://www.google.com/search?q=site:controller.com+' + q],
+  ['Barnstormers',  'https://www.google.com/search?q=site:barnstormers.com+' + q],
+  ['Hangar67',      'https://www.google.com/search?q=site:hangar67.com+' + q],
+].map(([name, url]) => `<a href="${url}" target="_blank" style="color:var(--sky-light)">${name}</a>`).join(', ');
+
+document.getElementById('c-result').innerHTML=`
+<div class="result-card">
+<div style="font-weight:500;font-size:16px;color:var(--sky);margin-bottom:1rem">${model} — active listings</div>
+<div class="metric-row" style="grid-template-columns:repeat(4,1fr)">
+<div class="metric"><div class="metric-val">${fmt(v.askLow)}</div><div class="metric-lbl">Low ask</div></div>
+<div class="metric"><div class="metric-val">${fmt(v.askMid)}</div><div class="metric-lbl">Median ask</div></div>
+<div class="metric"><div class="metric-val">${fmt(v.askHigh)}</div><div class="metric-lbl">High ask</div></div>
+<div class="metric"><div class="metric-val">${v.avgDaysListed}d</div><div class="metric-lbl">Avg listed</div></div>
+</div>
+<p style="font-size:14px;color:rgba(11,37,69,0.7);margin-bottom:.75rem">${v.summary}</p>
+<div style="font-size:13px;color:var(--muted);padding:10px 12px;background:var(--offwhite);border-radius:var(--radius);margin-bottom:1rem"><i class="ti ti-info-circle" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>${v.negotiationNote}</div>
+<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
+<thead><tr style="border-bottom:1px solid rgba(11,37,69,0.1)">
+<th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em">YEAR</th>
+<th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em">TTAF</th>
+<th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em">SMOH</th>
+<th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em">COND.</th>
+<th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em">ASKING PRICE</th>
+<th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em">LISTED</th>
+</tr></thead>
+<tbody>${rows}</tbody>
+</table></div>
+<div class="note-box" style="margin-top:.75rem">Asking prices only — no sale prices, as GA transactions are not publicly recorded. Find ${model} listings at ${marketHtml}.</div>
+</div>`;
+}
 document.getElementById('c-result').innerHTML=`
 <div class="result-card">
 <div style="font-weight:500;font-size:16px;color:var(--sky);margin-bottom:1rem">${model} — active listings</div>
