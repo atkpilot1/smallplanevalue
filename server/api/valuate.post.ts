@@ -136,6 +136,19 @@ export default defineEventHandler(async (event) => {
     prompt += cirrusGuide(d.year, d.model, d.cirrusGen)
   }
 
+  // Deterministic avionics adjustment from the spreadsheet-derived engine.
+  // Base airframe value is unknown until the LLM prices it, so we inject the
+  // per-item dollar figures and total and instruct the model to use them as-is
+  // (applying the 40% airframe cap relative to its own base airframe estimate).
+  const av = computeAvionicsAdjustment(avs)
+  if (av.lineItems.length || av.adsbPenalty) {
+    prompt +=
+      av.summary +
+      'Apply the avionics adjustment ABOVE to the base airframe value you derive from comps. ' +
+      'Do NOT independently re-estimate the dollar value of avionics — these figures are authoritative. ' +
+      'Cap total POSITIVE avionics value at 40% of the base airframe value; the ADS-B penalty (if any) always applies in full.\n\n'
+  }
+
   prompt +=
     'Aircraft: ' + (d.year || '?') + ' ' + d.make + ' ' + d.model + '\nTTAF: ' + (d.ttaf || '?') + ' hrs\n' + d.engineInfo + '\n'
   prompt +=
