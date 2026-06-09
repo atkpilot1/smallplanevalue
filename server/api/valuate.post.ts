@@ -13,6 +13,7 @@ const bodySchema = z.object({
   avionics: z.array(z.string()).optional().default([]),
   notes: z.string().optional().default(''),
   asking: z.string().optional().default(''),
+  cirrusGen: z.string().optional().default(''),
 })
 
 const valSchema = z.object({
@@ -30,6 +31,67 @@ const valSchema = z.object({
   negotiatingTips: z.array(z.string()),
   confidence: z.string(),
 })
+
+// --- Cirrus generation-based valuation guide ------------------------------
+// Cirrus values track GENERATION far more than raw year. The same model year can
+// be a different generation, and avionics packages (Avidyne -> Perspective ->
+// Perspective+) are standard-fit per generation. Anchor bands below are
+// 2025-2026 retail asking ranges; refine with real TAP/Controller comps.
+
+function isCirrus(make: string, model: string): boolean {
+  const m = (make + ' ' + model).toLowerCase()
+  return /\bcirrus\b/.test(m) || /\bsr20\b|\bsr22\b|\bsr22t\b|\bsf50\b|vision\s*jet/.test(m)
+}
+
+// Map a model year to its Cirrus generation for the given model family.
+function cirrusGen(yearStr: string, model: string): string {
+  const y = parseInt((yearStr || '').replace(/[^0-9]/g, ''), 10)
+  const m = (model || '').toLowerCase()
+  const isJet = /sf50|vision\s*jet/.test(m)
+  if (!y) return isJet ? 'unknown (SF50)' : 'unknown'
+  if (isJet) {
+    if (y <= 2018) return 'G1'
+    if (y <= 2022) return 'G2 / G2+'
+    return 'G2+ (current)'
+  }
+  // SR20 / SR22 / SR22T share the same generation year breaks
+  if (y <= 2003) return 'G1'
+  if (y <= 2006) return 'G2'
+  if (y <= 2012) return 'G3'   // G3 airframe ran ~2007-2012 (no public "G4")
+  if (y <= 2016) return 'G5'
+  if (y <= 2023) return 'G6'
+  return 'G7'
+}
+
+function cirrusGuide(yearStr: string, model: string, genOverride?: string): string {
+  // A user-selected generation (from the UI dropdown) is authoritative; fall
+  // back to inferring it from the year when not provided.
+  const override = (genOverride || '').trim()
+  const gen = override || cirrusGen(yearStr, model)
+  let g =
+    'CIRRUS GENERATION GUIDE — price by GENERATION, not raw year. ' +
+    'This aircraft is generation: ' + gen +
+    (override ? ' (explicitly specified by the user — treat as authoritative).' : ' (inferred from year — verify against serial + avionics).') +
+    '\n\n'
+
+  g += 'Year -> generation (SR20 / SR22 / SR22T):\n'
+  g += '  G1 = 2001-2003 | G2 = 2004-2006 | G3 = 2007-2012 | G5 = 2013-2016 | G6 = 2017-2023 | G7 = 2024+\n'
+  g += '  (SF50 Vision Jet: G1 = 2016-2018 | G2/G2+ = 2019-2022 | G2+ current = 2023+)\n\n'
+
+  g += 'Standard avionics by generation (already included — do NOT add as an extra unless upgraded beyond stock):\n'
+  g += '  G1-G2: Avidyne Entegra. G3: Avidyne or early Cirrus Perspective (Garmin). G5: Cirrus Perspective (Garmin). G6+: Cirrus Perspective+ (Garmin, faster, larger displays, FIKI common). SF50: Cirrus Perspective Touch / Perspective Touch+.\n\n'
+
+  g += 'Approx 2025-2026 RETAIL ASKING bands (anchor with live comps; FIKI, low time, AC, and Perspective+ push to the top):\n'
+  g += '  SR20:  G1-G2 $150-220k | G3 $200-300k | G5 $300-400k | G6 $380-520k | G7 $560k+.\n'
+  g += '  SR22 (NA): G1 $200-290k | G2 $250-340k | G3 $300-470k | G5 $480-620k | G6 $580-820k | G7 $900k-1.1M+.\n'
+  g += '  SR22T (turbo): G3 $360-520k | G5 $540-700k | G6 $680-950k | G7 $1.0-1.25M+.\n'
+  g += '  SF50 Vision Jet: G1 $1.7-2.2M | G2/G2+ $2.4-3.4M | newest low-time $3.5M+.\n\n'
+
+  g += 'CIRRUS-SPECIFIC VALUE DRIVERS: FIKI known-ice (big premium, standard on most G6+) | air conditioning | Perspective+ vs older Perspective/Avidyne | low airframe time | CAPS parachute repack currently in-date (10-yr repack ~$15-18k; an overdue/soon-due repack is a real deduction) | TKS fluid system condition.\n'
+  g += 'IMPORTANT: a 2017-2023 SR22 is a G6 with Perspective+ and usually FIKI — it must NOT be priced like an older G3/G5. Late-gen low-time examples are commonly $600k-$820k (SR22) / $700k-$950k (SR22T). Do not lowball late-generation Cirrus aircraft.\n\n'
+
+  return g
+}
 
 function extractJson(txt: string): unknown {
   const cleaned = txt.replace(/```json|```/g, '').trim()
@@ -62,13 +124,18 @@ export default defineEventHandler(async (event) => {
   prompt +=
     '- Cessna 172: $80k-$250k. Cessna 182: $120k-$350k. RV-10: $260k-$530k (older/basic $260-330k, newer/loaded $400-530k).\n'
   prompt +=
-    '- Cirrus SR20: $150k-$350k (G1-G2 $150-220k, G3+ $220-350k). SR22: $240k-$1M+ (G1-G2 $240-350k, G3 $300-500k, G5-G6 $600k-1M+). SR22T: $350k-$1.1M+.\n'
+    '- Cirrus (SR20/SR22/SR22T/SF50 Vision Jet): DO NOT price from this line — a detailed generation-by-generation guide is provided below and MUST be used when the aircraft is a Cirrus.\n'
   prompt +=
     '- Piper Cherokee/Archer: $50k-$150k. Saratoga/Lance: $180k-$400k. Mooney M20: $100k-$350k.\n'
   prompt +=
     '- Avionics: G1000 NXi +$25-35k, G500 TXi +$18-25k, Aspen EFD +$8-12k, GTN 750Xi +$12-18k. Radar on twins +$5-10k.\n'
   prompt +=
     '- Twins: matched engine times=premium. Factory new engines $15-20k more than field OH. 3-blade props +$3-8k.\n\n'
+
+  if (isCirrus(d.make, d.model) || d.cirrusGen) {
+    prompt += cirrusGuide(d.year, d.model, d.cirrusGen)
+  }
+
   prompt +=
     'Aircraft: ' + (d.year || '?') + ' ' + d.make + ' ' + d.model + '\nTTAF: ' + (d.ttaf || '?') + ' hrs\n' + d.engineInfo + '\n'
   prompt +=
