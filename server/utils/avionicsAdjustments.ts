@@ -45,8 +45,10 @@ export const AVIONICS_ROWS: AvionicsRow[] = [
   { item: 'Avidyne IFD440', category: 'Navigator', installedCost: 12000, retainedNew: 0.45, annualDecay: 0.06, floorPct: 0.25, yearsSinceInstall: 6, lpvWaas: true, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Avidyne IFD 440'] },
 
   // Glass PFD/MFD
-  { item: 'Garmin G500 TXi', category: 'Glass', installedCost: 19000, retainedNew: 0.55, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 4, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: true, aliases: ['Garmin G500 TXi'] },
-  { item: 'Garmin G600 TXi', category: 'Glass', installedCost: 26000, retainedNew: 0.55, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 4, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: true, aliases: ['Garmin G600 TXi'] },
+  { item: 'Garmin G500 TXi 10.6"', category: 'Glass', installedCost: 19000, retainedNew: 0.55, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 4, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: true, aliases: ['Garmin G500 TXi', 'Garmin G500 TXi 10.6"'] },
+  { item: 'Garmin G500 TXi 7"', category: 'Glass', installedCost: 14000, retainedNew: 0.55, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 4, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: true, aliases: ['Garmin G500 TXi 7"'] },
+  { item: 'Garmin G600 TXi 10.6"', category: 'Glass', installedCost: 26000, retainedNew: 0.55, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 4, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: true, aliases: ['Garmin G600 TXi', 'Garmin G600 TXi 10.6"'] },
+  { item: 'Garmin G600 TXi 7"', category: 'Glass', installedCost: 18000, retainedNew: 0.55, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 4, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: true, aliases: ['Garmin G600 TXi 7"'] },
   { item: 'Garmin G3X Touch', category: 'Glass', installedCost: 22000, retainedNew: 0.55, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 3, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: true, aliases: ['Garmin G3X Touch'] },
   { item: 'Garmin GI 275 (each)', category: 'Glass', installedCost: 6000, retainedNew: 0.5, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 3, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: true, aliases: ['Garmin GI 275'] },
   { item: 'Garmin G5 (each)', category: 'Glass', installedCost: 5500, retainedNew: 0.5, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 4, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: true, aliases: ['Garmin G5'] },
@@ -81,7 +83,26 @@ export const AVIONICS_ROWS: AvionicsRow[] = [
 
   // Audio panels
   { item: 'Garmin GMA 345 (Bluetooth)', category: 'Audio Panel', installedCost: 3500, retainedNew: 0.4, annualDecay: 0.07, floorPct: 0.2, yearsSinceInstall: 4, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['GMA 345 audio'] },
-  { item: 'PS Engineering PMA8000', category: 'Audio Panel', installedCost: 2500, retainedNew: 0.35, annualDecay: 0.07, floorPct: 0.18, yearsSinceInstall: 8, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['PS Engineering PMA 8000'] },
+  { item: 'Garmin GMA 350/35c', category: 'Audio Panel', installedCost: 3000, retainedNew: 0.4, annualDecay: 0.07, floorPct: 0.2, yearsSinceInstall: 6, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Garmin GMA 350'] },
+  { item: 'PS Engineering PMA 8000', category: 'Audio Panel', installedCost: 2500, retainedNew: 0.35, annualDecay: 0.07, floorPct: 0.18, yearsSinceInstall: 8, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['PS Engineering PMA 8000'] },
+  { item: 'PS Engineering PMA 450B', category: 'Audio Panel', installedCost: 3200, retainedNew: 0.4, annualDecay: 0.07, floorPct: 0.2, yearsSinceInstall: 4, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['PS Engineering PMA 450B'] },
+  { item: 'PS Engineering PMA 6000/7000', category: 'Audio Panel', installedCost: 1800, retainedNew: 0.3, annualDecay: 0.07, floorPct: 0.15, yearsSinceInstall: 12, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['PS Engineering PMA 6000/7000'] },
+
+  // Standby instruments
+  { item: 'L3 ESI-500 electronic standby', category: 'Standby Instrument', installedCost: 9000, retainedNew: 0.45, annualDecay: 0.06, floorPct: 0.25, yearsSinceInstall: 5, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['L3 ESI-500'] },
+  { item: 'Garmin GI 275 standby', category: 'Standby Instrument', installedCost: 6000, retainedNew: 0.5, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 3, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Garmin GI 275 standby'] },
+
+  // Integration / adapters
+  { item: 'Garmin GAD 43e autopilot adapter', category: 'Integration', installedCost: 2500, retainedNew: 0.4, annualDecay: 0.06, floorPct: 0.2, yearsSinceInstall: 5, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Garmin GAD 43e'] },
+
+  // uAvionix (mostly experimental)
+  { item: 'uAvionix skyBeacon', category: 'ADS-B', installedCost: 2000, retainedNew: 0.45, annualDecay: 0.07, floorPct: 0.25, yearsSinceInstall: 4, lpvWaas: false, adsbOut: true, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['skyBeacon'] },
+  { item: 'uAvionix tailBeacon', category: 'ADS-B', installedCost: 2000, retainedNew: 0.45, annualDecay: 0.07, floorPct: 0.25, yearsSinceInstall: 4, lpvWaas: false, adsbOut: true, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['tailBeacon'] },
+  { item: 'uAvionix echoUAT', category: 'ADS-B', installedCost: 1500, retainedNew: 0.4, annualDecay: 0.07, floorPct: 0.2, yearsSinceInstall: 5, lpvWaas: false, adsbOut: true, adsbIn: true, coupledAp: false, glassPfd: false, aliases: ['echoUAT'] },
+  { item: 'uAvionix tailBeaconX', category: 'ADS-B', installedCost: 2500, retainedNew: 0.5, annualDecay: 0.06, floorPct: 0.25, yearsSinceInstall: 2, lpvWaas: false, adsbOut: true, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['tailBeaconX'] },
+  { item: 'uAvionix AV-30', category: 'Glass', installedCost: 2200, retainedNew: 0.5, annualDecay: 0.06, floorPct: 0.25, yearsSinceInstall: 3, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: true, aliases: ['uAvionix AV-30', 'AV-30-C', 'AV-30-E'] },
+  { item: 'uAvionix AvLink', category: 'Integration', installedCost: 250, retainedNew: 0.4, annualDecay: 0.08, floorPct: 0.2, yearsSinceInstall: 3, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['AvLink'] },
+  { item: 'uAvionix BeaconX', category: 'ADS-B', installedCost: 2500, retainedNew: 0.5, annualDecay: 0.06, floorPct: 0.25, yearsSinceInstall: 2, lpvWaas: false, adsbOut: true, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['uAvionix BeaconX', 'BeaconX'] },
 
   // Traffic
   { item: 'Active traffic (TAS/Skywatch)', category: 'Traffic', installedCost: 10000, retainedNew: 0.35, annualDecay: 0.08, floorPct: 0.15, yearsSinceInstall: 8, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Traffic TAS'] },

@@ -492,6 +492,7 @@ font-family: var(--body); transition: border-color .15s;
 outline: none;
 }
 .form-group input:focus, .form-group select:focus { border-color: var(--sky-light); }
+.form-group select { -webkit-appearance: menulist; appearance: menulist; min-height: 38px; }
 .form-group textarea { resize: vertical; min-height: 72px; }
 .chk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
 .chk-label {
@@ -961,8 +962,8 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 <div class="form-group"><label>MODEL</label><input type="text" id="v-model" placeholder="172S, Baron D55, SR22, RV-10..." oninput="toggleCirrusGen()" /></div>
 </div>
 <div class="form-grid-3">
-<div class="form-group"><label>YEAR</label><input type="number" id="v-year" placeholder="e.g. 1969" min="1930" max="2026" /></div>
-<div class="form-group"><label>LAST ANNUAL</label><input type="month" id="v-annual" style="font-size:13px" /></div>
+<div class="form-group"><label>YEAR</label><input type="number" id="v-year" placeholder="e.g. 1969" min="1930" max="2026" oninput="toggleCirrusGen()" /></div>
+<div class="form-group"><label>LAST ANNUAL</label><div style="display:flex;gap:6px;width:100%"><select id="v-annual-month" style="flex:1"><option value="">Month</option><option value="01">January</option><option value="02">February</option><option value="03">March</option><option value="04">April</option><option value="05">May</option><option value="06">June</option><option value="07">July</option><option value="08">August</option><option value="09">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select><input type="number" id="v-annual-year" placeholder="Year" min="1960" max="2026" style="flex:1" /></div></div>
 <div class="form-group"><label>ENGINE</label><input type="text" id="v-engine-display" placeholder="From N-number lookup" readonly style="background:var(--offwhite);color:var(--muted)" /></div>
 <div class="form-group"><label>ASKING PRICE ($)</label><input type="number" id="v-asking" placeholder="e.g. 299000" /></div>
 <div class="form-group"><label>TOTAL TIME (TTAF HRS)</label><input type="number" id="v-ttaf" placeholder="e.g. 3200" /></div>
@@ -974,7 +975,7 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 </div>
 <div class="form-group" id="v-cirrusgen-group" style="display:none">
 <label>CIRRUS GENERATION</label>
-<select id="v-cirrusgen">
+<select id="v-cirrusgen" onchange="this.dataset.touched='1'">
 <option value="">Auto-detect from year</option>
 <option value="G1">G1 (2001–2003)</option>
 <option value="G2">G2 (2004–2006)</option>
@@ -1046,8 +1047,8 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 <label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-g5" /> G5 (single or dual) <select id="av-g5-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
 <label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gi275" /> GI 275 <select id="av-gi275-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
 <label class="chk-label"><input type="checkbox" id="av-g500" /> G500</label>
-<label class="chk-label"><input type="checkbox" id="av-g500txi" /> G500 TXi</label>
-<label class="chk-label"><input type="checkbox" id="av-g600txi" /> G600 TXi</label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-g500txi" /> G500 TXi <select id="av-g500txi-size" style="width:62px;padding:1px 2px;font-size:11px;border:1px solid #aab;border-radius:3px;background:#f0f4f8;color:#1a2332"><option value='10.6"'>10.6"</option><option value='7"'>7"</option><option value='dual 10.6"'>2x 10.6"</option><option value='dual 7"'>2x 7"</option><option value='10.6&quot; + 7&quot;'>10.6"+7"</option></select></label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-g600txi" /> G600 TXi <select id="av-g600txi-size" style="width:62px;padding:1px 2px;font-size:11px;border:1px solid #aab;border-radius:3px;background:#f0f4f8;color:#1a2332"><option value='10.6"'>10.6"</option><option value='7"'>7"</option><option value='dual 10.6"'>2x 10.6"</option><option value='dual 7"'>2x 7"</option><option value='10.6&quot; + 7&quot;'>10.6"+7"</option></select></label>
 <label class="chk-label"><input type="checkbox" id="av-g1000" /> G1000</label>
 <label class="chk-label"><input type="checkbox" id="av-g1000nxi" /> G1000 NXi</label>
 <label class="chk-label"><input type="checkbox" id="av-g3x" /> G3X Touch</label>
@@ -1068,11 +1069,16 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 <label class="chk-label"><input type="checkbox" id="av-gfc600" /> GFC 600 autopilot</label>
 <label class="chk-label"><input type="checkbox" id="av-gfc700" /> GFC 700 autopilot</label>
 <label class="chk-label"><input type="checkbox" id="av-autoland" /> Garmin Autoland (HALO/Safe Return/HomeSafe)</label>
-<label class="chk-label"><input type="checkbox" id="av-gma345" /> GMA 345 audio panel</label>
-<label class="chk-label"><input type="checkbox" id="av-pma8000" /> PS Engineering PMA 8000 audio</label>
+<label class="chk-label"><input type="checkbox" id="av-gad43" /> GAD 43e autopilot adapter</label>
 <label class="chk-label"><input type="checkbox" id="av-mx20" /> Garmin MX20 MFD</label>
 <label class="chk-label"><input type="checkbox" id="av-gmx200" /> Garmin GMX 200 MFD</label>
 <label class="chk-label"><input type="checkbox" id="av-gdl88" /> GDL 88 (ADS-B transceiver)</label>
+<label class="chk-label"><input type="checkbox" id="av-gma345" /> GMA 345 (Bluetooth) audio panel</label>
+<label class="chk-label"><input type="checkbox" id="av-gma350" /> GMA 350/35c audio panel</label>
+<label class="chk-label"><input type="checkbox" id="av-gi275-standby" /> GI 275 standby instrument</label>
+<label class="chk-label"><input type="checkbox" id="av-gtx345" /> GTX 345 (ADS-B In/Out transponder)</label>
+<label class="chk-label"><input type="checkbox" id="av-radar-garmin" /> GWX 68/70/75/80 weather radar</label>
+<label class="chk-label"><input type="checkbox" id="av-garmin-eis" /> GI 275 EIS / TXi EIS engine monitor</label>
 </div>
 <div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> ASPEN AVIONICS</div>
 <div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
@@ -1109,13 +1115,31 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 <label class="chk-label"><input type="checkbox" id="av-kfc200" /> King KFC 150/200/225</label>
 <label class="chk-label"><input type="checkbox" id="av-trutrak" /> TruTrak / BendixKing</label>
 </div>
+<div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> PS ENGINEERING</div>
+<div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-pma8000" /> PMA 8000 series audio panel</label>
+<label class="chk-label"><input type="checkbox" id="av-pma450" /> PMA 450B audio panel</label>
+<label class="chk-label"><input type="checkbox" id="av-pma6000" /> PMA 6000/7000 audio panel</label>
+</div>
+<div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> L3 / L3HARRIS</div>
+<div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-esi500" /> ESI-500 electronic standby</label>
+</div>
+<div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> UAVIONIX (mostly experimental)</div>
+<div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-uav-skybeacon" /> skyBeacon (wingtip ADS-B Out)</label>
+<label class="chk-label"><input type="checkbox" id="av-uav-tailbeacon" /> tailBeacon (tail ADS-B Out)</label>
+<label class="chk-label"><input type="checkbox" id="av-uav-echouat" /> echoUAT (ADS-B In/Out)</label>
+<label class="chk-label"><input type="checkbox" id="av-uav-tailbeaconx" /> tailBeaconX (transponder + ADS-B)</label>
+<label class="chk-label"><input type="checkbox" id="av-uav-avipro" /> AV-30-C / AV-30-E (EFIS)</label>
+<label class="chk-label"><input type="checkbox" id="av-uav-avlink" /> AvLink (Wi-Fi gateway)</label>
+<label class="chk-label"><input type="checkbox" id="av-uav-beaconx" /> BeaconX series</label>
+</div>
 <div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> TRANSPONDER / ADS-B</div>
 <div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
-<label class="chk-label"><input type="checkbox" id="av-gtx345" /> GTX 345 (ADS-B In/Out)</label>
 <label class="chk-label"><input type="checkbox" id="av-adsb" /> ADS-B Out (other)</label>
 <label class="chk-label"><input type="checkbox" id="av-tcas" /> Traffic (TAS/TCAD)</label>
 <label class="chk-label"><input type="checkbox" id="av-wx500" /> Stormscope WX-500</label>
-<label class="chk-label"><input type="checkbox" id="av-radar-garmin" /> Garmin GWX 68/70/75/80 radar</label>
 <label class="chk-label"><input type="checkbox" id="av-radar-bk" /> BendixKing RDR 2000/2100 radar</label>
 <label class="chk-label"><input type="checkbox" id="av-radar-legacy" /> Legacy radar (RDS-81/82, other)</label>
 </div>
@@ -1124,7 +1148,6 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 <label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-ei-cgr" /> EI CGR-30P <select id="av-ei-cgr-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option><option value="3">x3</option></select></label>
 <label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-ei-other" /> EI (other) <select id="av-ei-other-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option><option value="3">x3</option></select></label>
 <label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-jpi" /> JPI EDM 700/800/900 <select id="av-jpi-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option><option value="3">x3</option></select></label>
-<label class="chk-label"><input type="checkbox" id="av-garmin-eis" /> Garmin GI 275 EIS / TXi EIS</label>
 </div>
 <div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> OTHER</div>
 <div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
@@ -1585,9 +1608,10 @@ var cosm = document.getElementById('v-cosm'); if (cosm) cosm.value = 'Average';
 var notes = document.getElementById('v-notes'); if (notes) notes.value = '';
 var engDisp = document.getElementById('v-engine-display'); if (engDisp) engDisp.value = '';
 var asking = document.getElementById('v-asking'); if (asking) asking.value = '';
-var annual = document.getElementById('v-annual'); if (annual) annual.value = '';
+var annualM = document.getElementById('v-annual-month'); if (annualM) annualM.value = '';
+var annualY = document.getElementById('v-annual-year'); if (annualY) annualY.value = '';
 var engConv = document.getElementById('v-eng-conv'); if (engConv) engConv.value = '';
-var cgen = document.getElementById('v-cirrusgen'); if (cgen) cgen.value = '';
+var cgen = document.getElementById('v-cirrusgen'); if (cgen) { cgen.value = ''; delete cgen.dataset.touched; }
 toggleCirrusGen();
 document.querySelectorAll('input[type="checkbox"][id^="av-"]').forEach(function(cb) { cb.checked = false; });
 document.querySelectorAll('select[id$="-qty"]').forEach(function(s) { s.value = '1'; });
@@ -1636,14 +1660,37 @@ if (s) s.style.display = isTwin ? 'none' : '';
 if (t) t.style.display = isTwin ? 'block' : 'none';
 }
 
+function cirrusGenFromYear(yearStr, model) {
+var y = parseInt((yearStr || '').replace(/[^0-9]/g, ''), 10);
+var m = (model || '').toLowerCase();
+var isJet = /sf50|vision\s*jet/.test(m);
+if (!y) return '';
+if (isJet) {
+  if (y <= 2018) return 'SF50 G1';
+  if (y <= 2022) return 'SF50 G2';
+  return 'SF50 G2+';
+}
+if (y <= 2003) return 'G1';
+if (y <= 2006) return 'G2';
+if (y <= 2012) return 'G3';
+if (y <= 2016) return 'G5';
+if (y <= 2023) return 'G6';
+return 'G7';
+}
 function toggleCirrusGen() {
 var grp = document.getElementById('v-cirrusgen-group');
 if (!grp) return;
 var mk = (document.getElementById('v-make') ? document.getElementById('v-make').value : '') || '';
 var md = (document.getElementById('v-model') ? document.getElementById('v-model').value : '') || '';
+var yr = (document.getElementById('v-year') ? document.getElementById('v-year').value : '') || '';
 var blob = (mk + ' ' + md).toLowerCase();
 var isCirrus = /\bcirrus\b/.test(blob) || /\bsr20\b|\bsr22t?\b|\bsf50\b|vision\s*jet/.test(blob);
 grp.style.display = isCirrus ? '' : 'none';
+var sel = document.getElementById('v-cirrusgen');
+if (isCirrus && sel && !sel.dataset.touched) {
+  var g = cirrusGenFromYear(yr, mk + ' ' + md);
+  if (g) sel.value = g;
+}
 }
 
 /* ── VALUATION ── */
@@ -1658,8 +1705,8 @@ var ttaf=document.getElementById('v-ttaf').value;
 var cond=document.getElementById('v-cond').value;
 var cosm=document.getElementById('v-cosm').value;
 var notes=document.getElementById('v-notes').value.replace(/["'\\]/g, ' ');
-var annualEl=document.getElementById('v-annual');var annualInfo='';
-if(annualEl&&annualEl.value){var ad=new Date(annualEl.value+'-01');var now=new Date();var months=Math.round((now-ad)/(1000*60*60*24*30));var pct=Math.min(100,Math.round(months/12*100));annualInfo='Annual inspection done '+months+' months ago ('+pct+'% through annual cycle). ';}
+var annualMEl=document.getElementById('v-annual-month');var annualYEl=document.getElementById('v-annual-year');var annualVal=(annualMEl&&annualYEl&&annualMEl.value&&annualYEl.value)?(annualYEl.value+'-'+annualMEl.value):'';var annualInfo='';
+if(annualVal){var ad=new Date(annualVal+'-01');var now=new Date();var months=Math.round((now-ad)/(1000*60*60*24*30));var pct=Math.min(100,Math.round(months/12*100));annualInfo='Annual inspection done '+months+' months ago ('+pct+'% through annual cycle). ';}
 var isTwin = document.getElementById('v-engines') && document.getElementById('v-engines').value === '2';
 var engineInfo = '';
 if (isTwin) {
@@ -1675,8 +1722,13 @@ engineInfo='Single engine. Engine: ' + (window._valEngMake||'') + ' ' + (window.
 }
 var engConvEl=document.getElementById('v-eng-conv');
 if(engConvEl&&engConvEl.value.trim()){engineInfo+='. Engine conversion/STC: '+engConvEl.value.trim().replace(/["'\\]/g,' ');}
-var avIds={'av-sixpack':'Standard six pack','av-nav1':'Single NAV/COM','av-nav2':'Dual NAV/COM','av-adf':'ADF','av-dme':'DME','av-kx155':'King KX-155/165','av-g5':'Garmin G5','av-gi275':'Garmin GI 275','av-g500':'Garmin G500','av-g500txi':'Garmin G500 TXi','av-g600txi':'Garmin G600 TXi','av-g1000':'Garmin G1000','av-g1000nxi':'Garmin G1000 NXi','av-g3x':'Garmin G3X Touch','av-gns430':'GNS 430(non WAAS)','av-gns430w':'GNS 430W WAAS','av-gns530':'GNS 530 non-WAAS','av-gns530w':'GNS 530W WAAS','av-gns480':'GNS 480 WAAS','av-gtn650':'GTN 650','av-gtn750':'GTN 750','av-gtn650xi':'GTN 650Xi','av-gtn750xi':'GTN 750Xi','av-gps175':'Garmin GPS 175','av-gnx375':'Garmin GNX 375','av-gnc255':'Garmin GNC 255','av-gtr205':'Garmin GTR 205','av-gfc500':'Garmin GFC 500','av-gfc600':'Garmin GFC 600','av-gfc700':'Garmin GFC 700','av-autoland':'Garmin Autoland (emergency autoland)','av-gma345':'GMA 345 audio','av-pma8000':'PS Engineering PMA 8000','av-mx20':'Garmin MX20 MFD','av-gmx200':'Garmin GMX 200 MFD','av-aspen-e5':'Aspen E5','av-aspen-pro':'Aspen Pro 1000 MAX','av-aspen-mfd':'Aspen MFD 500/1000','av-aspen-2500':'Aspen 2500 MAX','av-avr9':'Avidyne Entegra R9','av-ex500':'Avidyne EX500/600','av-ifd440':'Avidyne IFD 440','av-ifd550':'Avidyne IFD 540/550','av-dfc90':'Avidyne DFC 90','av-dfc100':'Avidyne DFC 100','av-stec55':'S-TEC 55X','av-stec65':'S-TEC 65','av-stec3100':'S-TEC 3100','av-kfc200':'King KFC 150/200/225','av-trutrak':'TruTrak/BendixKing','av-dynon-hdx':'Dynon SkyView HDX','av-dynon-se':'Dynon SkyView SE','av-dynon-d10':'Dynon D10A/D100','av-dynon-ap':'Dynon SV-AP autopilot','av-dynon-gps':'Dynon SkyView GPS','av-gtx345':'GTX 345 ADS-B','av-adsb':'ADS-B Out','av-tcas':'Traffic TAS','av-wx500':'Stormscope','av-gdl88':'Garmin GDL 88','av-radar-garmin':'Garmin GWX radar','av-radar-bk':'BendixKing RDR 2000/2100 radar','av-radar-legacy':'Legacy radar','av-ei-cgr':'EI CGR-30P','av-ei-other':'EI monitor','av-jpi':'JPI EDM','av-garmin-eis':'Garmin EIS','av-wx':'XM weather','av-stc':'Engine STC','av-3blade':'3-blade prop','av-cies':'CiES senders','av-led':'LED lighting','av-annual':'Fresh annual','av-oxy':'Oxygen system'};
-var avs=[];for(var id in avIds){var el=document.getElementById(id);if(el&&el.checked)avs.push(avIds[id]);}
+var avIds={'av-sixpack':'Standard six pack','av-nav1':'Single NAV/COM','av-nav2':'Dual NAV/COM','av-adf':'ADF','av-dme':'DME','av-kx155':'King KX-155/165','av-g5':'Garmin G5','av-gi275':'Garmin GI 275','av-g500':'Garmin G500','av-g500txi':'Garmin G500 TXi','av-g600txi':'Garmin G600 TXi','av-g1000':'Garmin G1000','av-g1000nxi':'Garmin G1000 NXi','av-g3x':'Garmin G3X Touch','av-gns430':'GNS 430(non WAAS)','av-gns430w':'GNS 430W WAAS','av-gns530':'GNS 530 non-WAAS','av-gns530w':'GNS 530W WAAS','av-gns480':'GNS 480 WAAS','av-gtn650':'GTN 650','av-gtn750':'GTN 750','av-gtn650xi':'GTN 650Xi','av-gtn750xi':'GTN 750Xi','av-gps175':'Garmin GPS 175','av-gnx375':'Garmin GNX 375','av-gnc255':'Garmin GNC 255','av-gtr205':'Garmin GTR 205','av-gfc500':'Garmin GFC 500','av-gfc600':'Garmin GFC 600','av-gfc700':'Garmin GFC 700','av-autoland':'Garmin Autoland (emergency autoland)','av-gad43':'Garmin GAD 43e','av-gma345':'GMA 345 audio','av-gma350':'Garmin GMA 350','av-pma8000':'PS Engineering PMA 8000','av-pma450':'PS Engineering PMA 450B','av-pma6000':'PS Engineering PMA 6000/7000','av-esi500':'L3 ESI-500','av-gi275-standby':'Garmin GI 275 standby','av-uav-skybeacon':'uAvionix skyBeacon','av-uav-tailbeacon':'uAvionix tailBeacon','av-uav-echouat':'uAvionix echoUAT','av-uav-tailbeaconx':'uAvionix tailBeaconX','av-uav-avipro':'uAvionix AV-30','av-uav-avlink':'uAvionix AvLink','av-uav-beaconx':'uAvionix BeaconX','av-mx20':'Garmin MX20 MFD','av-gmx200':'Garmin GMX 200 MFD','av-aspen-e5':'Aspen E5','av-aspen-pro':'Aspen Pro 1000 MAX','av-aspen-mfd':'Aspen MFD 500/1000','av-aspen-2500':'Aspen 2500 MAX','av-avr9':'Avidyne Entegra R9','av-ex500':'Avidyne EX500/600','av-ifd440':'Avidyne IFD 440','av-ifd550':'Avidyne IFD 540/550','av-dfc90':'Avidyne DFC 90','av-dfc100':'Avidyne DFC 100','av-stec55':'S-TEC 55X','av-stec65':'S-TEC 65','av-stec3100':'S-TEC 3100','av-kfc200':'King KFC 150/200/225','av-trutrak':'TruTrak/BendixKing','av-dynon-hdx':'Dynon SkyView HDX','av-dynon-se':'Dynon SkyView SE','av-dynon-d10':'Dynon D10A/D100','av-dynon-ap':'Dynon SV-AP autopilot','av-dynon-gps':'Dynon SkyView GPS','av-gtx345':'GTX 345 ADS-B','av-adsb':'ADS-B Out','av-tcas':'Traffic TAS','av-wx500':'Stormscope','av-gdl88':'Garmin GDL 88','av-radar-garmin':'Garmin GWX radar','av-radar-bk':'BendixKing RDR 2000/2100 radar','av-radar-legacy':'Legacy radar','av-ei-cgr':'EI CGR-30P','av-ei-other':'EI monitor','av-jpi':'JPI EDM','av-garmin-eis':'Garmin EIS','av-wx':'XM weather','av-stc':'Engine STC','av-3blade':'3-blade prop','av-cies':'CiES senders','av-led':'LED lighting','av-annual':'Fresh annual','av-oxy':'Oxygen system'};
+var avs=[];for(var id in avIds){var el=document.getElementById(id);if(!el||!el.checked)continue;var nm=avIds[id];
+  var sizeEl=document.getElementById(id+'-size');
+  if(sizeEl&&sizeEl.value){var sv=sizeEl.value;if(sv.indexOf('dual')===0){var oneSize=sv.replace('dual ','');avs.push(nm+' '+oneSize);avs.push(nm+' '+oneSize);}else if(sv.indexOf('+')>=0){var parts=sv.split('+');avs.push(nm+' '+parts[0].trim());avs.push(nm+' '+parts[1].trim());}else{avs.push(nm+' '+sv);}continue;}
+  var qtyEl=document.getElementById(id+'-qty');var qty=(qtyEl&&qtyEl.value)?parseInt(qtyEl.value,10):1;if(!(qty>=1))qty=1;
+  for(var q=0;q<qty;q++)avs.push(nm);
+}
 var band=BANDS['Piston single'];
 setLoading('v-spin','v-btn',true);
 document.getElementById('v-result').innerHTML='';
@@ -2171,6 +2223,7 @@ function renderRecentSales() {
     if (id === 'sold') renderRecentSales();
   };
 })();
+
 </script>
 </body>
 </html>

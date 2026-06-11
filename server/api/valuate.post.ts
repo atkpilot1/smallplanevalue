@@ -95,13 +95,47 @@ function cirrusGuide(yearStr: string, model: string, genOverride?: string): stri
 
 function extractJson(txt: string): unknown {
   const cleaned = txt.replace(/```json|```/g, '').trim()
-  const m = cleaned.match(/\{[\s\S]*\}/)
-  if (m) {
+  // Scan for every balanced {...} object (brace-aware, string-aware) and return
+  // the LAST one that parses and looks like a valuation. This is robust when the
+  // model emits reasoning text containing stray braces before the final JSON.
+  const candidates: string[] = []
+  for (let i = 0; i < cleaned.length; i++) {
+    if (cleaned[i] !== '{') continue
+    let depth = 0
+    let inStr = false
+    let esc = false
+    for (let j = i; j < cleaned.length; j++) {
+      const ch = cleaned[j]
+      if (inStr) {
+        if (esc) esc = false
+        else if (ch === '\\') esc = true
+        else if (ch === '"') inStr = false
+        continue
+      }
+      if (ch === '"') inStr = true
+      else if (ch === '{') depth++
+      else if (ch === '}') {
+        depth--
+        if (depth === 0) {
+          candidates.push(cleaned.slice(i, j + 1))
+          break
+        }
+      }
+    }
+  }
+  for (let k = candidates.length - 1; k >= 0; k--) {
     try {
-      return JSON.parse(m[0])
+      const o = JSON.parse(candidates[k])
+      if (o && typeof o === 'object' && 'sellerAsk' in (o as Record<string, unknown>)) return o
     } catch {
-      const m2 = cleaned.match(/\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/)
-      return m2 ? JSON.parse(m2[0]) : JSON.parse(cleaned)
+      /* try the next candidate */
+    }
+  }
+  for (let k = candidates.length - 1; k >= 0; k--) {
+    try {
+      return JSON.parse(candidates[k])
+    } catch {
+      /* keep trying */
     }
   }
   return JSON.parse(cleaned)
@@ -170,15 +204,58 @@ export default defineEventHandler(async (event) => {
     '{"sellerAsk":NUMBER,"fairMarketValue":NUMBER,"buyerTarget":NUMBER,"condImpact":"+3%","avImpact":"+7%","engineImpact":"-4%","condVerdict":"Good","avVerdict":"Above average","engineVerdict":"Mid-life","keyFinding":"One sentence.","analysis":"2-3 sentences.","negotiatingTips":["Tip 1","Tip 2","Tip 3"],"confidence":"high"}'
 
   const provider = anthropic()
-  const { text } = await generateText({
-    model: provider(models().main),
-    prompt,
-    maxOutputTokens: 1500,
-    tools: {
-      web_search: provider.tools.webSearch_20250305({ maxUses: 8 }),
-    },
-    stopWhen: stepCountIs(10),
-  })
+  let text = ''
+  try {
+    const res = await generateText({
+      model: provider(models().main),
+      prompt,
+      maxOutputTokens: 1500,
+      tools: {
+        web_search: provider.tools.webSearch_20250305({ maxUses: 8 }),
+      },
+      stopWhen: stepCountIs(10),
+    })
+    text = res.text || ''
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err)
+    throw createError({ statusCode: 502, statusMessage: 'Valuation provider error: ' + msg })
+  }
 
-  return valSchema.parse(extractJson(text))
+  let raw: unknown
+  try {
+    raw = extractJson(text)
+  } catch {
+    throw createError({
+      statusCode: 502,
+      statusMessage: 'Could not parse a valuation from the AI response. Please try again.',
+    })
+  }
+
+  // Coerce common shape issues (numbers returned as strings, missing optional
+  // arrays) before strict validation so a minor format drift doesn't 500.
+  const obj = (raw && typeof raw === 'object') ? (raw as Record<string, unknown>) : {}
+  const toNum = (v: unknown): unknown => {
+    if (typeof v === 'number') return v
+    if (typeof v === 'string') {
+      const n = parseFloat(v.replace(/[^0-9.\-]/g, ''))
+      if (!Number.isNaN(n)) return n
+    }
+    return v
+  }
+  obj.sellerAsk = toNum(obj.sellerAsk)
+  obj.fairMarketValue = toNum(obj.fairMarketValue)
+  obj.buyerTarget = toNum(obj.buyerTarget)
+  if (!Array.isArray(obj.negotiatingTips)) {
+    obj.negotiatingTips = typeof obj.negotiatingTips === 'string' ? [obj.negotiatingTips] : []
+  }
+  if (typeof obj.confidence !== 'string') obj.confidence = 'medium'
+
+  const result = valSchema.safeParse(obj)
+  if (!result.success) {
+    throw createError({
+      statusCode: 502,
+      statusMessage: 'The AI returned an incomplete valuation. Please try again.',
+    })
+  }
+  return result.data
 })
