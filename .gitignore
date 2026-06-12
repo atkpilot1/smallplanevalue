@@ -1,6 +1,24 @@
+# Secrets / env
 .env
 .env.local
+.env*
+
+# Archives / data dumps
 ReleasableAircraft.zip
 
-# Local Netlify folder
+# Dependencies
+node_modules
+
+# Build / framework output
+.nuxt
+.output
+.vercel
 .netlify
+dist
+
+# Test output
+test-results
+playwright-report
+
+# OS / editor cruft
+.DS_Store
