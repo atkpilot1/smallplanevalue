@@ -140,6 +140,40 @@ function extractJson(txt: string): unknown {
       /* keep trying */
     }
   }
+  // Salvage: the model likely emitted a valid object that got truncated before
+  // its closing brace (token limit). Recover the three required price numbers
+  // plus any whole string fields we can find, so the user still gets a result.
+  const open = cleaned.indexOf('{')
+  if (open !== -1 && cleaned.includes('sellerAsk')) {
+    const num = (key: string): number | undefined => {
+      const m = cleaned.match(new RegExp('"' + key + '"\\s*:\\s*"?\\$?([0-9][0-9,]*)'))
+      return m ? parseInt(m[1].replace(/,/g, ''), 10) : undefined
+    }
+    const str = (key: string): string | undefined => {
+      const m = cleaned.match(new RegExp('"' + key + '"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"'))
+      return m ? m[1] : undefined
+    }
+    const sellerAsk = num('sellerAsk')
+    const fairMarketValue = num('fairMarketValue')
+    const buyerTarget = num('buyerTarget')
+    if (sellerAsk !== undefined && fairMarketValue !== undefined && buyerTarget !== undefined) {
+      return {
+        sellerAsk,
+        fairMarketValue,
+        buyerTarget,
+        condImpact: str('condImpact') || '',
+        avImpact: str('avImpact') || '',
+        engineImpact: str('engineImpact') || '',
+        condVerdict: str('condVerdict') || '',
+        avVerdict: str('avVerdict') || '',
+        engineVerdict: str('engineVerdict') || '',
+        keyFinding: str('keyFinding') || '',
+        analysis: str('analysis') || '',
+        negotiatingTips: [],
+        confidence: str('confidence') || 'medium',
+      }
+    }
+  }
   return JSON.parse(cleaned)
 }
 
@@ -217,7 +251,7 @@ export default defineEventHandler(async (event) => {
   prompt +=
     '4. Base sellerAsk, fairMarketValue and buyerTarget DIRECTLY on the actual prices you found online. Every number you output should be defensible by the real listings you located, not invented.\n'
   prompt += '5. Keep the spread between seller price and buyer target within 10-15% max.\n\n'
-  prompt += 'Return ONLY valid JSON:\n'
+  prompt += 'Return ONLY valid JSON — no preamble, no markdown, no text after the closing brace. Keep keyFinding to ONE sentence, analysis to 2-3 sentences, and each negotiating tip to one short sentence so the JSON stays compact and complete:\n'
   prompt +=
     '{"sellerAsk":NUMBER,"fairMarketValue":NUMBER,"buyerTarget":NUMBER,"condImpact":"+3%","avImpact":"+7%","engineImpact":"-4%","condVerdict":"Good","avVerdict":"Above average","engineVerdict":"Mid-life","keyFinding":"One sentence.","analysis":"2-3 sentences.","negotiatingTips":["Tip 1","Tip 2","Tip 3"],"confidence":"high"}'
 
@@ -227,7 +261,7 @@ export default defineEventHandler(async (event) => {
     const res = await generateText({
       model: provider(models().main),
       prompt,
-      maxOutputTokens: 1500,
+      maxOutputTokens: 3000,
       tools: {
         web_search: provider.tools.webSearch_20250305({ maxUses: 8 }),
       },
