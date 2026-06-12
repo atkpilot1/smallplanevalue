@@ -511,6 +511,14 @@ transition: background .1s;
 .av-body { display:none;flex-direction:column;gap:3px;margin-bottom:12px; }
 .av-hdr.open + .av-body { display:flex; }
 .chk-label input { width: auto; }
+.adv-section { border:1px solid rgba(19,64,116,0.12);border-radius:var(--radius);margin:14px 0;background:rgba(19,64,116,0.02); }
+.adv-section > summary { cursor:pointer;list-style:none;padding:11px 14px;font-size:12px;font-weight:600;color:var(--sky);letter-spacing:.03em;display:flex;align-items:center;gap:8px;user-select:none; }
+.adv-section > summary::-webkit-details-marker { display:none; }
+.adv-section > summary::before { content:'\25B6';font-size:9px;transition:transform .2s; }
+.adv-section[open] > summary::before { transform:rotate(90deg); }
+.adv-section > summary:hover { opacity:.8; }
+.adv-section > summary .adv-hint { font-weight:400;color:var(--muted);letter-spacing:0;margin-left:auto; }
+.adv-body { padding:4px 14px 14px; }
 .submit-btn {
 background: var(--sky); color: var(--white);
 border: none; border-radius: var(--radius);
@@ -989,6 +997,9 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 </select>
 </div>
 </div>
+<details class="adv-section" id="eng-times-section">
+<summary>ENGINE &amp; TIMES <span class="adv-hint">optional — SMOH, prop, conversions</span></summary>
+<div class="adv-body">
 <div class="form-group"><label>ENGINE CONVERSION / STC <span style="color:var(--muted);font-weight:400">(optional)</span></label><input type="text" id="v-eng-conv" placeholder="e.g. IO-550 conversion, RAM, tip tanks, 3-blade prop..." /></div>
 
 <!-- Single engine fields -->
@@ -1010,6 +1021,8 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 <div class="form-group"><label>RIGHT PROP TSOH (HRS)</label><input type="number" id="v-prop-r" placeholder="e.g. 450" /></div>
 </div>
 </div>
+</div>
+</details>
 
 <div class="form-grid-2">
 <div class="form-group"><label>OVERALL CONDITION</label>
@@ -1030,7 +1043,29 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 </div>
 </div>
 
-<div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:10px;letter-spacing:.03em">AVIONICS &amp; EQUIPMENT</div>
+<div class="form-grid-2">
+<div class="form-group"><label>LOGBOOKS</label>
+<select id="v-logbooks">
+<option value="">Unknown</option>
+<option value="Complete since new">Complete since new (+value)</option>
+<option value="Complete, no gaps">Complete, no unexplained gaps</option>
+<option value="Minor gaps">Minor gaps</option>
+<option value="Missing / incomplete">Missing / incomplete (−value)</option>
+</select>
+</div>
+<div class="form-group"><label>DAMAGE HISTORY</label>
+<select id="v-damage">
+<option value="">Unknown</option>
+<option value="None (clean, verified)">None — clean, verified</option>
+<option value="Repaired, minor (documented)">Repaired — minor, documented</option>
+<option value="Repaired, major (documented)">Repaired — major (spar/firewall/prop strike)</option>
+</select>
+</div>
+</div>
+
+<details class="adv-section">
+<summary>AVIONICS &amp; EQUIPMENT <span class="adv-hint">optional — sharpens estimate</span></summary>
+<div class="adv-body">
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 24px">
 <div>
 <div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> BASIC / LEGACY</div>
@@ -1164,6 +1199,8 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 </div>
 </div>
 </div>
+</div>
+</details>
 
 <div class="form-group" style="margin-bottom:0">
 <label>NOTES (damage history, engine OH type, storage, special equipment)</label>
@@ -1612,6 +1649,8 @@ var annualM = document.getElementById('v-annual-month'); if (annualM) annualM.va
 var annualY = document.getElementById('v-annual-year'); if (annualY) annualY.value = '';
 var engConv = document.getElementById('v-eng-conv'); if (engConv) engConv.value = '';
 var cgen = document.getElementById('v-cirrusgen'); if (cgen) { cgen.value = ''; delete cgen.dataset.touched; }
+var lbk = document.getElementById('v-logbooks'); if (lbk) lbk.value = '';
+var dmg = document.getElementById('v-damage'); if (dmg) dmg.value = '';
 toggleCirrusGen();
 document.querySelectorAll('input[type="checkbox"][id^="av-"]').forEach(function(cb) { cb.checked = false; });
 document.querySelectorAll('select[id$="-qty"]').forEach(function(s) { s.value = '1'; });
@@ -1658,6 +1697,8 @@ var s = document.getElementById('single-eng-fields');
 var t = document.getElementById('twin-eng-fields');
 if (s) s.style.display = isTwin ? 'none' : '';
 if (t) t.style.display = isTwin ? 'block' : 'none';
+// Surface the engine detail fields when the user switches to twin.
+if (isTwin) { var es = document.getElementById('eng-times-section'); if (es) es.open = true; }
 }
 
 function cirrusGenFromYear(yearStr, model) {
@@ -1746,7 +1787,9 @@ var v=await apiPost('/api/valuate', {
   avionics: avs,
   notes: notes || '',
   asking: askPrice || '',
-  cirrusGen: (document.getElementById('v-cirrusgen') ? document.getElementById('v-cirrusgen').value : '')
+  cirrusGen: (document.getElementById('v-cirrusgen') ? document.getElementById('v-cirrusgen').value : ''),
+  logbooks: (document.getElementById('v-logbooks') ? document.getElementById('v-logbooks').value : ''),
+  damage: (document.getElementById('v-damage') ? document.getElementById('v-damage').value : '')
 });
 renderVal(v,make,model,year);
 } catch(e) { console.error('Valuation error:', e); document.getElementById('v-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed: ' + (e.message || e) + '</p>'; }

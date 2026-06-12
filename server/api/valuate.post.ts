@@ -14,6 +14,8 @@ const bodySchema = z.object({
   notes: z.string().optional().default(''),
   asking: z.string().optional().default(''),
   cirrusGen: z.string().optional().default(''),
+  logbooks: z.string().optional().default(''),
+  damage: z.string().optional().default(''),
 })
 
 const valSchema = z.object({
@@ -186,7 +188,23 @@ export default defineEventHandler(async (event) => {
   prompt +=
     'Aircraft: ' + (d.year || '?') + ' ' + d.make + ' ' + d.model + '\nTTAF: ' + (d.ttaf || '?') + ' hrs\n' + d.engineInfo + '\n'
   prompt +=
-    'Annual: ' + (d.annualInfo || 'Unknown') + '. Condition: ' + d.cond + ', Paint/Interior: ' + d.cosm + '\nAvionics: ' + (avs.length ? avs.join(', ') : 'Standard/basic') + '\nNotes: ' + (d.notes || 'none') + '\n'
+    'Annual: ' + (d.annualInfo || 'Unknown') + '. Condition: ' + d.cond + ', Paint/Interior: ' + d.cosm + '\nAvionics: ' + (avs.length ? avs.join(', ') : 'Standard/basic') + '\n'
+  prompt +=
+    'Logbooks: ' + (d.logbooks || 'Unknown') + '. Damage history: ' + (d.damage || 'Unknown') + '\nNotes: ' + (d.notes || 'none') + '\n'
+  prompt +=
+    'VALUE ADJUSTMENTS — apply these AFTER you establish a base value from comps. Each adjustment is a percentage of the base airframe value; net them together and reflect the result in fairMarketValue and in condImpact/condVerdict:\n' +
+    'LOGBOOKS (records strongly drive resale value):\n' +
+    '  - Complete since new: +3% to +8% (highly desirable; note as a premium).\n' +
+    '  - Complete (not since new, but no unexplained gaps): baseline, no adjustment.\n' +
+    '  - Minor gaps: -3% to -8%.\n' +
+    '  - Missing / incomplete logbooks: -10% to -25% (one of the largest possible deductions; larger on higher-value or complex/twin aircraft). ALWAYS apply a real deduction and call it out in keyFinding.\n' +
+    'DAMAGE HISTORY:\n' +
+    '  - None (verified, clean): small premium, +0% to +3%.\n' +
+    '  - Repaired (documented, minor): -3% to -8%.\n' +
+    '  - Repaired (major: spar, firewall, prop strike w/ teardown): -8% to -15%.\n' +
+    '  - Unknown/undisclosed: treat cautiously, lower confidence.\n' +
+    'VALUE-ADD ITEMS (credit when present in notes/equipment — additive, but cap combined positive condition/logbook/damage adjustments at +15% of base): fresh/recent engine overhaul or factory reman, recently complied ADs/SBs, recent annual, fresh paint, fresh interior, no-damage clean history, complete logs, useful STC mods, hangared storage, useful-load mods.\n' +
+    'DEDUCTION ITEMS (subtract when present): run-out/high-time engine, corrosion, hail/hangar rash, outdated/inop equipment, overdue inspections, missing records.\n\n'
   prompt +=
     'CRITICAL PRICING RULES: 1) Fair market value MUST be 8-15% BELOW the asking price - buyers NEVER pay full ask. 2) A 1970s airplane is worth 30-40% less than the same model from the 1990s. 3) A 1976 A36 Bonanza with 4000+ hours and older avionics (Apollo, STEC, King KI-525) has a fair value of $240-290k even with an IO-550 conversion. 4) Only modern glass cockpit A36s (G500/G1000, 1990s+, low time) reach $350k+. Year matters hugely - a 1976 is worth much less than a 2006. High airframe time reduces value. Engine conversions add 25-40k max. Older avionics add modest value. Keep spread between seller and buyer target within 10-15%.\n\n'
   prompt += 'MANDATORY — GROUND YOUR ESTIMATE IN REAL EVIDENCE BEFORE PRICING:\n'
