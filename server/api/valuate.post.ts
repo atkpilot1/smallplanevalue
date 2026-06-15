@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import { generateText, stepCountIs } from 'ai'
+import { generateText, stepCountIs, tool } from 'ai'
+import { findComparables, formatComparables } from '../data/aircraftDb'
 
 const bodySchema = z.object({
   make: z.string().min(1),
@@ -255,16 +256,33 @@ export default defineEventHandler(async (event) => {
     'OTHER DEDUCTION ITEMS (subtract when present): run-out/high-time engine, corrosion, hail/hangar rash, outdated/inop equipment, overdue inspections.\n\n'
   prompt +=
     'CRITICAL PRICING RULES: 1) Fair market value MUST be 8-15% BELOW the asking price - buyers NEVER pay full ask. 2) A 1970s airplane is worth 30-40% less than the same model from the 1990s. 3) A 1976 A36 Bonanza with 4000+ hours and older avionics (Apollo, STEC, King KI-525) has a fair value of $240-290k even with an IO-550 conversion. 4) Only modern glass cockpit A36s (G500/G1000, 1990s+, low time) reach $350k+. Year matters hugely - a 1976 is worth much less than a 2006. High airframe time reduces value. Engine conversions add 25-40k max. Older avionics add modest value. Keep spread between seller and buyer target within 10-15%.\n\n'
+  // --- Internal database comparables (always injected) ----------------------
+  // Fuzzy-match the make/model against our scraped Trade-A-Plane catalog and
+  // inject the full detail of each price-bearing match. Year is intentionally
+  // NOT used to filter — nearby years of the same make/model are useful comps.
+  const dbComps = findComparables({ make: d.make, model: d.model, limit: 6 })
+  if (dbComps.length) {
+    prompt +=
+      'INTERNAL DATABASE COMPARABLES — real Trade-A-Plane listings (asking prices) from our own catalog, matched by make/model (years deliberately NOT filtered, so nearby years are included — adjust for year/spec differences yourself). Treat these as primary evidence alongside your web search:\n\n' +
+      formatComparables(dbComps) +
+      '\n\nThese are ASKING prices, not sold prices. Use them together with live web data; reconcile differences in year, hours, avionics and condition when pricing.\n\n'
+  } else {
+    prompt +=
+      'INTERNAL DATABASE COMPARABLES: no direct matches were pre-loaded for this make/model. You can still call the lookup_comps tool with alternate make/model spellings to search the internal catalog.\n\n'
+  }
+
   prompt += 'MANDATORY — GROUND YOUR ESTIMATE IN REAL EVIDENCE BEFORE PRICING:\n'
   prompt +=
-    '1. You MUST use the web_search tool to find CURRENT, ACTIVE listings and recent sold prices for this exact make/model/year. Do NOT price from memory. Searching is not optional.\n'
+    '1. You MUST use BOTH sources of evidence: (a) the INTERNAL DATABASE COMPARABLES above (and the lookup_comps tool for more/alternate matches), AND (b) the web_search tool for current, active listings and recent sold prices. Do NOT price from memory. Using both is not optional.\n'
   prompt +=
     '2. Keep searching until you have found solid, usable data — run multiple searches with different queries if your first attempts come up short (try variations like "' + (d.year || '') + ' ' + d.make + ' ' + d.model + ' for sale price", "' + d.make + ' ' + d.model + ' asking price", "' + d.make + ' ' + d.model + ' sold price", and aircraft marketplaces like Controller, Trade-A-Plane, Aircraft For Sale, Barnstormers).\n'
   prompt +=
-    '3. Try very hard to find at least 3-5 comparable real-world listings/sales. Only fall back to general market knowledge if repeated searches genuinely return nothing useful — and if so, lower confidence and note it in keyFinding.\n'
+    '3. Use the lookup_comps tool whenever the pre-loaded internal comps are sparse, the make/model may be spelled differently, or you want more examples from the internal catalog.\n'
   prompt +=
-    '4. Base sellerAsk, fairMarketValue and buyerTarget DIRECTLY on the actual prices you found online. Every number you output should be defensible by the real listings you located, not invented.\n'
-  prompt += '5. Keep the spread between seller price and buyer target within 10-15% max.\n\n'
+    '4. Try very hard to base your price on at least 3-5 comparable real-world listings/sales drawn from the internal comps and the web combined. Only fall back to general market knowledge if both genuinely return nothing useful — and if so, lower confidence and note it in keyFinding.\n'
+  prompt +=
+    '5. Base sellerAsk, fairMarketValue and buyerTarget DIRECTLY on the actual prices you found (internal comps + web). Every number you output should be defensible by real listings, not invented.\n'
+  prompt += '6. Keep the spread between seller price and buyer target within 10-15% max.\n\n'
   prompt += 'Return ONLY valid JSON — no preamble, no markdown, no text after the closing brace. Keep keyFinding to ONE sentence, analysis to 2-3 sentences, and each negotiating tip to one short sentence so the JSON stays compact and complete:\n'
   prompt +=
     '{"sellerAsk":NUMBER,"fairMarketValue":NUMBER,"buyerTarget":NUMBER,"condImpact":"+3%","avImpact":"+7%","engineImpact":"-4%","condVerdict":"Good","avVerdict":"Above average","engineVerdict":"Mid-life","keyFinding":"One sentence.","analysis":"2-3 sentences.","negotiatingTips":["Tip 1","Tip 2","Tip 3"],"confidence":"high"}'
@@ -278,6 +296,33 @@ export default defineEventHandler(async (event) => {
       maxOutputTokens: 3000,
       tools: {
         web_search: provider.tools.webSearch_20250305({ maxUses: 8 }),
+        lookup_comps: tool({
+          description:
+            'Search the internal Trade-A-Plane aircraft database for comparable listings by make/model. ' +
+            'Returns real listings WITH asking prices and full detail (year, total time, avionics, condition notes). ' +
+            'Year is NOT used to filter, so nearby years of the same make/model are included. ' +
+            'Use this to get more or alternately-spelled comparables beyond the ones pre-loaded into the prompt.',
+          inputSchema: z.object({
+            make: z.string().describe('Aircraft manufacturer, e.g. "PIPER", "CESSNA", "BEECHCRAFT".'),
+            model: z
+              .string()
+              .describe('Model or family, e.g. "PA-28-180", "172", "A36 BONANZA". Use a broad model name for more matches.'),
+            limit: z
+              .number()
+              .int()
+              .min(1)
+              .max(12)
+              .optional()
+              .describe('Maximum number of comparables to return (default 6).'),
+          }),
+          execute: async ({ make, model, limit }) => {
+            const comps = findComparables({ make, model, limit: limit ?? 6 })
+            return {
+              count: comps.length,
+              comparables: formatComparables(comps),
+            }
+          },
+        }),
       },
       stopWhen: stepCountIs(10),
     })
