@@ -571,6 +571,12 @@ margin-top: 1.5rem;
 .spin.on { display: block; }
 .spin-i { font-size: 24px; animation: rot 1.1s linear infinite; display: inline-block; margin-bottom: 6px; color: var(--sky-light); }
 @keyframes rot { to { transform: rotate(360deg); } }
+/* flying-plane loader (valuation) */
+.fly-track { position: relative; height: 34px; width: 100%; max-width: 320px; margin: 0 auto 8px; overflow: hidden; }
+.fly-track::after { content: ''; position: absolute; left: 0; right: 0; bottom: 6px; border-bottom: 1px dashed rgba(19,64,116,0.18); }
+.fly-plane { position: absolute; top: 4px; font-size: 22px; color: var(--sky-light); animation: fly-rl 2.4s linear infinite; will-change: transform; }
+.fly-plane i.ti { display: inline-block; transform: rotate(-135deg) !important; }
+@keyframes fly-rl { from { transform: translateX(320px); } to { transform: translateX(-40px); } }
 
 /* badge */
 .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 99px; }
@@ -1063,8 +1069,20 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 </div>
 </div>
 
+<div class="form-group">
+<label>AVIONICS PANEL</label>
+<select id="v-avionics-package">
+<option value="">Select a panel type…</option>
+<option value="Steam / round-gauge (basic)">Steam / round-gauge (basic)</option>
+<option value="Basic IFR (GPS + ADS-B)">Basic IFR — WAAS GPS + ADS-B</option>
+<option value="Single glass upgrade (Aspen / G5 / GI 275)">Single glass upgrade — Aspen / G5 / GI 275</option>
+<option value="Modern Garmin suite (GTN + glass + GFC autopilot)">Modern Garmin suite — GTN + glass + GFC autopilot</option>
+<option value="Full glass + autopilot (latest Garmin suite)">Full glass + autopilot — latest Garmin suite</option>
+</select>
+</div>
+
 <details class="adv-section">
-<summary>AVIONICS &amp; EQUIPMENT <span class="adv-hint">optional — sharpens estimate</span></summary>
+<summary>AVIONICS — itemize for precision <span class="adv-hint">optional — overrides panel above</span></summary>
 <div class="adv-body">
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 24px">
 <div>
@@ -1209,7 +1227,7 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 <button class="submit-btn accent-btn" id="v-btn" onclick="doValuation()">
 <i class="ti ti-calculator"></i> Get honest valuation
 </button>
-<div class="spin" id="v-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Analyzing asking prices &amp; discount patterns...</div></div>
+<div class="spin" id="v-spin"><div class="fly-track"><span class="fly-plane"><i class="ti ti-plane"></i></span></div><div>Searching live listings &amp; recent sales...</div></div>
 <div id="v-result"></div>
 </div>
 
@@ -1651,6 +1669,7 @@ var engConv = document.getElementById('v-eng-conv'); if (engConv) engConv.value 
 var cgen = document.getElementById('v-cirrusgen'); if (cgen) { cgen.value = ''; delete cgen.dataset.touched; }
 var lbk = document.getElementById('v-logbooks'); if (lbk) lbk.value = '';
 var dmg = document.getElementById('v-damage'); if (dmg) dmg.value = '';
+var avpkg = document.getElementById('v-avionics-package'); if (avpkg) avpkg.value = '';
 toggleCirrusGen();
 document.querySelectorAll('input[type="checkbox"][id^="av-"]').forEach(function(cb) { cb.checked = false; });
 document.querySelectorAll('select[id$="-qty"]').forEach(function(s) { s.value = '1'; });
@@ -1789,7 +1808,8 @@ var v=await apiPost('/api/valuate', {
   asking: askPrice || '',
   cirrusGen: (document.getElementById('v-cirrusgen') ? document.getElementById('v-cirrusgen').value : ''),
   logbooks: (document.getElementById('v-logbooks') ? document.getElementById('v-logbooks').value : ''),
-  damage: (document.getElementById('v-damage') ? document.getElementById('v-damage').value : '')
+  damage: (document.getElementById('v-damage') ? document.getElementById('v-damage').value : ''),
+  avionicsPackage: (document.getElementById('v-avionics-package') ? document.getElementById('v-avionics-package').value : '')
 });
 renderVal(v,make,model,year);
 } catch(e) { console.error('Valuation error:', e); document.getElementById('v-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed: ' + (e.message || e) + '</p>'; }

@@ -16,6 +16,7 @@ const bodySchema = z.object({
   cirrusGen: z.string().optional().default(''),
   logbooks: z.string().optional().default(''),
   damage: z.string().optional().default(''),
+  avionicsPackage: z.string().optional().default(''),
 })
 
 const valSchema = z.object({
@@ -101,6 +102,15 @@ function extractJson(txt: string): unknown {
   // the LAST one that parses and looks like a valuation. This is robust when the
   // model emits reasoning text containing stray braces before the final JSON.
   const candidates: string[] = []
+
+  const tryParse = (candidate: string): unknown | null => {
+    try {
+      return JSON.parse(candidate)
+    } catch {
+      return null
+    }
+  }
+
   for (let i = 0; i < cleaned.length; i++) {
     if (cleaned[i] !== '{') continue
     let depth = 0
@@ -123,6 +133,9 @@ function extractJson(txt: string): unknown {
           break
         }
       }
+    }
+    if (depth !== 0) {
+      candidates.push(cleaned.slice(i))
     }
   }
   for (let k = candidates.length - 1; k >= 0; k--) {
@@ -210,13 +223,24 @@ export default defineEventHandler(async (event) => {
   // Base airframe value is unknown until the LLM prices it, so we inject the
   // per-item dollar figures and total and instruct the model to use them as-is
   // (applying the 40% airframe cap relative to its own base airframe estimate).
-  const av = computeAvionicsAdjustment(avs)
-  if (av.lineItems.length || av.adsbPenalty) {
+  // Two avionics paths:
+  //  - If the user itemized avionics (checkboxes), use the per-item engine.
+  //  - Otherwise, if they picked a simplified panel package, use that.
+  if (avs.length > 0) {
+    const av = computeAvionicsAdjustment(avs)
+    if (av.lineItems.length || av.adsbPenalty) {
+      prompt +=
+        av.summary +
+        'Apply the avionics adjustment ABOVE to the base airframe value you derive from comps. ' +
+        'Do NOT independently re-estimate the dollar value of avionics — these figures are authoritative. ' +
+        'Cap total POSITIVE avionics value at 40% of the base airframe value; the ADS-B penalty (if any) always applies in full.\n\n'
+    }
+  } else if (d.avionicsPackage && avionicsPackageValue(d.avionicsPackage)) {
+    // Simplified "panel package" path. The package dollar value is added
+    // deterministically AFTER the estimate (see applyAvionicsPackage), so the
+    // model must price a neutral basic-IFR panel and NOT value avionics itself.
     prompt +=
-      av.summary +
-      'Apply the avionics adjustment ABOVE to the base airframe value you derive from comps. ' +
-      'Do NOT independently re-estimate the dollar value of avionics — these figures are authoritative. ' +
-      'Cap total POSITIVE avionics value at 40% of the base airframe value; the ADS-B penalty (if any) always applies in full.\n\n'
+      'AVIONICS: price this aircraft assuming a basic IFR panel (a WAAS GPS + ADS-B Out). The actual panel upgrade value is added automatically AFTER your estimate, so DO NOT add or subtract avionics value yourself and do NOT mention the avionics/panel in keyFinding or analysis.\n\n'
   }
 
   prompt +=
@@ -226,19 +250,9 @@ export default defineEventHandler(async (event) => {
   prompt +=
     'Logbooks: ' + (d.logbooks || 'Unknown') + '. Damage history: ' + (d.damage || 'Unknown') + '\nNotes: ' + (d.notes || 'none') + '\n'
   prompt +=
-    'VALUE ADJUSTMENTS — apply these AFTER you establish a base value from comps. Each adjustment is a percentage of the base airframe value; net them together and reflect the result in fairMarketValue and in condImpact/condVerdict:\n' +
-    'LOGBOOKS (records strongly drive resale value):\n' +
-    '  - Complete since new: +3% to +8% (highly desirable; note as a premium).\n' +
-    '  - Complete (not since new, but no unexplained gaps): baseline, no adjustment.\n' +
-    '  - Minor gaps: -3% to -8%.\n' +
-    '  - Missing / incomplete logbooks: -10% to -25% (one of the largest possible deductions; larger on higher-value or complex/twin aircraft). ALWAYS apply a real deduction and call it out in keyFinding.\n' +
-    'DAMAGE HISTORY:\n' +
-    '  - None (verified, clean): small premium, +0% to +3%.\n' +
-    '  - Repaired (documented, minor): -3% to -8%.\n' +
-    '  - Repaired (major: spar, firewall, prop strike w/ teardown): -8% to -15%.\n' +
-    '  - Unknown/undisclosed: treat cautiously, lower confidence.\n' +
-    'VALUE-ADD ITEMS (credit when present in notes/equipment — additive, but cap combined positive condition/logbook/damage adjustments at +15% of base): fresh/recent engine overhaul or factory reman, recently complied ADs/SBs, recent annual, fresh paint, fresh interior, no-damage clean history, complete logs, useful STC mods, hangared storage, useful-load mods.\n' +
-    'DEDUCTION ITEMS (subtract when present): run-out/high-time engine, corrosion, hail/hangar rash, outdated/inop equipment, overdue inspections, missing records.\n\n'
+    'IMPORTANT — LOGBOOKS and DAMAGE HISTORY are adjusted automatically AFTER your estimate, so DO NOT price them yourself. Price this aircraft assuming COMPLETE logbooks and NO damage history (a clean baseline). Ignore the "Logbooks:" and "Damage history:" lines above when setting sellerAsk, fairMarketValue and buyerTarget. Do not mention logbook completeness or damage history in keyFinding/analysis — a separate records adjustment is appended automatically.\n' +
+    'OTHER VALUE-ADD ITEMS (credit when present in notes/equipment, cap combined positives at +15% of base): fresh/recent engine overhaul or factory reman, recently complied ADs/SBs, recent annual, fresh paint, fresh interior, useful STC mods, hangared storage, useful-load mods.\n' +
+    'OTHER DEDUCTION ITEMS (subtract when present): run-out/high-time engine, corrosion, hail/hangar rash, outdated/inop equipment, overdue inspections.\n\n'
   prompt +=
     'CRITICAL PRICING RULES: 1) Fair market value MUST be 8-15% BELOW the asking price - buyers NEVER pay full ask. 2) A 1970s airplane is worth 30-40% less than the same model from the 1990s. 3) A 1976 A36 Bonanza with 4000+ hours and older avionics (Apollo, STEC, King KI-525) has a fair value of $240-290k even with an IO-550 conversion. 4) Only modern glass cockpit A36s (G500/G1000, 1990s+, low time) reach $350k+. Year matters hugely - a 1976 is worth much less than a 2006. High airframe time reduces value. Engine conversions add 25-40k max. Older avionics add modest value. Keep spread between seller and buyer target within 10-15%.\n\n'
   prompt += 'MANDATORY — GROUND YOUR ESTIMATE IN REAL EVIDENCE BEFORE PRICING:\n'
@@ -289,8 +303,11 @@ export default defineEventHandler(async (event) => {
   const toNum = (v: unknown): unknown => {
     if (typeof v === 'number') return v
     if (typeof v === 'string') {
-      const n = parseFloat(v.replace(/[^0-9.\-]/g, ''))
-      if (!Number.isNaN(n)) return n
+      let str = v.trim().toLowerCase()
+      const suffix = str.endsWith('k') ? 1000 : str.endsWith('m') ? 1_000_000 : 1
+      if (suffix > 1) str = str.slice(0, -1)
+      const n = parseFloat(str.replace(/[^0-9\.\-]/g, ''))
+      if (!Number.isNaN(n)) return Math.round(n * suffix)
     }
     return v
   }
@@ -309,5 +326,106 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'The AI returned an incomplete valuation. Please try again.',
     })
   }
-  return result.data
+
+  // Deterministic adjustments applied to the AI's clean baseline so ordering is
+  // guaranteed and not subject to per-call web-search noise:
+  //  1) avionics panel package (added as flat dollars over a basic-IFR baseline)
+  //  2) logbook + damage records factors
+  let out = applyAvionicsPackage(result.data, avs.length > 0 ? '' : d.avionicsPackage)
+  out = applyRecordsAdjustment(out, d.logbooks, d.damage)
+  return out
 })
+
+function applyAvionicsPackage(
+  v: z.infer<typeof valSchema>,
+  pkgName: string,
+): z.infer<typeof valSchema> {
+  const pkg = avionicsPackageValue(pkgName)
+  if (!pkg || pkg.value === 0) return v
+  const add = pkg.value
+  const round = (n: number) => Math.round(n / 1000) * 1000
+  const adjusted = {
+    ...v,
+    sellerAsk: round(v.sellerAsk + add),
+    fairMarketValue: round(v.fairMarketValue + add),
+    buyerTarget: round(v.buyerTarget + add),
+  }
+  adjusted.avImpact = '+$' + add.toLocaleString('en-US')
+  adjusted.avVerdict = pkgName.replace(/\s*\(.*\)\s*$/, '')
+  return adjusted
+}
+
+// Fractional value impact of logbook completeness (relative to a clean baseline).
+function logbookFactor(logbooks: string): number {
+  switch (logbooks) {
+    case 'Complete since new': return 0.05
+    case 'Complete, no gaps': return 0
+    case 'Minor gaps': return -0.06
+    case 'Missing / incomplete': return -0.18
+    default: return 0 // Unknown
+  }
+}
+
+// Fractional value impact of damage history (relative to a clean baseline).
+function damageFactor(damage: string): number {
+  switch (damage) {
+    case 'None (clean, verified)': return 0.02
+    case 'Repaired, minor (documented)': return -0.06
+    case 'Repaired, major (documented)': return -0.12
+    default: return 0 // Unknown
+  }
+}
+
+// Simplified avionics "panel package" presets. Each maps to an approximate
+// added value (in dollars) over a basic IFR panel. These are deliberately
+// conservative resale-VALUE figures (not install cost) and easy to tune.
+function avionicsPackageValue(pkg: string): { value: number; note: string } | null {
+  switch (pkg) {
+    case 'Steam / round-gauge (basic)':
+      return { value: 0, note: 'Legacy steam gauges — no avionics premium; may need ADS-B and upgrades.' }
+    case 'Basic IFR (GPS + ADS-B)':
+      return { value: 8000, note: 'A WAAS GPS navigator plus ADS-B Out — the practical baseline buyers expect.' }
+    case 'Single glass upgrade (Aspen / G5 / GI 275)':
+      return { value: 16000, note: 'One glass PFD (Aspen Evolution, Garmin G5 or GI 275) replacing the primary instruments.' }
+    case 'Modern Garmin suite (GTN + glass + GFC autopilot)':
+      return { value: 45000, note: 'A modern Garmin retrofit: GTN-series navigator, G500 TXi / dual G5/GI 275 glass, and a GFC 500/600 digital autopilot.' }
+    case 'Full glass + autopilot (latest Garmin suite)':
+      return { value: 60000, note: 'A full latest-generation Garmin panel (GTN Xi navigators, G500 TXi displays, GFC autopilot, GTX 345 ADS-B In/Out) — top of the retrofit market.' }
+    default:
+      return null
+  }
+}
+
+function applyRecordsAdjustment(
+  v: z.infer<typeof valSchema>,
+  logbooks: string,
+  damage: string,
+): z.infer<typeof valSchema> {
+  const lf = logbookFactor(logbooks)
+  const df = damageFactor(damage)
+  const factor = 1 + lf + df
+  if (factor === 1) return v // nothing to adjust
+
+  const round = (n: number) => Math.round(n / 1000) * 1000
+  const adjusted = {
+    ...v,
+    sellerAsk: round(v.sellerAsk * factor),
+    fairMarketValue: round(v.fairMarketValue * factor),
+    buyerTarget: round(v.buyerTarget * factor),
+  }
+
+  // Surface the records impact in the condition verdict so the UI reflects it.
+  const pct = Math.round((lf + df) * 100)
+  const notes: string[] = []
+  if (lf < 0) notes.push('incomplete/missing logbooks')
+  else if (lf > 0) notes.push('complete logbooks')
+  if (df < 0) notes.push('damage history')
+  else if (df > 0) notes.push('clean, no-damage history')
+  if (notes.length) {
+    const sign = pct >= 0 ? '+' : ''
+    adjusted.condImpact = sign + pct + '% records'
+    const lead = pct < 0 ? 'Records deduction applied for ' : 'Records premium applied for '
+    adjusted.keyFinding = (lead + notes.join(' and ') + ' (' + sign + pct + '% vs clean baseline). ' + (v.keyFinding || '')).trim()
+  }
+  return adjusted
+}
