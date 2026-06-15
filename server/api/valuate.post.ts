@@ -204,7 +204,7 @@ export default defineEventHandler(async (event) => {
   prompt +=
     '2025-2026 market:\n- Beech Baron D55/E55: $180k-$320k. Fresh matched engines +$40-60k. G500 TXi+GTN 750Xi+GFC 600 adds $30-50k.\n'
   prompt +=
-    '- Autopilot: GFC 600 is gold standard (+$15-20k). S-TEC 3100 capable but $25-30k less than GFC 600. S-TEC 55X basic (+$2-4k). S-TEC 65 is an older rate-based unit, less capable than the 55X (+$1-2k).\n'
+    '- Autopilot: GFC 600 is gold standard (+$15-20k). S-TEC 3100 capable but $25-30k less than GFC 600. S-TEC 55X basic (+$2-4k). Other legacy S-TEC units (S-TEC 65/60/50/40/30) are older rate-based autopilots, all valued the same and less capable than the 55X (+$1-2k).\n'
   prompt +=
     '- Cessna 172: $80k-$250k. Cessna 182: $120k-$350k. RV-10: $260k-$530k (older/basic $260-330k, newer/loaded $400-530k).\n'
   prompt +=

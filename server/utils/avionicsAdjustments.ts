@@ -68,7 +68,7 @@ export const AVIONICS_ROWS: AvionicsRow[] = [
   { item: 'Avidyne DFC100', category: 'Autopilot', installedCost: 15000, retainedNew: 0.5, annualDecay: 0.06, floorPct: 0.28, yearsSinceInstall: 7, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: true, glassPfd: false, aliases: ['Avidyne DFC 100'] },
   { item: 'Avidyne DFC90', category: 'Autopilot', installedCost: 10000, retainedNew: 0.45, annualDecay: 0.06, floorPct: 0.25, yearsSinceInstall: 9, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: true, glassPfd: false, aliases: ['Avidyne DFC 90'] },
   { item: 'Genesys S-TEC 55X', category: 'Autopilot', installedCost: 15000, retainedNew: 0.45, annualDecay: 0.06, floorPct: 0.25, yearsSinceInstall: 12, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: true, glassPfd: false, aliases: ['S-TEC 55X'] },
-  { item: 'Genesys S-TEC 65', category: 'Autopilot', installedCost: 14000, retainedNew: 0.45, annualDecay: 0.06, floorPct: 0.25, yearsSinceInstall: 12, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: true, glassPfd: false, aliases: ['S-TEC 65'] },
+  { item: 'Genesys S-TEC (other legacy)', category: 'Autopilot', installedCost: 14000, retainedNew: 0.45, annualDecay: 0.06, floorPct: 0.25, yearsSinceInstall: 12, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: true, glassPfd: false, aliases: ['S-TEC 65', 'S-TEC 60', 'S-TEC 60-2', 'S-TEC 50', 'S-TEC 40', 'S-TEC 30', 'S-TEC other', 'S-TEC'] },
   { item: 'Bendix/King KFC 150/200', category: 'Autopilot', installedCost: 7000, retainedNew: 0.3, annualDecay: 0.05, floorPct: 0.15, yearsSinceInstall: 25, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: true, glassPfd: false, aliases: ['King KFC 150/200/225'] },
 
   // Transponder / ADS-B

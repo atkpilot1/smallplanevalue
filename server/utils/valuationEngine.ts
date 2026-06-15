@@ -135,7 +135,7 @@ export const AVIONICS: AvionicsRow[] = [
   { id: 'ap_dfc100', category: 'Autopilot', item: 'Avidyne DFC100', cost: 15000, retained: 0.50, decay: 0.06, floor: 0.28, years: 7, lpv: 0, adsbOut: 0, adsbIn: 0, coupledAP: 1, glass: 0 },
   { id: 'ap_dfc90', category: 'Autopilot', item: 'Avidyne DFC90', cost: 10000, retained: 0.45, decay: 0.06, floor: 0.25, years: 9, lpv: 0, adsbOut: 0, adsbIn: 0, coupledAP: 1, glass: 0 },
   { id: 'ap_stec55x', category: 'Autopilot', item: 'Genesys S-TEC 55X', cost: 15000, retained: 0.45, decay: 0.06, floor: 0.25, years: 12, lpv: 0, adsbOut: 0, adsbIn: 0, coupledAP: 1, glass: 0 },
-  { id: 'ap_stec65', category: 'Autopilot', item: 'Genesys S-TEC 65', cost: 14000, retained: 0.45, decay: 0.06, floor: 0.25, years: 12, lpv: 0, adsbOut: 0, adsbIn: 0, coupledAP: 1, glass: 0 },
+  { id: 'ap_stec65', category: 'Autopilot', item: 'Genesys S-TEC (other legacy)', cost: 14000, retained: 0.45, decay: 0.06, floor: 0.25, years: 12, lpv: 0, adsbOut: 0, adsbIn: 0, coupledAP: 1, glass: 0 },
   { id: 'ap_kfc150', category: 'Autopilot', item: 'Bendix/King KFC 150', cost: 7000, retained: 0.30, decay: 0.05, floor: 0.15, years: 25, lpv: 0, adsbOut: 0, adsbIn: 0, coupledAP: 1, glass: 0 },
   { id: 'ap_kap140', category: 'Autopilot', item: 'Bendix/King KAP 140', cost: 6000, retained: 0.30, decay: 0.05, floor: 0.15, years: 22, lpv: 0, adsbOut: 0, adsbIn: 0, coupledAP: 0, glass: 0 },
   { id: 'ap_century', category: 'Autopilot', item: 'Century / other analog', cost: 5000, retained: 0.28, decay: 0.05, floor: 0.12, years: 30, lpv: 0, adsbOut: 0, adsbIn: 0, coupledAP: 0, glass: 0 },
