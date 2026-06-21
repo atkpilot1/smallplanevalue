@@ -977,7 +977,7 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 </div>
 <div class="form-grid-3">
 <div class="form-group"><label>YEAR</label><input type="number" id="v-year" placeholder="e.g. 1969" min="1930" max="2026" oninput="toggleCirrusGen()" /></div>
-<div class="form-group"><label>LAST ANNUAL</label><div style="display:flex;gap:6px;width:100%"><select id="v-annual-month" style="flex:1"><option value="">Month</option><option value="01">January</option><option value="02">February</option><option value="03">March</option><option value="04">April</option><option value="05">May</option><option value="06">June</option><option value="07">July</option><option value="08">August</option><option value="09">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select><input type="number" id="v-annual-year" placeholder="Year" min="1960" max="2026" style="flex:1" /></div></div>
+<div class="form-group"><label>LAST ANNUAL</label><div style="display:flex;gap:6px;width:100%"><select id="v-annual-month" style="flex:1"><option value="">Month</option><option value="01">January</option><option value="02">February</option><option value="03">March</option><option value="04">April</option><option value="05">May</option><option value="06">June</option><option value="07">July</option><option value="08">August</option><option value="09">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select><input type="number" id="v-annual-year" placeholder="Year" min="2010" max="2026" style="flex:1" /></div><label class="chk-label" style="margin-top:6px"><input type="checkbox" id="v-out-of-annual" /> Out of annual</label></div>
 <div class="form-group"><label>ENGINE</label><input type="text" id="v-engine-display" placeholder="From N-number lookup" readonly style="background:var(--offwhite);color:var(--muted)" /></div>
 <div class="form-group"><label>ASKING PRICE ($)</label><input type="number" id="v-asking" placeholder="e.g. 299000" /></div>
 <div class="form-group"><label>TOTAL TIME (TTAF HRS)</label><input type="number" id="v-ttaf" placeholder="e.g. 3200" /></div>
@@ -1665,6 +1665,7 @@ var engDisp = document.getElementById('v-engine-display'); if (engDisp) engDisp.
 var asking = document.getElementById('v-asking'); if (asking) asking.value = '';
 var annualM = document.getElementById('v-annual-month'); if (annualM) annualM.value = '';
 var annualY = document.getElementById('v-annual-year'); if (annualY) annualY.value = '';
+var outAnnual = document.getElementById('v-out-of-annual'); if (outAnnual) outAnnual.checked = false;
 var engConv = document.getElementById('v-eng-conv'); if (engConv) engConv.value = '';
 var cgen = document.getElementById('v-cirrusgen'); if (cgen) { cgen.value = ''; delete cgen.dataset.touched; }
 var lbk = document.getElementById('v-logbooks'); if (lbk) lbk.value = '';
@@ -1767,6 +1768,7 @@ var cosm=document.getElementById('v-cosm').value;
 var notes=document.getElementById('v-notes').value.replace(/["'\\]/g, ' ');
 var annualMEl=document.getElementById('v-annual-month');var annualYEl=document.getElementById('v-annual-year');var annualVal=(annualMEl&&annualYEl&&annualMEl.value&&annualYEl.value)?(annualYEl.value+'-'+annualMEl.value):'';var annualInfo='';
 if(annualVal){var ad=new Date(annualVal+'-01');var now=new Date();var months=Math.round((now-ad)/(1000*60*60*24*30));var pct=Math.min(100,Math.round(months/12*100));annualInfo='Annual inspection done '+months+' months ago ('+pct+'% through annual cycle). ';}
+var outOfAnnualEl=document.getElementById('v-out-of-annual');var outOfAnnual=!!(outOfAnnualEl&&outOfAnnualEl.checked);if(outOfAnnual){annualInfo+='Aircraft is OUT OF ANNUAL (airworthiness inspection lapsed). ';}
 var isTwin = document.getElementById('v-engines') && document.getElementById('v-engines').value === '2';
 var engineInfo = '';
 if (isTwin) {
@@ -1809,6 +1811,7 @@ var v=await apiPost('/api/valuate', {
   cirrusGen: (document.getElementById('v-cirrusgen') ? document.getElementById('v-cirrusgen').value : ''),
   logbooks: (document.getElementById('v-logbooks') ? document.getElementById('v-logbooks').value : ''),
   damage: (document.getElementById('v-damage') ? document.getElementById('v-damage').value : ''),
+  outOfAnnual: outOfAnnual,
   avionicsPackage: (document.getElementById('v-avionics-package') ? document.getElementById('v-avionics-package').value : '')
 });
 renderVal(v,make,model,year);

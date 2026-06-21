@@ -17,6 +17,7 @@ const bodySchema = z.object({
   cirrusGen: z.string().optional().default(''),
   logbooks: z.string().optional().default(''),
   damage: z.string().optional().default(''),
+  outOfAnnual: z.boolean().optional().default(false),
   avionicsPackage: z.string().optional().default(''),
 })
 
@@ -378,8 +379,28 @@ export default defineEventHandler(async (event) => {
   //  2) logbook + damage records factors
   let out = applyAvionicsPackage(result.data, avs.length > 0 ? '' : d.avionicsPackage)
   out = applyRecordsAdjustment(out, d.logbooks, d.damage)
+  out = applyOutOfAnnualAdjustment(out, d.outOfAnnual)
   return out
 })
+
+// Flat deduction applied when the aircraft is out of annual (airworthiness
+// inspection lapsed). A non-airworthy aircraft cannot be legally flown until a
+// fresh annual is completed, which is a significant, deterministic hit.
+const OUT_OF_ANNUAL_DEDUCTION = 50000
+
+function applyOutOfAnnualAdjustment(
+  v: z.infer<typeof valSchema>,
+  outOfAnnual: boolean,
+): z.infer<typeof valSchema> {
+  if (!outOfAnnual) return v
+  const clampPos = (n: number) => Math.max(0, n)
+  return {
+    ...v,
+    sellerAsk: clampPos(v.sellerAsk - OUT_OF_ANNUAL_DEDUCTION),
+    fairMarketValue: clampPos(v.fairMarketValue - OUT_OF_ANNUAL_DEDUCTION),
+    buyerTarget: clampPos(v.buyerTarget - OUT_OF_ANNUAL_DEDUCTION),
+  }
+}
 
 function applyAvionicsPackage(
   v: z.infer<typeof valSchema>,
