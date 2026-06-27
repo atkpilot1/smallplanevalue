@@ -1,0 +1,14 @@
+{
+  "routes": [
+    {
+      "src": "\\/.netlify\\/functions\\/proxy",
+      "dest": "/api/proxy"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/.netlify/functions/proxy",
+      "destination": "/api/proxy"
+    }
+  ]
+}

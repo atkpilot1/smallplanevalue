@@ -2,6 +2,15 @@
 // add an entry here (img is the public URL path, no base64 needed).
 const PLANES = [
   {
+    img: '/planes/Cessna.jpg',
+    alt: 'Cessna 206',
+    name: 'Cessna 206',
+    tag: 'Piston Single',
+    icon: 'ti-star',
+    desc: '6-seat utility single · commonly used for utility and bush operations',
+    ask: '$120k-$260k',
+  },
+  {
     img: '/planes/cessna-195.jpg',
     alt: 'Cessna 195',
     name: 'Cessna 195',
@@ -27,15 +36,6 @@ const PLANES = [
     icon: 'ti-star',
     desc: '4-seat certified · IO-550 · CAPS parachute system',
     ask: '$180k-$450k',
-  },
-  {
-    img: '/planes/cessna-172.jpg',
-    alt: 'Cessna 172 Skyhawk',
-    name: 'Cessna',
-    tag: 'Piston Single',
-    icon: 'ti-star',
-    desc: '4-seat trainer · Lycoming O-360 · most-produced aircraft',
-    ask: '$80k-$400k',
   },
   {
     img: '/planes/beech-a36.jpg',
