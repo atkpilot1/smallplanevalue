@@ -690,6 +690,9 @@ nav { padding: 0 1.5rem; }
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-9ET7HJRJWC');
+  function trackEvent(name, params) {
+    if (typeof gtag === 'function') gtag('event', name, params || {});
+  }
 </script>
 </head>
 <body>
@@ -1532,6 +1535,7 @@ if (d.error) throw new Error(d.error);
 window._lastLookup = d;
 window._lastLookup = d;
 renderLookup(d);
+trackEvent('lookup_success', { source: 'spv' });
 if (d.aircraftType && d.aircraftType.toLowerCase().indexOf('multi') >= 0) {
   var engSel = document.getElementById('v-engines');
   if (engSel) { engSel.value = '2'; toggleEngineFields(); }
@@ -2314,6 +2318,27 @@ function renderRecentSales() {
     origSwitch(id);
     if (id === 'sold') renderRecentSales();
   };
+})();
+
+// Deep link from ntailnum: ?n=12345&utm_source=ntailnum
+(function initNtailnumDeepLink() {
+  var params = new URLSearchParams(location.search);
+  var n = params.get('n');
+  if (!n) return;
+  var nn = n.replace(/^N/i, '').trim().toUpperCase();
+  if (!nn) return;
+  var utmSource = params.get('utm_source') || 'ntailnum';
+  trackEvent('ntailnum_referral', {
+    utm_source: utmSource,
+    utm_medium: params.get('utm_medium') || '',
+    utm_campaign: params.get('utm_campaign') || '',
+  });
+  var nnInput = document.getElementById('nn');
+  if (nnInput) nnInput.value = nn;
+  switchTab('lookup');
+  var app = document.getElementById('app');
+  if (app) app.scrollIntoView({ behavior: 'smooth' });
+  setTimeout(function() { doLookup(); }, 300);
 })();
 
 </script>

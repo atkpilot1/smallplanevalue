@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
   const supabaseUrl = process.env.SUPABASE_URL
   const supabaseAnonKey = process.env.SUPABASE_ANON_KEY
 
-  if (type === 'faa_lookup' || type === 'feedback') {
+  if (type === 'faa_lookup' || type === 'feedback' || type === 'lookup_lead') {
     if (!supabaseUrl || !supabaseAnonKey) {
       return json(event, 500, { error: 'Database not configured' })
     }
@@ -117,6 +117,43 @@ export default defineEventHandler(async (event) => {
           aircraft: body.aircraft || null,
           accuracy: body.accuracy || null,
           message: body.message || null,
+          user_agent: body.user_agent || null,
+        },
+      })
+
+      return json(event, 200, { ok: true })
+    } catch (err) {
+      return json(event, 500, { error: 'Save failed', detail: (err as Error).message })
+    }
+  }
+
+  if (type === 'lookup_lead') {
+    const email = (body.email || '').toString().trim().toLowerCase()
+    if (!email || !email.includes('@')) {
+      return json(event, 400, { error: 'Valid email required' })
+    }
+    const nn = (body.nnumber || '').toString().replace(/^N/i, '').trim().toUpperCase() || null
+    const yearRaw = body.year
+    const yearNum = yearRaw != null && yearRaw !== '' ? parseInt(String(yearRaw), 10) : null
+
+    try {
+      await $fetch(`${supabaseUrl}/rest/v1/lookup_leads`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: supabaseAnonKey,
+          Authorization: `Bearer ${supabaseAnonKey}`,
+          Prefer: 'return=minimal',
+        },
+        body: {
+          email,
+          nnumber: nn,
+          make: body.make || null,
+          model: body.model || null,
+          year: Number.isFinite(yearNum) ? yearNum : null,
+          utm_source: body.utm_source || null,
+          utm_medium: body.utm_medium || null,
+          utm_campaign: body.utm_campaign || null,
           user_agent: body.user_agent || null,
         },
       })
