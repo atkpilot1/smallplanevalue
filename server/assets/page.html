@@ -566,6 +566,35 @@ transition: background .1s;
 .adv-section[open] > summary::before { transform:rotate(90deg); }
 .adv-section > summary:hover { opacity:.8; }
 .adv-section > summary .adv-hint { font-weight:400;color:var(--muted);letter-spacing:0;margin-left:auto; }
+.engine-section {
+  border: 1.5px solid rgba(19,64,116,0.18); border-radius: var(--radius-lg);
+  margin: 16px 0; background: rgba(19,64,116,0.04); overflow: hidden;
+}
+.engine-section-hdr {
+  padding: 12px 16px; font-size: 12px; font-weight: 600; color: var(--sky);
+  letter-spacing: .04em; border-bottom: 1px solid rgba(19,64,116,0.1);
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.engine-section-hdr .engine-hint { font-weight: 400; color: var(--muted); letter-spacing: 0; font-size: 11px; }
+.engine-section-body { padding: 14px 16px 16px; }
+.engine-life-wrap { margin-top: 10px; }
+.engine-life-label {
+  display: flex; justify-content: space-between; font-size: 11px; color: var(--muted);
+  margin-bottom: 5px; gap: 8px; flex-wrap: wrap;
+}
+.engine-life-label strong { color: var(--sky); font-weight: 600; }
+.engine-life-track {
+  height: 12px; background: var(--offwhite); border-radius: 99px; overflow: hidden;
+  border: 1px solid rgba(11,37,69,0.08);
+}
+.engine-life-fill {
+  height: 100%; border-radius: 99px; transition: width .25s ease, background .25s ease;
+  background: linear-gradient(90deg, var(--success) 0%, #27ae60 100%);
+}
+.engine-life-fill.mid { background: linear-gradient(90deg, #f39c12 0%, #e67e22 100%); }
+.engine-life-fill.high { background: linear-gradient(90deg, #e67e22 0%, var(--danger) 100%); }
+.engine-life-fill.runout { background: var(--danger); }
+.engine-tbo-note { font-size: 11px; color: var(--muted); margin-top: 6px; }
 .adv-body { padding:4px 14px 14px; }
 .submit-btn {
 background: var(--sky); color: var(--white);
@@ -1065,32 +1094,42 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 </select>
 </div>
 </div>
-<details class="adv-section" id="eng-times-section">
-<summary>ENGINE &amp; TIMES <span class="adv-hint">optional — SMOH, prop, conversions</span></summary>
-<div class="adv-body">
-<div class="form-group"><label>ENGINE CONVERSION / STC <span style="color:var(--muted);font-weight:400">(optional)</span></label><input type="text" id="v-eng-conv" placeholder="e.g. IO-550 conversion, RAM, tip tanks, 3-blade prop..." /></div>
+<div class="engine-section" id="eng-times-section">
+<div class="engine-section-hdr">
+<i class="ti ti-engine" style="font-size:16px"></i>
+ENGINE TIMES
+<span class="engine-hint">SMOH &amp; TBO drive value as much as avionics — enter times from the logs</span>
+</div>
+<div class="engine-section-body">
+<div class="form-grid-2" style="margin-bottom:10px">
+<div class="form-group"><label>RECOMMENDED TBO (HRS)</label><input type="number" id="v-tbo" placeholder="Auto from engine type" readonly style="background:var(--offwhite);color:var(--sky);font-weight:600" /></div>
+<div class="form-group"><label>ENGINE CONVERSION / STC</label><input type="text" id="v-eng-conv" placeholder="e.g. IO-550 conversion, RAM, tip tanks..." oninput="refreshEngineLife()" /></div>
+</div>
 
 <!-- Single engine fields -->
 <div id="single-eng-fields">
 <div class="form-grid-2">
-<div class="form-group"><label>ENGINE SMOH HRS</label><input type="number" id="v-smoh" placeholder="e.g. 800" /></div>
+<div class="form-group"><label>ENGINE SMOH (HRS)</label><input type="number" id="v-smoh" placeholder="e.g. 800" oninput="refreshEngineLife()" /></div>
 <div class="form-group"><label>PROP TSOH (HRS)</label><input type="number" id="v-prop1" placeholder="e.g. 400" /></div>
 </div>
+<div id="engine-life-single" class="engine-life-wrap"></div>
 </div>
 
 <!-- Twin engine fields -->
 <div id="twin-eng-fields" style="display:none">
 <div class="form-grid-2" style="margin-bottom:10px">
-<div class="form-group"><label>LEFT ENGINE SMOH HRS</label><input type="number" id="v-smoh-l" placeholder="e.g. 800" /></div>
-<div class="form-group"><label>RIGHT ENGINE SMOH HRS</label><input type="number" id="v-smoh-r" placeholder="e.g. 900" /></div>
+<div class="form-group"><label>LEFT ENGINE SMOH (HRS)</label><input type="number" id="v-smoh-l" placeholder="e.g. 800" oninput="refreshEngineLife()" /></div>
+<div class="form-group"><label>RIGHT ENGINE SMOH (HRS)</label><input type="number" id="v-smoh-r" placeholder="e.g. 900" oninput="refreshEngineLife()" /></div>
 </div>
 <div class="form-grid-2">
 <div class="form-group"><label>LEFT PROP TSOH (HRS)</label><input type="number" id="v-prop-l" placeholder="e.g. 400" /></div>
 <div class="form-group"><label>RIGHT PROP TSOH (HRS)</label><input type="number" id="v-prop-r" placeholder="e.g. 450" /></div>
 </div>
+<div id="engine-life-twin" class="engine-life-wrap"></div>
+</div>
+<div class="engine-tbo-note" id="engine-tbo-note"></div>
 </div>
 </div>
-</details>
 
 <div class="form-grid-2">
 <div class="form-group"><label>OVERALL CONDITION</label>
@@ -1859,6 +1898,7 @@ if (d.avionics && Array.isArray(d.avionics)) {
   });
 }
 toggleCirrusGen();
+await refreshEngineLife();
 } catch(e) { console.error('Parse failed:', e); alert('Could not parse listing. Try entering details manually.'); }
 document.getElementById('paste-spin').classList.remove('on');
 document.getElementById('paste-btn').disabled = false;
@@ -1886,6 +1926,11 @@ var annualM = document.getElementById('v-annual-month'); if (annualM) annualM.va
 var annualY = document.getElementById('v-annual-year'); if (annualY) annualY.value = '';
 var outAnnual = document.getElementById('v-out-of-annual'); if (outAnnual) outAnnual.checked = false;
 var engConv = document.getElementById('v-eng-conv'); if (engConv) engConv.value = '';
+var tboIn = document.getElementById('v-tbo'); if (tboIn) tboIn.value = '';
+var engNote = document.getElementById('engine-tbo-note'); if (engNote) engNote.textContent = '';
+var els = document.getElementById('engine-life-single'); if (els) els.innerHTML = '';
+var elt = document.getElementById('engine-life-twin'); if (elt) elt.innerHTML = '';
+window._lastEngineLife = null;
 var cgen = document.getElementById('v-cirrusgen'); if (cgen) { cgen.value = ''; delete cgen.dataset.touched; }
 var lbk = document.getElementById('v-logbooks'); if (lbk) lbk.value = '';
 var dmg = document.getElementById('v-damage'); if (dmg) dmg.value = '';
@@ -1910,6 +1955,7 @@ var sel = document.getElementById('v-engines');
 if (sel) { sel.value = '2'; toggleEngineFields(); }
 }
 toggleCirrusGen();
+refreshEngineLife();
 }
 function prefillCl(make, model, year, eng, engModel, acType, numEng) {
 window._engModel = engModel || '';
@@ -1929,6 +1975,90 @@ if (eng) {
 }
 }
 
+/* ── ENGINE TBO & LIFE REMAINING ── */
+window._engineTboCache = window._engineTboCache || {};
+window._lastEngineLife = null;
+
+function currentEngineModelStr() {
+  var disp = document.getElementById('v-engine-display');
+  var fromDisp = disp && disp.value ? disp.value.trim() : '';
+  var fromLookup = ((window._valEngMake || '') + ' ' + (window._valEngModel || '')).trim();
+  return fromLookup || fromDisp;
+}
+
+async function fetchEngineTbo(model, smoh) {
+  var key = (model || '').toUpperCase() + '|' + (smoh != null ? smoh : '');
+  if (window._engineTboCache[key]) return window._engineTboCache[key];
+  var q = new URLSearchParams();
+  if (model) q.set('model', model);
+  if (window._valEngMake) q.set('make', window._valEngMake);
+  if (smoh != null && smoh !== '') q.set('smoh', String(smoh));
+  var r = await fetch('/api/engine-tbo?' + q.toString());
+  var data = await r.json().catch(function() { return {}; });
+  window._engineTboCache[key] = data;
+  return data;
+}
+
+function engineLifeBarHtml(label, smoh, tbo, life) {
+  if (!smoh || smoh <= 0 || !tbo) return '';
+  var pct = life && life.pctRemaining != null ? life.pctRemaining : Math.max(0, Math.round((1 - smoh / tbo) * 100));
+  var used = life && life.pctUsed != null ? life.pctUsed : Math.min(100, Math.round(smoh / tbo * 100));
+  var hrsLeft = life && life.hrsRemaining != null ? life.hrsRemaining : Math.max(0, tbo - smoh);
+  var status = life && life.status ? life.status : (pct >= 60 ? 'fresh' : pct >= 30 ? 'mid' : pct >= 10 ? 'high' : 'runout');
+  var fillClass = status === 'fresh' ? '' : status;
+  return '<div class="engine-life-label"><span><strong>' + label + '</strong> ' + Number(smoh).toLocaleString() + ' / ' + Number(tbo).toLocaleString() + ' SMOH</span><span><strong>' + pct + '%</strong> life remaining (' + hrsLeft.toLocaleString() + ' hrs)</span></div>'
+    + '<div class="engine-life-track"><div class="engine-life-fill ' + fillClass + '" style="width:' + pct + '%"></div></div>';
+}
+
+async function refreshEngineLife() {
+  var model = currentEngineModelStr();
+  var tboEl = document.getElementById('v-tbo');
+  var noteEl = document.getElementById('engine-tbo-note');
+  var isTwin = document.getElementById('v-engines') && document.getElementById('v-engines').value === '2';
+  var spec = await fetchEngineTbo(model, null);
+  if (tboEl && spec.tbo) tboEl.value = spec.tbo;
+  if (noteEl) {
+    var note = spec.matchType === 'default'
+      ? 'TBO defaulting to 2,000 hrs — confirm from engine logs if different.'
+      : 'TBO ' + spec.tbo.toLocaleString() + ' hrs (' + spec.matchType + ' match: ' + spec.matchedKey + ').';
+    noteEl.textContent = note;
+  }
+  var tbo = spec.tbo || 2000;
+  var lifeBlocks = [];
+  if (isTwin) {
+    var sl = parseInt(document.getElementById('v-smoh-l') && document.getElementById('v-smoh-l').value, 10);
+    var sr = parseInt(document.getElementById('v-smoh-r') && document.getElementById('v-smoh-r').value, 10);
+    var twinHtml = '';
+    if (sl > 0) {
+      var lSpec = await fetchEngineTbo(model, sl);
+      twinHtml += engineLifeBarHtml('Left engine', sl, lSpec.tbo || tbo, lSpec.life);
+      lifeBlocks.push({ label: 'Left', smoh: sl, tbo: lSpec.tbo || tbo, life: lSpec.life });
+    }
+    if (sr > 0) {
+      var rSpec = await fetchEngineTbo(model, sr);
+      twinHtml += (twinHtml ? '<div style="height:10px"></div>' : '') + engineLifeBarHtml('Right engine', sr, rSpec.tbo || tbo, rSpec.life);
+      lifeBlocks.push({ label: 'Right', smoh: sr, tbo: rSpec.tbo || tbo, life: rSpec.life });
+    }
+    var twinEl = document.getElementById('engine-life-twin');
+    if (twinEl) twinEl.innerHTML = twinHtml;
+    var singleEl = document.getElementById('engine-life-single');
+    if (singleEl) singleEl.innerHTML = '';
+  } else {
+    var smoh = parseInt(document.getElementById('v-smoh') && document.getElementById('v-smoh').value, 10);
+    var singleHtml = '';
+    if (smoh > 0) {
+      var sSpec = await fetchEngineTbo(model, smoh);
+      singleHtml = engineLifeBarHtml('Engine', smoh, sSpec.tbo || tbo, sSpec.life);
+      lifeBlocks.push({ label: 'Engine', smoh: smoh, tbo: sSpec.tbo || tbo, life: sSpec.life });
+    }
+    var singleEl2 = document.getElementById('engine-life-single');
+    if (singleEl2) singleEl2.innerHTML = singleHtml;
+    var twinEl2 = document.getElementById('engine-life-twin');
+    if (twinEl2) twinEl2.innerHTML = '';
+  }
+  window._lastEngineLife = { tbo: tbo, engines: lifeBlocks, model: model };
+}
+
 /* ── ENGINE TOGGLE ── */
 function toggleEngineFields() {
 var isTwin = document.getElementById('v-engines') && document.getElementById('v-engines').value === '2';
@@ -1936,8 +2066,7 @@ var s = document.getElementById('single-eng-fields');
 var t = document.getElementById('twin-eng-fields');
 if (s) s.style.display = isTwin ? 'none' : '';
 if (t) t.style.display = isTwin ? 'block' : 'none';
-// Surface the engine detail fields when the user switches to twin.
-if (isTwin) { var es = document.getElementById('eng-times-section'); if (es) es.open = true; }
+refreshEngineLife();
 }
 
 function cirrusGenFromYear(yearStr, model) {
@@ -1999,6 +2128,8 @@ var notes=document.getElementById('v-notes').value.replace(/["'\\]/g, ' ');
 var annualMEl=document.getElementById('v-annual-month');var annualYEl=document.getElementById('v-annual-year');var annualVal=(annualMEl&&annualYEl&&annualMEl.value&&annualYEl.value)?(annualYEl.value+'-'+annualMEl.value):'';var annualInfo='';
 if(annualVal){var ad=new Date(annualVal+'-01');var now=new Date();var months=Math.round((now-ad)/(1000*60*60*24*30));var pct=Math.min(100,Math.round(months/12*100));annualInfo='Annual inspection done '+months+' months ago ('+pct+'% through annual cycle). ';}
 var outOfAnnualEl=document.getElementById('v-out-of-annual');var outOfAnnual=!!(outOfAnnualEl&&outOfAnnualEl.checked);if(outOfAnnual){annualInfo+='Aircraft is OUT OF ANNUAL (airworthiness inspection lapsed). ';}
+await refreshEngineLife();
+var tbo = parseInt(document.getElementById('v-tbo') && document.getElementById('v-tbo').value, 10) || 2000;
 var isTwin = document.getElementById('v-engines') && document.getElementById('v-engines').value === '2';
 var engineInfo = '';
 if (isTwin) {
@@ -2014,6 +2145,15 @@ engineInfo='Single engine. Engine: ' + (window._valEngMake||'') + ' ' + (window.
 }
 var engConvEl=document.getElementById('v-eng-conv');
 if(engConvEl&&engConvEl.value.trim()){engineInfo+='. Engine conversion/STC: '+engConvEl.value.trim().replace(/["'\\]/g,' ');}
+if (window._lastEngineLife && window._lastEngineLife.engines && window._lastEngineLife.engines.length) {
+  engineInfo += '. Recommended TBO: ' + tbo + ' hrs.';
+  window._lastEngineLife.engines.forEach(function(e) {
+    var pct = e.life ? e.life.pctRemaining : Math.max(0, Math.round((1 - e.smoh / e.tbo) * 100));
+    engineInfo += ' ' + e.label + ' engine: ' + e.smoh + ' SMOH / ' + e.tbo + ' TBO (' + pct + '% life remaining).';
+  });
+} else if (tbo) {
+  engineInfo += '. Recommended TBO: ' + tbo + ' hrs (enter SMOH for life-remaining analysis).';
+}
 var avIds={'av-sixpack':'Standard six pack','av-nav1':'Single NAV/COM','av-nav2':'Dual NAV/COM','av-adf':'ADF','av-dme':'DME','av-kx155':'King KX-155/165','av-g5':'Garmin G5','av-gi275':'Garmin GI 275','av-g500':'Garmin G500','av-g500txi':'Garmin G500 TXi','av-g600txi':'Garmin G600 TXi','av-g1000':'Garmin G1000','av-g1000nxi':'Garmin G1000 NXi','av-g3x':'Garmin G3X Touch','av-gns430':'GNS 430(non WAAS)','av-gns430w':'GNS 430W WAAS','av-gns530':'GNS 530 non-WAAS','av-gns530w':'GNS 530W WAAS','av-gns480':'GNS 480 WAAS','av-gtn650':'GTN 650','av-gtn750':'GTN 750','av-gtn650xi':'GTN 650Xi','av-gtn750xi':'GTN 750Xi','av-gps175':'Garmin GPS 175','av-gnx375':'Garmin GNX 375','av-gnc255':'Garmin GNC 255','av-gtr205':'Garmin GTR 205','av-gfc500':'Garmin GFC 500','av-gfc600':'Garmin GFC 600','av-gfc700':'Garmin GFC 700','av-autoland':'Garmin Autoland (emergency autoland)','av-gad43':'Garmin GAD 43e','av-gma345':'GMA 345 audio','av-gma350':'Garmin GMA 350','av-pma8000':'PS Engineering PMA 8000','av-pma450':'PS Engineering PMA 450B','av-pma6000':'PS Engineering PMA 6000/7000','av-esi500':'L3 ESI-500','av-gi275-standby':'Garmin GI 275 standby','av-uav-skybeacon':'uAvionix skyBeacon','av-uav-tailbeacon':'uAvionix tailBeacon','av-uav-echouat':'uAvionix echoUAT','av-uav-tailbeaconx':'uAvionix tailBeaconX','av-uav-avipro':'uAvionix AV-30','av-uav-avlink':'uAvionix AvLink','av-uav-beaconx':'uAvionix BeaconX','av-mx20':'Garmin MX20 MFD','av-gmx200':'Garmin GMX 200 MFD','av-aspen-e5':'Aspen E5','av-aspen-pro':'Aspen Pro 1000 MAX','av-aspen-mfd':'Aspen MFD 500/1000','av-aspen-2500':'Aspen 2500 MAX','av-avr9':'Avidyne Entegra R9','av-ex500':'Avidyne EX500/600','av-ifd440':'Avidyne IFD 440','av-ifd550':'Avidyne IFD 540/550','av-dfc90':'Avidyne DFC 90','av-dfc100':'Avidyne DFC 100','av-stec55':'S-TEC 55X','av-stec65':'S-TEC (other)','av-stec3100':'S-TEC 3100','av-kfc200':'King KFC 150/200/225','av-trutrak':'TruTrak/BendixKing','av-dynon-hdx':'Dynon SkyView HDX','av-dynon-se':'Dynon SkyView SE','av-dynon-d10':'Dynon D10A/D100','av-dynon-ap':'Dynon SV-AP autopilot','av-dynon-gps':'Dynon SkyView GPS','av-gtx345':'GTX 345 ADS-B','av-adsb':'ADS-B Out','av-tcas':'Traffic TAS','av-wx500':'Stormscope','av-gdl88':'Garmin GDL 88','av-radar-garmin':'Garmin GWX radar','av-radar-bk':'BendixKing RDR 2000/2100 radar','av-radar-legacy':'Legacy radar','av-ei-cgr':'EI CGR-30P','av-ei-other':'EI monitor','av-jpi':'JPI EDM','av-garmin-eis':'Garmin EIS','av-wx':'XM weather','av-stc':'Engine STC','av-3blade':'3-blade prop','av-cies':'CiES senders','av-led':'LED lighting','av-annual':'Fresh annual','av-oxy':'Oxygen system'};
 var avs=[];for(var id in avIds){var el=document.getElementById(id);if(!el||!el.checked)continue;var nm=avIds[id];
   var sizeEl=document.getElementById(id+'-size');
@@ -2073,6 +2213,17 @@ var total = seller - buyer;
 var fmvPct = total > 0 ? Math.round((fmv - buyer) / total * 100) : 50;
 function ic(s){if(!s)return 'neu';const n=parseFloat(s);return n>0?'up':n<0?'down':'neu';}
 const tips=(v.negotiatingTips||[]).map(t=>`<div class="tip-item"><i class="ti ti-arrow-right"></i><span>${t}</span></div>`).join('');
+var engLifeHtml = '';
+var elLife = window._lastEngineLife;
+if (elLife && elLife.engines && elLife.engines.length) {
+  engLifeHtml = '<div style="margin:1rem 0;padding:14px 16px;background:rgba(19,64,116,0.04);border-radius:var(--radius);border:1px solid rgba(19,64,116,0.08)">'
+    + '<div style="font-size:12px;font-weight:600;color:var(--sky);margin-bottom:12px;letter-spacing:.04em;display:flex;align-items:center;gap:6px"><i class="ti ti-engine"></i> ENGINE LIFE — SMOH vs TBO</div>';
+  elLife.engines.forEach(function(e, i) {
+    if (i > 0) engLifeHtml += '<div style="height:10px"></div>';
+    engLifeHtml += engineLifeBarHtml(e.label, e.smoh, e.tbo, e.life);
+  });
+  engLifeHtml += '</div>';
+}
 document.getElementById('v-result').innerHTML=`
 <div class="result-card">
 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem">
@@ -2115,6 +2266,7 @@ document.getElementById('v-result').innerHTML=`
 <div class="metric"><div class="metric-val">${v.avVerdict}</div><div class="metric-lbl">Avionics</div><div class="metric-note ${ic(v.avImpact)}">${v.avImpact||'—'} vs avg</div></div>
 <div class="metric"><div class="metric-val">${v.engineVerdict}</div><div class="metric-lbl">Engine</div><div class="metric-note ${ic(v.engineImpact)}">${v.engineImpact||'—'} vs avg</div></div>
 </div>
+${engLifeHtml}
 <div style="font-size:13px;font-weight:500;color:var(--sky);margin-bottom:.75rem;padding:10px 14px;background:rgba(19,64,116,0.06);border-radius:var(--radius)">${v.keyFinding}</div>
 <div class="analysis-text">${v.analysis}</div>
 ${tips?`<div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(11,37,69,0.08)"><div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:.04em">NEGOTIATING GUIDANCE</div><div class="tip-list">${tips}</div></div>`:''}
