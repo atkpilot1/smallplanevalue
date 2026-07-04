@@ -1,6 +1,11 @@
 import { z } from 'zod'
 import { generateText, stepCountIs, tool } from 'ai'
 import { findComparables, formatComparables } from '../data/aircraftDb'
+import {
+  countValuationsThisMonth,
+  recordValuationUsage,
+  FREE_VALUATIONS_PER_MONTH,
+} from '../utils/valuationAccess'
 
 const bodySchema = z.object({
   make: z.string().min(1),
@@ -19,6 +24,8 @@ const bodySchema = z.object({
   damage: z.string().optional().default(''),
   outOfAnnual: z.boolean().optional().default(false),
   avionicsPackage: z.string().optional().default(''),
+  clientId: z.string().optional().default(''),
+  email: z.string().optional().nullable(),
 })
 
 const valSchema = z.object({
@@ -199,6 +206,18 @@ export default defineEventHandler(async (event) => {
   }
   const d = parsed.data
   const avs = d.avionics
+  const clientId = (d.clientId || '').trim()
+
+  if (clientId) {
+    const used = await countValuationsThisMonth(clientId)
+    if (used >= FREE_VALUATIONS_PER_MONTH) {
+      throw createError({
+        statusCode: 402,
+        statusMessage: 'limit_reached',
+        data: { code: 'limit_reached', requiresEmail: !d.email },
+      })
+    }
+  }
 
   let prompt =
     'You are an expert aircraft appraiser with current 2025-2026 market knowledge. Provide ACCURATE asking prices — not lowballed.\n\n'
@@ -380,6 +399,15 @@ export default defineEventHandler(async (event) => {
   let out = applyAvionicsPackage(result.data, avs.length > 0 ? '' : d.avionicsPackage)
   out = applyRecordsAdjustment(out, d.logbooks, d.damage)
   out = applyOutOfAnnualAdjustment(out, d.outOfAnnual)
+
+  if (clientId) {
+    await recordValuationUsage(clientId, d.email, {
+      make: d.make,
+      model: d.model,
+      year: d.year || null,
+    })
+  }
+
   return out
 })
 

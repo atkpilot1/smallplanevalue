@@ -108,6 +108,13 @@ async function mockApis(page: Page) {
   )
 
   await page.route('**/api/feedback', (route) => route.fulfill({ json: { ok: true } }))
+
+  await page.route('**/api/valuation-access**', (route) => {
+    if (route.request().method() === 'GET') {
+      return route.fulfill({ json: { limit: 1, used: 0, remaining: 1, periodStart: '2026-07-01T00:00:00.000Z' } })
+    }
+    return route.fulfill({ json: { ok: true } })
+  })
 }
 
 test.beforeEach(async ({ page }) => {

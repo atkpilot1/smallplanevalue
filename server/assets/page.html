@@ -525,6 +525,40 @@ transition: background .1s;
   box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.18);
 }
 .out-of-annual-label input { width: 16px; height: 16px; accent-color: var(--danger); }
+.val-gate-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(11,37,69,0.55);
+  display: none; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.val-gate-overlay.on { display: flex; }
+.val-gate-card {
+  background: var(--card-bg); border-radius: var(--radius-lg);
+  padding: 24px; max-width: 420px; width: 100%;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+  border: 1px solid var(--card-border);
+}
+.val-gate-title { font-size: 18px; font-weight: 600; color: var(--sky); margin-bottom: 8px; }
+.val-gate-sub { font-size: 14px; color: var(--muted); line-height: 1.5; margin-bottom: 16px; }
+.val-gate-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.val-gate-row input {
+  flex: 1; padding: 10px 12px; border: 1px solid rgba(11,37,69,0.15);
+  border-radius: var(--radius); font-size: 14px; font-family: var(--body);
+}
+.val-gate-msg { font-size: 13px; margin-top: 8px; min-height: 18px; }
+.upgrade-card {
+  background: linear-gradient(135deg, var(--sky) 0%, var(--sky-mid) 100%);
+  border-radius: var(--radius-lg); padding: 22px; color: #fff; margin-top: 1rem;
+}
+.upgrade-card h3 { font-size: 17px; margin-bottom: 8px; }
+.upgrade-card p { font-size: 14px; opacity: 0.9; line-height: 1.5; margin-bottom: 14px; }
+.upgrade-btn {
+  background: var(--accent); color: var(--sky); border: none;
+  border-radius: var(--radius); padding: 10px 18px; font-weight: 600;
+  font-size: 14px; cursor: pointer; font-family: var(--body);
+}
+.upgrade-btn:hover { background: var(--accent-light); }
+.val-free-note { font-size: 12px; color: var(--muted); margin-top: 8px; }
 .adv-section { border:1px solid rgba(19,64,116,0.12);border-radius:var(--radius);margin:14px 0;background:rgba(19,64,116,0.02); }
 .adv-section > summary { cursor:pointer;list-style:none;padding:11px 14px;font-size:12px;font-weight:600;color:var(--sky);letter-spacing:.03em;display:flex;align-items:center;gap:8px;user-select:none; }
 .adv-section > summary::-webkit-details-marker { display:none; }
@@ -689,9 +723,20 @@ nav { padding: 0 1.5rem; }
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-9ET7HJRJWC');
+  var GA_ID = 'G-9ET7HJRJWC';
+  var GA_DEBUG = new URLSearchParams(location.search).has('ga_debug');
+  gtag('config', GA_ID, GA_DEBUG ? { debug_mode: true } : {});
   function trackEvent(name, params) {
-    if (typeof gtag === 'function') gtag('event', name, params || {});
+    if (typeof gtag !== 'function') return;
+    gtag('event', name, params || {});
+  }
+  /** GA4 recommended lead event — mark as key event in Admin > Events */
+  function trackGenerateLead(source, value) {
+    trackEvent('generate_lead', {
+      currency: 'USD',
+      value: value || 24,
+      lead_source: source || 'spv',
+    });
   }
 </script>
 </head>
@@ -1246,6 +1291,19 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 </button>
 <div class="spin" id="v-spin"><div class="fly-track"><span class="fly-plane"><i class="ti ti-plane"></i></span></div><div>Searching live listings &amp; recent sales...</div></div>
 <div id="v-result"></div>
+<p class="val-free-note" id="v-free-note">Includes 1 free full valuation per month.</p>
+</div>
+
+<div class="val-gate-overlay" id="val-email-gate" onclick="if(event.target===this)hideValuationEmailGate()">
+<div class="val-gate-card" onclick="event.stopPropagation()">
+<div class="val-gate-title">One free valuation per month</div>
+<div class="val-gate-sub">Enter your email to get notified when additional full reports are available ($24/report — launching soon).</div>
+<div class="val-gate-row">
+<input type="email" id="val-gate-email" placeholder="you@email.com" autocomplete="email" />
+<button class="submit-btn" id="val-gate-btn" type="button" onclick="submitValuationEmailGate()" style="width:auto;padding:10px 16px">Continue</button>
+</div>
+<div class="val-gate-msg" id="val-gate-msg"></div>
+</div>
 </div>
 
 <!-- MARKET COMPS -->
@@ -1498,9 +1556,140 @@ headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify(body)
 });
 const data = await r.json().catch(function(){ return {}; });
-if(!r.ok) throw new Error((data && (data.statusMessage || data.message)) || 'Request failed - try again');
+if(!r.ok) {
+  var err = new Error((data && (data.statusMessage || data.message)) || 'Request failed - try again');
+  err.status = r.status;
+  err.code = (data && data.data && data.data.code) || (data && data.statusMessage) || '';
+  err.payload = data;
+  throw err;
+}
 return data;
 }
+
+function getOrCreateClientId() {
+  var id = localStorage.getItem('spv_client_id');
+  if (!id) {
+    id = (typeof crypto !== 'undefined' && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : 'spv-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+    localStorage.setItem('spv_client_id', id);
+  }
+  return id;
+}
+
+function getValuationEmail() {
+  return (localStorage.getItem('spv_email') || '').trim();
+}
+
+function setValuationEmail(email) {
+  if (email) localStorage.setItem('spv_email', email.trim().toLowerCase());
+}
+
+async function fetchValuationAccess() {
+  var cid = getOrCreateClientId();
+  var r = await fetch('/api/valuation-access?clientId=' + encodeURIComponent(cid));
+  var data = await r.json().catch(function() { return {}; });
+  if (!r.ok) return { limit: 1, used: 0, remaining: 1 };
+  return data;
+}
+
+var _valGateContext = null;
+
+function showValuationEmailGate(ctx) {
+  _valGateContext = ctx;
+  var gate = document.getElementById('val-email-gate');
+  var msg = document.getElementById('val-gate-msg');
+  var emailEl = document.getElementById('val-gate-email');
+  if (msg) { msg.textContent = ''; msg.style.color = ''; }
+  if (emailEl) emailEl.value = getValuationEmail() || '';
+  if (gate) gate.classList.add('on');
+  trackEvent('valuation_limit_reached', { step: 'email_gate' });
+}
+
+function hideValuationEmailGate() {
+  var gate = document.getElementById('val-email-gate');
+  if (gate) gate.classList.remove('on');
+  _valGateContext = null;
+}
+
+async function submitValuationEmailGate() {
+  var emailEl = document.getElementById('val-gate-email');
+  var btn = document.getElementById('val-gate-btn');
+  var msg = document.getElementById('val-gate-msg');
+  var email = (emailEl && emailEl.value || '').trim().toLowerCase();
+  if (!email || email.indexOf('@') < 1) {
+    if (msg) { msg.style.color = 'var(--danger)'; msg.textContent = 'Enter a valid email.'; }
+    return;
+  }
+  var ctx = _valGateContext || {};
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
+  try {
+    await apiPost('/api/valuation-access', {
+      clientId: getOrCreateClientId(),
+      email: email,
+      make: ctx.make || null,
+      model: ctx.model || null,
+      year: ctx.year || null,
+    });
+    setValuationEmail(email);
+    trackEvent('valuation_email_captured', { source: 'limit_gate' });
+    trackGenerateLead('valuation_limit_gate', 24);
+    hideValuationEmailGate();
+    renderValuationUpgradeGate(ctx.make, ctx.model, ctx.year, email);
+  } catch (e) {
+    if (msg) { msg.style.color = 'var(--danger)'; msg.textContent = 'Could not save. Try again.'; }
+  }
+  if (btn) { btn.disabled = false; btn.textContent = 'Continue'; }
+}
+
+function renderValuationUpgradeGate(make, model, year, email) {
+  var el = document.getElementById('v-result');
+  if (!el) return;
+  var aircraft = [year, make, model].filter(Boolean).join(' ');
+  el.innerHTML = '<div class="upgrade-card">'
+    + '<h3>Free valuation used this month</h3>'
+    + '<p>You have used your 1 free full report for ' + new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' }) + '.'
+    + (aircraft ? ' We saved your interest in <strong>' + aircraft + '</strong>.' : '')
+    + ' Full reports with negotiating tips and comps will be <strong>$24</strong> — launching soon.</p>'
+    + '<button type="button" class="upgrade-btn" onclick="trackUpgradeIntent()"><i class="ti ti-report-money"></i> Get full report — notify me</button>'
+    + (email ? '<p style="font-size:12px;margin-top:12px;opacity:0.85">We will email <strong>' + email + '</strong> when paid reports go live.</p>' : '')
+    + '</div>';
+  trackEvent('valuation_limit_reached', { step: 'upgrade_gate' });
+}
+
+function trackUpgradeIntent() {
+  trackEvent('upgrade_intent_click', {
+    product: 'valuation_single_24',
+    phase: 1,
+    currency: 'USD',
+    value: 24,
+    event_category: 'monetization',
+  });
+  var el = document.getElementById('v-result');
+  if (el) {
+    var note = document.createElement('p');
+    note.style.cssText = 'font-size:13px;color:var(--success);margin-top:12px;font-weight:600';
+    note.textContent = 'Thanks — you are on the list. We will email you when $24 full reports launch.';
+    el.querySelector('.upgrade-card').appendChild(note);
+  }
+}
+
+async function updateValuationFreeNote() {
+  var note = document.getElementById('v-free-note');
+  if (!note) return;
+  try {
+    var access = await fetchValuationAccess();
+    if (access.remaining > 0) {
+      note.textContent = access.remaining + ' free full valuation' + (access.remaining === 1 ? '' : 's') + ' remaining this month.';
+    } else {
+      note.textContent = 'Free valuation used this month — email required for additional reports.';
+    }
+  } catch (e) {
+    note.textContent = 'Includes 1 free full valuation per month.';
+  }
+}
+
+updateValuationFreeNote();
 
 function setLoading(spinId, btnId, on) {
 document.getElementById(spinId).classList.toggle('on', on);
@@ -1792,6 +1981,17 @@ var make=document.getElementById('v-make').value.trim();
 var model=document.getElementById('v-model').value.trim();
 var year=document.getElementById('v-year').value;
 if (!make||!model) { alert('Enter make and model.'); return; }
+
+var access = await fetchValuationAccess();
+if (access.remaining <= 0) {
+  if (!getValuationEmail()) {
+    showValuationEmailGate({ make: make, model: model, year: year });
+    return;
+  }
+  renderValuationUpgradeGate(make, model, year, getValuationEmail());
+  return;
+}
+
 var ttaf=document.getElementById('v-ttaf').value;
 var cond=document.getElementById('v-cond').value;
 var cosm=document.getElementById('v-cosm').value;
@@ -1842,10 +2042,25 @@ var v=await apiPost('/api/valuate', {
   logbooks: (document.getElementById('v-logbooks') ? document.getElementById('v-logbooks').value : ''),
   damage: (document.getElementById('v-damage') ? document.getElementById('v-damage').value : ''),
   outOfAnnual: outOfAnnual,
-  avionicsPackage: (document.getElementById('v-avionics-package') ? document.getElementById('v-avionics-package').value : '')
+  avionicsPackage: (document.getElementById('v-avionics-package') ? document.getElementById('v-avionics-package').value : ''),
+  clientId: getOrCreateClientId(),
+  email: getValuationEmail() || null
 });
 renderVal(v,make,model,year);
-} catch(e) { console.error('Valuation error:', e); document.getElementById('v-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed: ' + (e.message || e) + '</p>'; }
+trackEvent('valuation_completed', { make: make, model: model });
+updateValuationFreeNote();
+} catch(e) {
+  if (e.status === 402 || e.code === 'limit_reached') {
+    if (!getValuationEmail()) {
+      showValuationEmailGate({ make: make, model: model, year: year });
+    } else {
+      renderValuationUpgradeGate(make, model, year, getValuationEmail());
+    }
+  } else {
+    console.error('Valuation error:', e);
+    document.getElementById('v-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed: ' + (e.message || e) + '</p>';
+  }
+}
 setLoading('v-spin','v-btn',false);
 }
 
