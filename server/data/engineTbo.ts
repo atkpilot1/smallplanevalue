@@ -91,21 +91,95 @@ const EXACT: Record<string, { tbo: number; overhaulCost?: number }> = {
   'TSIO-550-C': { tbo: 1800, overhaulCost: 80000 },
   'GTSIO-520-F': { tbo: 1600, overhaulCost: 75000 },
   'GTSIO-520-H': { tbo: 1600, overhaulCost: 75000 },
-  // Rotax / other
+  // Rotax
   '912ULS': { tbo: 2000, overhaulCost: 18000 },
+  '912UL': { tbo: 2000, overhaulCost: 18000 },
+  '912S': { tbo: 2000, overhaulCost: 18000 },
+  '912IS': { tbo: 2000, overhaulCost: 20000 },
   '914UL': { tbo: 2000, overhaulCost: 22000 },
+  '914F': { tbo: 2000, overhaulCost: 24000 },
   '915IS': { tbo: 1200, overhaulCost: 35000 },
+  '916IS': { tbo: 1200, overhaulCost: 40000 },
+  // Lycoming turbo / aerobatic
+  'TIO-360-A1B': { tbo: 1800, overhaulCost: 55000 },
+  'TIO-360-A3B6': { tbo: 1800, overhaulCost: 55000 },
+  'TIO-541-A1A': { tbo: 1800, overhaulCost: 85000 },
+  'TIO-541-E1A4': { tbo: 1800, overhaulCost: 90000 },
+  'AEIO-540-D4D5': { tbo: 2000, overhaulCost: 52000 },
+  'AEIO-580-B1A': { tbo: 2000, overhaulCost: 58000 },
+  // Continental turbo twins (Baron, Duke, etc.)
+  'TSIO-360-EB': { tbo: 1800, overhaulCost: 55000 },
+  'TSIO-360-GB': { tbo: 1800, overhaulCost: 55000 },
+  'TSIO-360-HB': { tbo: 1800, overhaulCost: 55000 },
+  'TSIO-360-KB': { tbo: 1800, overhaulCost: 55000 },
+  'TSIO-360-LB': { tbo: 1800, overhaulCost: 55000 },
+  'TSIO-360-MB': { tbo: 1800, overhaulCost: 55000 },
+  'TSIO-360-UB': { tbo: 1800, overhaulCost: 55000 },
+  'TIO-520-AE': { tbo: 1600, overhaulCost: 68000 },
+  'TIO-520-JF': { tbo: 1600, overhaulCost: 68000 },
+  'TIO-520-LB': { tbo: 1600, overhaulCost: 68000 },
+  'TIO-520-NB': { tbo: 1600, overhaulCost: 68000 },
+  // PT6 turboprops
+  'PT6A-6': { tbo: 3500, overhaulCost: 180000 },
+  'PT6A-11': { tbo: 3500, overhaulCost: 200000 },
+  'PT6A-20': { tbo: 3500, overhaulCost: 220000 },
+  'PT6A-21': { tbo: 3600, overhaulCost: 230000 },
+  'PT6A-27': { tbo: 3600, overhaulCost: 240000 },
+  'PT6A-28': { tbo: 3600, overhaulCost: 240000 },
+  'PT6A-34': { tbo: 3600, overhaulCost: 250000 },
+  'PT6A-35': { tbo: 3600, overhaulCost: 250000 },
+  'PT6A-41': { tbo: 3600, overhaulCost: 260000 },
+  'PT6A-42': { tbo: 3600, overhaulCost: 260000 },
+  'PT6A-60A': { tbo: 3600, overhaulCost: 280000 },
+  'PT6A-64': { tbo: 5000, overhaulCost: 320000 },
+  'PT6A-65B': { tbo: 3600, overhaulCost: 290000 },
+  'PT6A-67A': { tbo: 3600, overhaulCost: 300000 },
+  'PT6A-67B': { tbo: 3600, overhaulCost: 300000 },
+  'PT6A-67P': { tbo: 3600, overhaulCost: 310000 },
+  // Garrett / Honeywell (King Air, etc.)
+  'TPE331-1': { tbo: 3600, overhaulCost: 200000 },
+  'TPE331-3': { tbo: 3600, overhaulCost: 220000 },
+  'TPE331-5': { tbo: 3600, overhaulCost: 240000 },
+  'TPE331-6': { tbo: 3600, overhaulCost: 250000 },
+  'TPE331-10': { tbo: 3600, overhaulCost: 260000 },
+  'TPE331-11': { tbo: 3600, overhaulCost: 270000 },
 }
 
 /** Longest-prefix wins (e.g. IO-520 → 1700) */
 const PREFIX: Array<{ prefix: string; tbo: number; overhaulCost: number }> = [
+  { prefix: 'PT6A-67', tbo: 3600, overhaulCost: 300000 },
+  { prefix: 'PT6A-65', tbo: 3600, overhaulCost: 290000 },
+  { prefix: 'PT6A-64', tbo: 5000, overhaulCost: 320000 },
+  { prefix: 'PT6A-60', tbo: 3600, overhaulCost: 280000 },
+  { prefix: 'PT6A-42', tbo: 3600, overhaulCost: 260000 },
+  { prefix: 'PT6A-41', tbo: 3600, overhaulCost: 260000 },
+  { prefix: 'PT6A-35', tbo: 3600, overhaulCost: 250000 },
+  { prefix: 'PT6A-34', tbo: 3600, overhaulCost: 250000 },
+  { prefix: 'PT6A-28', tbo: 3600, overhaulCost: 240000 },
+  { prefix: 'PT6A-27', tbo: 3600, overhaulCost: 240000 },
+  { prefix: 'PT6A-21', tbo: 3600, overhaulCost: 230000 },
+  { prefix: 'PT6A-20', tbo: 3500, overhaulCost: 220000 },
+  { prefix: 'PT6A-11', tbo: 3500, overhaulCost: 200000 },
+  { prefix: 'PT6A', tbo: 3600, overhaulCost: 250000 },
+  { prefix: 'TPE331', tbo: 3600, overhaulCost: 250000 },
+  { prefix: 'TIO-541', tbo: 1800, overhaulCost: 88000 },
+  { prefix: 'TIO-520', tbo: 1600, overhaulCost: 68000 },
   { prefix: 'TSIO-550', tbo: 1800, overhaulCost: 80000 },
   { prefix: 'TSIO-520', tbo: 1600, overhaulCost: 70000 },
+  { prefix: 'TSIO-360', tbo: 1800, overhaulCost: 55000 },
   { prefix: 'GTSIO-520', tbo: 1600, overhaulCost: 75000 },
   { prefix: 'TIO-540', tbo: 1800, overhaulCost: 75000 },
+  { prefix: 'TIO-360', tbo: 1800, overhaulCost: 55000 },
+  { prefix: 'AEIO-580', tbo: 2000, overhaulCost: 58000 },
+  { prefix: 'AEIO-540', tbo: 2000, overhaulCost: 52000 },
+  { prefix: '916IS', tbo: 1200, overhaulCost: 40000 },
+  { prefix: '915IS', tbo: 1200, overhaulCost: 35000 },
+  { prefix: '914', tbo: 2000, overhaulCost: 22000 },
+  { prefix: '912', tbo: 2000, overhaulCost: 18000 },
   { prefix: 'IO-550', tbo: 2000, overhaulCost: 65000 },
   { prefix: 'IO-520', tbo: 1700, overhaulCost: 55000 },
   { prefix: 'IO-540', tbo: 2000, overhaulCost: 48000 },
+  { prefix: 'IO-470', tbo: 2000, overhaulCost: 40000 },
   { prefix: 'IO-390', tbo: 2000, overhaulCost: 42000 },
   { prefix: 'IO-360', tbo: 2000, overhaulCost: 36000 },
   { prefix: 'IO-320', tbo: 2000, overhaulCost: 32000 },
@@ -116,8 +190,6 @@ const PREFIX: Array<{ prefix: string; tbo: number; overhaulCost: number }> = [
   { prefix: 'O-300', tbo: 1800, overhaulCost: 25000 },
   { prefix: 'O-235', tbo: 2000, overhaulCost: 22000 },
   { prefix: 'O-200', tbo: 2400, overhaulCost: 22000 },
-  { prefix: 'IO-360', tbo: 1800, overhaulCost: 34000 },
-  { prefix: 'PT6A', tbo: 3600, overhaulCost: 250000 },
 ]
 
 const DEFAULT: { tbo: number; overhaulCost: number } = { tbo: 2000, overhaulCost: 45000 }
@@ -132,30 +204,37 @@ export function normalizeEngineModel(raw: string): string {
     .trim()
 }
 
-export function lookupEngineTbo(engineModel: string, _engineMake?: string): EngineSpec {
+export function lookupEngineTbo(
+  engineModel: string,
+  _engineMake?: string,
+  options?: { tboOverride?: number },
+): EngineSpec {
   const key = normalizeEngineModel(engineModel)
-  if (!key) {
-    return { ...DEFAULT, matchType: 'default', matchedKey: 'default' }
-  }
+  let spec: EngineSpec
 
-  if (EXACT[key]) {
+  if (!key) {
+    spec = { ...DEFAULT, matchType: 'default', matchedKey: 'default' }
+  } else if (EXACT[key]) {
     const e = EXACT[key]
-    return {
+    spec = {
       tbo: e.tbo,
       overhaulCost: e.overhaulCost ?? DEFAULT.overhaulCost,
       matchType: 'exact',
       matchedKey: key,
     }
+  } else {
+    const sorted = [...PREFIX].sort((a, b) => b.prefix.length - a.prefix.length)
+    const match = sorted.find((p) => key.startsWith(p.prefix))
+    spec = match
+      ? { tbo: match.tbo, overhaulCost: match.overhaulCost, matchType: 'prefix', matchedKey: match.prefix }
+      : { ...DEFAULT, matchType: 'default', matchedKey: 'default' }
   }
 
-  const sorted = [...PREFIX].sort((a, b) => b.prefix.length - a.prefix.length)
-  for (const p of sorted) {
-    if (key.startsWith(p.prefix)) {
-      return { tbo: p.tbo, overhaulCost: p.overhaulCost, matchType: 'prefix', matchedKey: p.prefix }
-    }
+  const override = options?.tboOverride
+  if (override != null && override > 0 && override !== spec.tbo) {
+    return { ...spec, tbo: Math.round(override), matchedKey: spec.matchedKey + ' (TBO override)' }
   }
-
-  return { ...DEFAULT, matchType: 'default', matchedKey: 'default' }
+  return spec
 }
 
 export function engineLifeRemaining(smoh: number, tbo: number): {

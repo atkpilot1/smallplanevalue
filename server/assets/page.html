@@ -595,6 +595,8 @@ transition: background .1s;
 .engine-life-fill.high { background: linear-gradient(90deg, #e67e22 0%, var(--danger) 100%); }
 .engine-life-fill.runout { background: var(--danger); }
 .engine-tbo-note { font-size: 11px; color: var(--muted); margin-top: 6px; }
+.tbo-reset-btn { font-size: 11px; padding: 2px 8px; border: 1px solid rgba(19,64,116,0.2); background: transparent; border-radius: 4px; cursor: pointer; color: var(--sky); font-family: var(--body); }
+.tbo-reset-btn:hover { background: rgba(19,64,116,0.06); }
 .adv-body { padding:4px 14px 14px; }
 .submit-btn {
 background: var(--sky); color: var(--white);
@@ -1102,7 +1104,7 @@ ENGINE TIMES
 </div>
 <div class="engine-section-body">
 <div class="form-grid-2" style="margin-bottom:10px">
-<div class="form-group"><label>RECOMMENDED TBO (HRS)</label><input type="number" id="v-tbo" placeholder="Auto from engine type" readonly style="background:var(--offwhite);color:var(--sky);font-weight:600" /></div>
+<div class="form-group"><label style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span>RECOMMENDED TBO (HRS)</span><button type="button" id="v-tbo-reset" class="tbo-reset-btn" onclick="resetTboAuto()" style="display:none">Use auto</button></label><input type="number" id="v-tbo" placeholder="Auto from engine type" min="500" max="8000" step="100" oninput="onTboOverride()" /></div>
 <div class="form-group"><label>ENGINE CONVERSION / STC</label><input type="text" id="v-eng-conv" placeholder="e.g. IO-550 conversion, RAM, tip tanks..." oninput="refreshEngineLife()" /></div>
 </div>
 
@@ -1927,6 +1929,8 @@ var annualY = document.getElementById('v-annual-year'); if (annualY) annualY.val
 var outAnnual = document.getElementById('v-out-of-annual'); if (outAnnual) outAnnual.checked = false;
 var engConv = document.getElementById('v-eng-conv'); if (engConv) engConv.value = '';
 var tboIn = document.getElementById('v-tbo'); if (tboIn) tboIn.value = '';
+window._tboUserOverride = false;
+var tboReset = document.getElementById('v-tbo-reset'); if (tboReset) tboReset.style.display = 'none';
 var engNote = document.getElementById('engine-tbo-note'); if (engNote) engNote.textContent = '';
 var els = document.getElementById('engine-life-single'); if (els) els.innerHTML = '';
 var elt = document.getElementById('engine-life-twin'); if (elt) elt.innerHTML = '';
@@ -1978,6 +1982,8 @@ if (eng) {
 /* ── ENGINE TBO & LIFE REMAINING ── */
 window._engineTboCache = window._engineTboCache || {};
 window._lastEngineLife = null;
+window._tboUserOverride = false;
+window._engineTboAuto = 2000;
 
 function currentEngineModelStr() {
   var disp = document.getElementById('v-engine-display');
@@ -1986,17 +1992,69 @@ function currentEngineModelStr() {
   return fromLookup || fromDisp;
 }
 
-async function fetchEngineTbo(model, smoh) {
-  var key = (model || '').toUpperCase() + '|' + (smoh != null ? smoh : '');
+async function fetchEngineTbo(model, smoh, tboOverride) {
+  var key = (model || '').toUpperCase() + '|' + (smoh != null ? smoh : '') + '|' + (tboOverride || '');
   if (window._engineTboCache[key]) return window._engineTboCache[key];
   var q = new URLSearchParams();
   if (model) q.set('model', model);
   if (window._valEngMake) q.set('make', window._valEngMake);
   if (smoh != null && smoh !== '') q.set('smoh', String(smoh));
+  if (tboOverride) q.set('tbo', String(tboOverride));
   var r = await fetch('/api/engine-tbo?' + q.toString());
   var data = await r.json().catch(function() { return {}; });
   window._engineTboCache[key] = data;
   return data;
+}
+
+function getEffectiveTbo() {
+  var v = parseInt(document.getElementById('v-tbo') && document.getElementById('v-tbo').value, 10);
+  return (v > 0 ? v : window._engineTboAuto) || 2000;
+}
+
+function onTboOverride() {
+  window._tboUserOverride = true;
+  var btn = document.getElementById('v-tbo-reset');
+  if (btn) btn.style.display = '';
+  refreshEngineLifeBars();
+}
+
+function resetTboAuto() {
+  window._tboUserOverride = false;
+  var btn = document.getElementById('v-tbo-reset');
+  if (btn) btn.style.display = 'none';
+  refreshEngineLife();
+}
+
+function refreshEngineLifeBars() {
+  var tbo = getEffectiveTbo();
+  var isTwin = document.getElementById('v-engines') && document.getElementById('v-engines').value === '2';
+  var lifeBlocks = [];
+  if (isTwin) {
+    var sl = parseInt(document.getElementById('v-smoh-l') && document.getElementById('v-smoh-l').value, 10);
+    var sr = parseInt(document.getElementById('v-smoh-r') && document.getElementById('v-smoh-r').value, 10);
+    var twinHtml = '';
+    if (sl > 0) {
+      twinHtml += engineLifeBarHtml('Left engine', sl, tbo, null);
+      lifeBlocks.push({ label: 'Left', smoh: sl, tbo: tbo });
+    }
+    if (sr > 0) {
+      twinHtml += (twinHtml ? '<div style="height:10px"></div>' : '') + engineLifeBarHtml('Right engine', sr, tbo, null);
+      lifeBlocks.push({ label: 'Right', smoh: sr, tbo: tbo });
+    }
+    var twinEl = document.getElementById('engine-life-twin');
+    if (twinEl) twinEl.innerHTML = twinHtml;
+    var singleEl = document.getElementById('engine-life-single');
+    if (singleEl) singleEl.innerHTML = '';
+  } else {
+    var smoh = parseInt(document.getElementById('v-smoh') && document.getElementById('v-smoh').value, 10);
+    var singleHtml = smoh > 0 ? engineLifeBarHtml('Engine', smoh, tbo, null) : '';
+    if (smoh > 0) lifeBlocks.push({ label: 'Engine', smoh: smoh, tbo: tbo });
+    var singleEl2 = document.getElementById('engine-life-single');
+    if (singleEl2) singleEl2.innerHTML = singleHtml;
+    var twinEl2 = document.getElementById('engine-life-twin');
+    if (twinEl2) twinEl2.innerHTML = '';
+  }
+  window._lastEngineLife = { tbo: tbo, engines: lifeBlocks, model: currentEngineModelStr() };
 }
 
 function engineLifeBarHtml(label, smoh, tbo, life) {
@@ -2014,49 +2072,18 @@ async function refreshEngineLife() {
   var model = currentEngineModelStr();
   var tboEl = document.getElementById('v-tbo');
   var noteEl = document.getElementById('engine-tbo-note');
-  var isTwin = document.getElementById('v-engines') && document.getElementById('v-engines').value === '2';
-  var spec = await fetchEngineTbo(model, null);
-  if (tboEl && spec.tbo) tboEl.value = spec.tbo;
+  var spec = await fetchEngineTbo(model, null, window._tboUserOverride ? getEffectiveTbo() : null);
+  window._engineTboAuto = spec.tbo || 2000;
+  if (tboEl && !window._tboUserOverride) tboEl.value = window._engineTboAuto;
   if (noteEl) {
-    var note = spec.matchType === 'default'
-      ? 'TBO defaulting to 2,000 hrs — confirm from engine logs if different.'
-      : 'TBO ' + spec.tbo.toLocaleString() + ' hrs (' + spec.matchType + ' match: ' + spec.matchedKey + ').';
+    var note = window._tboUserOverride
+      ? 'TBO manually set to ' + getEffectiveTbo().toLocaleString() + ' hrs (auto would be ' + window._engineTboAuto.toLocaleString() + ').'
+      : (spec.matchType === 'default'
+        ? 'TBO defaulting to 2,000 hrs — edit above if your engine has a different interval.'
+        : 'TBO ' + spec.tbo.toLocaleString() + ' hrs (' + spec.matchType + ' match: ' + spec.matchedKey + ').');
     noteEl.textContent = note;
   }
-  var tbo = spec.tbo || 2000;
-  var lifeBlocks = [];
-  if (isTwin) {
-    var sl = parseInt(document.getElementById('v-smoh-l') && document.getElementById('v-smoh-l').value, 10);
-    var sr = parseInt(document.getElementById('v-smoh-r') && document.getElementById('v-smoh-r').value, 10);
-    var twinHtml = '';
-    if (sl > 0) {
-      var lSpec = await fetchEngineTbo(model, sl);
-      twinHtml += engineLifeBarHtml('Left engine', sl, lSpec.tbo || tbo, lSpec.life);
-      lifeBlocks.push({ label: 'Left', smoh: sl, tbo: lSpec.tbo || tbo, life: lSpec.life });
-    }
-    if (sr > 0) {
-      var rSpec = await fetchEngineTbo(model, sr);
-      twinHtml += (twinHtml ? '<div style="height:10px"></div>' : '') + engineLifeBarHtml('Right engine', sr, rSpec.tbo || tbo, rSpec.life);
-      lifeBlocks.push({ label: 'Right', smoh: sr, tbo: rSpec.tbo || tbo, life: rSpec.life });
-    }
-    var twinEl = document.getElementById('engine-life-twin');
-    if (twinEl) twinEl.innerHTML = twinHtml;
-    var singleEl = document.getElementById('engine-life-single');
-    if (singleEl) singleEl.innerHTML = '';
-  } else {
-    var smoh = parseInt(document.getElementById('v-smoh') && document.getElementById('v-smoh').value, 10);
-    var singleHtml = '';
-    if (smoh > 0) {
-      var sSpec = await fetchEngineTbo(model, smoh);
-      singleHtml = engineLifeBarHtml('Engine', smoh, sSpec.tbo || tbo, sSpec.life);
-      lifeBlocks.push({ label: 'Engine', smoh: smoh, tbo: sSpec.tbo || tbo, life: sSpec.life });
-    }
-    var singleEl2 = document.getElementById('engine-life-single');
-    if (singleEl2) singleEl2.innerHTML = singleHtml;
-    var twinEl2 = document.getElementById('engine-life-twin');
-    if (twinEl2) twinEl2.innerHTML = '';
-  }
-  window._lastEngineLife = { tbo: tbo, engines: lifeBlocks, model: model };
+  refreshEngineLifeBars();
 }
 
 /* ── ENGINE TOGGLE ── */
@@ -2129,17 +2156,22 @@ var annualMEl=document.getElementById('v-annual-month');var annualYEl=document.g
 if(annualVal){var ad=new Date(annualVal+'-01');var now=new Date();var months=Math.round((now-ad)/(1000*60*60*24*30));var pct=Math.min(100,Math.round(months/12*100));annualInfo='Annual inspection done '+months+' months ago ('+pct+'% through annual cycle). ';}
 var outOfAnnualEl=document.getElementById('v-out-of-annual');var outOfAnnual=!!(outOfAnnualEl&&outOfAnnualEl.checked);if(outOfAnnual){annualInfo+='Aircraft is OUT OF ANNUAL (airworthiness inspection lapsed). ';}
 await refreshEngineLife();
-var tbo = parseInt(document.getElementById('v-tbo') && document.getElementById('v-tbo').value, 10) || 2000;
+var tbo = getEffectiveTbo();
 var isTwin = document.getElementById('v-engines') && document.getElementById('v-engines').value === '2';
+var engineModel = currentEngineModelStr();
+var engineSmoh = null, engineSmohL = null, engineSmohR = null;
 var engineInfo = '';
 if (isTwin) {
 var sl=document.getElementById('v-smoh-l')?document.getElementById('v-smoh-l').value:'';
 var sr2=document.getElementById('v-smoh-r')?document.getElementById('v-smoh-r').value:'';
+if (sl) engineSmohL = parseInt(sl, 10);
+if (sr2) engineSmohR = parseInt(sr2, 10);
 var pl=document.getElementById('v-prop-l')?document.getElementById('v-prop-l').value:'';
 var pr=document.getElementById('v-prop-r')?document.getElementById('v-prop-r').value:'';
 engineInfo='Twin engine. Engine: ' + (window._valEngMake||'') + ' ' + (window._valEngModel||'') + '. Left SMOH: '+(sl||'?')+' hrs, Right SMOH: '+(sr2||'?')+' hrs, Left prop: '+(pl||'?')+' hrs, Right prop: '+(pr||'?')+' hrs';
 } else {
 var smoh=document.getElementById('v-smoh')?document.getElementById('v-smoh').value:'';
+if (smoh) engineSmoh = parseInt(smoh, 10);
 var prop=document.getElementById('v-prop1')?document.getElementById('v-prop1').value:'';
 engineInfo='Single engine. Engine: ' + (window._valEngMake||'') + ' ' + (window._valEngModel||'') + '. SMOH: '+(smoh||'?')+' hrs, Prop TSOH: '+(prop||'?')+' hrs';
 }
@@ -2184,7 +2216,13 @@ var v=await apiPost('/api/valuate', {
   outOfAnnual: outOfAnnual,
   avionicsPackage: (document.getElementById('v-avionics-package') ? document.getElementById('v-avionics-package').value : ''),
   clientId: getOrCreateClientId(),
-  email: getValuationEmail() || null
+  email: getValuationEmail() || null,
+  engineModel: engineModel,
+  engineTbo: tbo,
+  engineSmoh: engineSmoh,
+  engineSmohL: engineSmohL,
+  engineSmohR: engineSmohR,
+  isTwin: isTwin
 });
 renderVal(v,make,model,year);
 trackEvent('valuation_completed', { make: make, model: model });

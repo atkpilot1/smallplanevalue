@@ -6,6 +6,8 @@ import {
   recordValuationUsage,
   FREE_VALUATIONS_PER_MONTH,
 } from '../utils/valuationAccess'
+import { engineAdjustment } from '../utils/valuationEngine'
+import { engineLifeRemaining, lookupEngineTbo } from '../data/engineTbo'
 
 const bodySchema = z.object({
   make: z.string().min(1),
@@ -26,6 +28,12 @@ const bodySchema = z.object({
   avionicsPackage: z.string().optional().default(''),
   clientId: z.string().optional().default(''),
   email: z.string().optional().nullable(),
+  engineModel: z.string().optional().default(''),
+  engineTbo: z.coerce.number().optional(),
+  engineSmoh: z.coerce.number().optional(),
+  engineSmohL: z.coerce.number().optional(),
+  engineSmohR: z.coerce.number().optional(),
+  isTwin: z.boolean().optional().default(false),
 })
 
 const valSchema = z.object({
@@ -275,7 +283,7 @@ export default defineEventHandler(async (event) => {
     'OTHER VALUE-ADD ITEMS (credit when present in notes/equipment, cap combined positives at +15% of base): fresh/recent engine overhaul or factory reman, recently complied ADs/SBs, recent annual, fresh paint, fresh interior, useful STC mods, hangared storage, useful-load mods.\n' +
     'OTHER DEDUCTION ITEMS (subtract when present): run-out/high-time engine, corrosion, hail/hangar rash, outdated/inop equipment, overdue inspections.\n\n'
   prompt +=
-    'CRITICAL PRICING RULES: 1) Fair market value MUST be 8-15% BELOW the asking price - buyers NEVER pay full ask. 2) Engine time vs TBO is a primary value driver — fresh engines (under 25% of TBO consumed) add significant value; run-out engines (over 85% of TBO) subtract heavily. Use the SMOH/TBO life-remaining % in engineInfo when provided. 3) A 1970s airplane is worth 30-40% less than the same model from the 1990s. 4) A 1976 A36 Bonanza with 4000+ hours and older avionics (Apollo, STEC, King KI-525) has a fair value of $240-290k even with an IO-550 conversion. 5) Only modern glass cockpit A36s (G500/G1000, 1990s+, low time) reach $350k+. Year matters hugely - a 1976 is worth much less than a 2006. High airframe time reduces value. Engine conversions add 25-40k max. Older avionics add modest value. Keep spread between seller and buyer target within 10-15%.\n\n'
+    'CRITICAL PRICING RULES: 1) Fair market value MUST be 8-15% BELOW the asking price - buyers NEVER pay full ask. 2) BASELINE ENGINE: assume MID-TIME engines (50% of TBO consumed) in your base numbers — a deterministic dollar adjustment is applied after your response from actual SMOH. Do NOT double-count engine time in your JSON. 3) Engine time vs TBO is a primary value driver for the post-adjustment. 4) A 1970s airplane is worth 30-40% less than the same model from the 1990s. 5) A 1976 A36 Bonanza with 4000+ hours and older avionics (Apollo, STEC, King KI-525) has a fair value of $240-290k even with an IO-550 conversion. 6) Only modern glass cockpit A36s (G500/G1000, 1990s+, low time) reach $350k+. Year matters hugely - a 1976 is worth much less than a 2006. High airframe time reduces value. Engine conversions add 25-40k max. Older avionics add modest value. Keep spread between seller and buyer target within 10-15%.\n\n'
   // --- Internal database comparables (always injected) ----------------------
   // Fuzzy-match the make/model against our scraped Trade-A-Plane catalog and
   // inject the full detail of each price-bearing match. Year is intentionally
@@ -399,6 +407,14 @@ export default defineEventHandler(async (event) => {
   let out = applyAvionicsPackage(result.data, avs.length > 0 ? '' : d.avionicsPackage)
   out = applyRecordsAdjustment(out, d.logbooks, d.damage)
   out = applyOutOfAnnualAdjustment(out, d.outOfAnnual)
+  out = applyEngineTimeAdjustment(out, {
+    engineModel: d.engineModel || '',
+    engineTbo: d.engineTbo,
+    smoh: d.engineSmoh,
+    smohL: d.engineSmohL,
+    smohR: d.engineSmohR,
+    isTwin: d.isTwin,
+  })
 
   if (clientId) {
     await recordValuationUsage(clientId, d.email, {
@@ -521,5 +537,70 @@ function applyRecordsAdjustment(
     const lead = pct < 0 ? 'Records deduction applied for ' : 'Records premium applied for '
     adjusted.keyFinding = (lead + notes.join(' and ') + ' (' + sign + pct + '% vs clean baseline). ' + (v.keyFinding || '')).trim()
   }
+  return adjusted
+}
+
+function applyEngineTimeAdjustment(
+  v: z.infer<typeof valSchema>,
+  params: {
+    engineModel?: string
+    engineTbo?: number
+    smoh?: number
+    smohL?: number
+    smohR?: number
+    isTwin?: boolean
+  },
+): z.infer<typeof valSchema> {
+  const spec = lookupEngineTbo(params.engineModel || '', undefined, {
+    tboOverride: params.engineTbo && params.engineTbo > 0 ? params.engineTbo : undefined,
+  })
+  const tbo = spec.tbo
+  const overhaulCost = spec.overhaulCost
+  const round = (n: number) => Math.round(n / 1000) * 1000
+  const clampPos = (n: number) => Math.max(0, n)
+
+  const adjustments: ReturnType<typeof engineAdjustment>[] = []
+  const smohs: number[] = []
+
+  if (params.isTwin) {
+    if (params.smohL != null && params.smohL >= 0) {
+      adjustments.push(engineAdjustment({ smoh: params.smohL, tbo, overhaulCost }))
+      smohs.push(params.smohL)
+    }
+    if (params.smohR != null && params.smohR >= 0) {
+      adjustments.push(engineAdjustment({ smoh: params.smohR, tbo, overhaulCost }))
+      smohs.push(params.smohR)
+    }
+  } else if (params.smoh != null && params.smoh >= 0) {
+    adjustments.push(engineAdjustment({ smoh: params.smoh, tbo, overhaulCost }))
+    smohs.push(params.smoh)
+  }
+
+  if (!adjustments.length) return v
+
+  const totalAdj = round(adjustments.reduce((sum, a) => sum + a.adj, 0) / adjustments.length)
+  if (totalAdj === 0) return v
+
+  const adjusted = {
+    ...v,
+    sellerAsk: clampPos(round(v.sellerAsk + totalAdj)),
+    fairMarketValue: clampPos(round(v.fairMarketValue + totalAdj)),
+    buyerTarget: clampPos(round(v.buyerTarget + totalAdj)),
+  }
+
+  const sign = totalAdj >= 0 ? '+' : '-'
+  adjusted.engineImpact = sign + '$' + Math.abs(totalAdj).toLocaleString('en-US') + ' vs midtime'
+
+  const worstLife = Math.min(...smohs.map((s) => engineLifeRemaining(s, tbo).pctRemaining))
+  if (worstLife >= 60) adjusted.engineVerdict = 'Fresh (' + worstLife + '% life)'
+  else if (worstLife >= 30) adjusted.engineVerdict = 'Mid-life (' + worstLife + '% life)'
+  else if (worstLife >= 10) adjusted.engineVerdict = 'High-time (' + worstLife + '% life)'
+  else adjusted.engineVerdict = 'Run-out (' + worstLife + '% life)'
+
+  const adjLabel = totalAdj >= 0 ? 'Engine time premium' : 'Engine time deduction'
+  adjusted.keyFinding = (
+    adjLabel + ' (' + sign + '$' + Math.abs(totalAdj).toLocaleString() + ' vs midtime baseline). ' + (v.keyFinding || '')
+  ).trim()
+
   return adjusted
 }
