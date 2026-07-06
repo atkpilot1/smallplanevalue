@@ -63,6 +63,25 @@ function isCirrus(make: string, model: string): boolean {
   return /\bcirrus\b/.test(m) || /\bsr20\b|\bsr22\b|\bsr22t\b|\bsf50\b|vision\s*jet/.test(m)
 }
 
+function isBonanzaFamily(make: string, model: string): boolean {
+  const m = (make + ' ' + model).toLowerCase()
+  return /\bbeech\b|\bbonanza\b|\bf33|\ba36|\ba35|\bv35|\bbaron\b/.test(m)
+}
+
+function bonanzaGuide(): string {
+  return (
+    'BEECH BONANZA / F33A / A36 GUIDE — price by equipment stack, not year alone:\n' +
+    '- Base F33A (IO-520, legacy avionics, mid-time): late 1970s–1980s typically $200–280k asking.\n' +
+    '- Turbonormalized IO-550 (Tornado Alley or similar STC): +$50–80k over IO-520 baseline — a major mod, not a minor conversion.\n' +
+    '- Fresh IO-550 (under 200 SMOH): +$30–50k vs mid-time engine.\n' +
+    '- Premium Garmin retrofit (G500 TXi / G500 + GTN 750 + GFC 500): +$45–65k over steam gauges.\n' +
+    '- TKS known-ice + air conditioning: +$25–40k combined.\n' +
+    '- Fully loaded F33A (turbo norm, fresh IO-550, TKS, A/C, modern panel, clean logs): $320–420k fair market is realistic for 1980s examples.\n' +
+    '- A36 six-seat: typically +$30–80k over a comparably equipped F33A.\n' +
+    '- Do NOT price a turbonormalized, fresh-engine, glass-panel F33A like a base IO-520 comp at $210–240k.\n\n'
+  )
+}
+
 // Map a model year to its Cirrus generation for the given model family.
 function cirrusGen(yearStr: string, model: string): string {
   const y = parseInt((yearStr || '').replace(/[^0-9]/g, ''), 10)
@@ -248,6 +267,20 @@ export default defineEventHandler(async (event) => {
     prompt += cirrusGuide(d.year, d.model, d.cirrusGen)
   }
 
+  if (isBonanzaFamily(d.make, d.model)) {
+    prompt += bonanzaGuide()
+  }
+
+  const listingAsk = parseInt((d.asking || '').replace(/[^0-9]/g, ''), 10) || 0
+  if (listingAsk > 0) {
+    prompt +=
+      'LISTING ASK (seller advertised price you are evaluating): $' +
+      listingAsk.toLocaleString('en-US') +
+      '. Set fairMarketValue and buyerTarget from market evidence and comps — do NOT anchor FMV to this listing. ' +
+      'Your sellerAsk in JSON is the typical MARKET list price for comparable aircraft (from comps), not this listing. ' +
+      'If this listing is materially above or below market, say so in keyFinding.\n\n'
+  }
+
   // Deterministic avionics adjustment from the spreadsheet-derived engine.
   // Base airframe value is unknown until the LLM prices it, so we inject the
   // per-item dollar figures and total and instruct the model to use them as-is
@@ -283,7 +316,7 @@ export default defineEventHandler(async (event) => {
     'OTHER VALUE-ADD ITEMS (credit when present in notes/equipment, cap combined positives at +15% of base): fresh/recent engine overhaul or factory reman, recently complied ADs/SBs, recent annual, fresh paint, fresh interior, useful STC mods, hangared storage, useful-load mods.\n' +
     'OTHER DEDUCTION ITEMS (subtract when present): run-out/high-time engine, corrosion, hail/hangar rash, outdated/inop equipment, overdue inspections.\n\n'
   prompt +=
-    'CRITICAL PRICING RULES: 1) Fair market value MUST be 8-15% BELOW the asking price - buyers NEVER pay full ask. 2) BASELINE ENGINE: assume MID-TIME engines (50% of TBO consumed) in your base numbers — a deterministic dollar adjustment is applied after your response from actual SMOH. Do NOT double-count engine time in your JSON. 3) Engine time vs TBO is a primary value driver for the post-adjustment. 4) A 1970s airplane is worth 30-40% less than the same model from the 1990s. 5) A 1976 A36 Bonanza with 4000+ hours and older avionics (Apollo, STEC, King KI-525) has a fair value of $240-290k even with an IO-550 conversion. 6) Only modern glass cockpit A36s (G500/G1000, 1990s+, low time) reach $350k+. Year matters hugely - a 1976 is worth much less than a 2006. High airframe time reduces value. Engine conversions add 25-40k max. Older avionics add modest value. Keep spread between seller and buyer target within 10-15%.\n\n'
+    'CRITICAL PRICING RULES: 1) In your JSON, sellerAsk is typical MARKET list price from comps; fairMarketValue is 8–15% below that sellerAsk (buyers rarely pay full ask). This spread is internal to your three numbers — it is NOT relative to any LISTING ASK line above. 2) BASELINE ENGINE: assume MID-TIME engines (50% of TBO consumed) in your base numbers — a deterministic dollar adjustment is applied after your response from actual SMOH. Do NOT double-count engine time in your JSON. 3) A 1970s airplane is worth less than the same model from the 1990s, but major STCs (turbonormalized IO-550, TKS, A/C) stack additively on Bonanzas. 4) A 1976 A36 Bonanza with 4000+ hours and older avionics has fair value $240–290k even with IO-550 conversion; a glass-panel, low-time, turbonormalized F33A is a different tier ($320–420k). 5) Only modern glass cockpit A36s (G500/G1000, 1990s+, low time) reach $350k+ without turbo norm. Keep spread between your sellerAsk and buyerTarget within 10–15%.\n\n'
   // --- Internal database comparables (always injected) ----------------------
   // Fuzzy-match the make/model against our scraped Trade-A-Plane catalog and
   // inject the full detail of each price-bearing match. Year is intentionally

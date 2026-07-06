@@ -2244,11 +2244,24 @@ setLoading('v-spin','v-btn',false);
 
 function renderVal(v, make, model, year) {
 // Support both old and new format
-var apEl=document.getElementById("v-asking");var seller = (apEl&&apEl.value ? parseInt(apEl.value) : 0) || v.sellerAsk || v.askHigh || 0;
+var apEl=document.getElementById("v-asking");
+var listingAsk = (apEl && apEl.value) ? parseInt(apEl.value, 10) : 0;
+var marketAsk = v.sellerAsk || v.askHigh || 0;
+var seller = marketAsk || listingAsk;
 var fmv = v.fairMarketValue || v.askMid || 0;
 var buyer = v.buyerTarget || v.askLow || 0;
 var total = seller - buyer;
 var fmvPct = total > 0 ? Math.round((fmv - buyer) / total * 100) : 50;
+var listingGapHtml = '';
+if (listingAsk > 0 && fmv > 0 && listingAsk !== marketAsk) {
+  var gapPct = Math.round((listingAsk - fmv) / fmv * 100);
+  var gapLabel = gapPct > 0 ? gapPct + '% above' : Math.abs(gapPct) + '% below';
+  var gapColor = gapPct > 15 ? 'var(--danger)' : gapPct > 5 ? 'var(--warn)' : 'var(--success)';
+  listingGapHtml = '<div style="background:rgba(232,160,32,0.12);border:1px solid rgba(232,160,32,0.35);border-radius:var(--radius);padding:12px 14px;margin-bottom:1rem;font-size:13px;color:var(--sky)">'
+    + '<strong>Listing ask:</strong> ' + fmt(listingAsk) + ' — <span style="color:' + gapColor + ';font-weight:600">' + gapLabel + ' our fair market value</span>'
+    + (marketAsk ? ' · Typical market list for comps: ' + fmt(marketAsk) : '')
+    + '</div>';
+}
 function ic(s){if(!s)return 'neu';const n=parseFloat(s);return n>0?'up':n<0?'down':'neu';}
 const tips=(v.negotiatingTips||[]).map(t=>`<div class="tip-item"><i class="ti ti-arrow-right"></i><span>${t}</span></div>`).join('');
 var engLifeHtml = '';
@@ -2272,6 +2285,7 @@ document.getElementById('v-result').innerHTML=`
 </div>
 <span class="badge ${v.confidence==='high'?'bg-green':'bg-amber'}"><i class="ti ti-${v.confidence==='high'?'circle-check':'alert-circle'}" style="font-size:12px"></i> ${v.confidence==='high'?'High':'Moderate'} confidence</span>
 </div>
+${listingGapHtml}
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:1rem">
 <div style="text-align:center;padding:14px 8px;background:var(--offwhite);border-radius:var(--radius)">
 <div style="font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em;margin-bottom:4px">BUYER TARGET</div>
@@ -2284,9 +2298,9 @@ document.getElementById('v-result').innerHTML=`
 <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:2px">realistic price</div>
 </div>
 <div style="text-align:center;padding:14px 8px;background:var(--offwhite);border-radius:var(--radius)">
-<div style="font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em;margin-bottom:4px">SELLER ASKING</div>
+<div style="font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em;margin-bottom:4px">TYPICAL MARKET ASK</div>
 <div style="font-size:22px;font-weight:700;color:#c0392b">${fmt(seller)}</div>
-<div style="font-size:11px;color:var(--muted);margin-top:2px">typical list price</div>
+<div style="font-size:11px;color:var(--muted);margin-top:2px">from comps, not your listing</div>
 </div>
 </div>
 <div class="price-bar-wrap">
@@ -2297,7 +2311,7 @@ document.getElementById('v-result').innerHTML=`
 </div>
 </div>
 <div style="background:var(--offwhite);border-radius:var(--radius);padding:12px 14px;margin:1rem 0;font-size:13px;color:var(--muted)">
-<strong style="color:var(--sky)">How this works:</strong> Seller Asking is the typical list price. Fair Market Value is what the aircraft is realistically worth. Buyer Target is a strong negotiating position. GA sale prices are not publicly recorded — this reflects current listings and broker experience.
+<strong style="color:var(--sky)">How this works:</strong> Fair Market Value is what the aircraft is realistically worth today. Buyer Target is a strong negotiating position. Typical Market Ask is what similar listings ask — if you entered a listing price, it is shown separately above.
 </div>
 <div class="metric-row">
 <div class="metric"><div class="metric-val">${v.condVerdict}</div><div class="metric-lbl">Condition</div><div class="metric-note ${ic(v.condImpact)}">${v.condImpact||'—'} vs avg</div></div>
