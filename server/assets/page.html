@@ -597,6 +597,31 @@ transition: background .1s;
 .engine-tbo-note { font-size: 11px; color: var(--muted); margin-top: 6px; }
 .tbo-reset-btn { font-size: 11px; padding: 2px 8px; border: 1px solid rgba(19,64,116,0.2); background: transparent; border-radius: 4px; cursor: pointer; color: var(--sky); font-family: var(--body); }
 .tbo-reset-btn:hover { background: rgba(19,64,116,0.06); }
+.listing-narrative {
+  background: linear-gradient(135deg, rgba(19,64,116,0.06) 0%, rgba(19,64,116,0.02) 100%);
+  border: 1px solid rgba(19,64,116,0.12); border-radius: var(--radius-lg);
+  padding: 16px 18px; margin-bottom: 1rem;
+}
+.listing-narrative-hdr {
+  font-size: 12px; font-weight: 600; color: var(--sky); letter-spacing: .04em;
+  margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+.listing-narrative-body { font-size: 14px; color: var(--sky); line-height: 1.55; }
+.val-accuracy-row {
+  margin: 1.25rem 0; padding: 14px 16px; background: var(--offwhite);
+  border-radius: var(--radius); border: 1px solid rgba(11,37,69,0.08);
+}
+.val-accuracy-label { font-size: 13px; font-weight: 500; color: var(--sky); margin-bottom: 10px; }
+.val-accuracy-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.val-acc-btn {
+  flex: 1; min-width: 90px; padding: 9px 12px; border: 1px solid rgba(19,64,116,0.2);
+  border-radius: var(--radius); background: #fff; color: var(--sky); font-size: 13px;
+  font-weight: 500; cursor: pointer; font-family: var(--body); transition: background .15s, border-color .15s;
+}
+.val-acc-btn:hover { background: rgba(19,64,116,0.06); border-color: var(--sky-mid); }
+.val-acc-btn:disabled { opacity: 0.6; cursor: default; }
+.val-acc-btn.selected { background: var(--sky); color: #fff; border-color: var(--sky); }
+.val-accuracy-msg { font-size: 13px; margin-top: 10px; min-height: 18px; }
 .adv-body { padding:4px 14px 14px; }
 .submit-btn {
 background: var(--sky); color: var(--white);
@@ -1375,44 +1400,6 @@ ENGINE TIMES
 <div class="form-group"><label>YOUR FEEDBACK</label><textarea id="fb-message" rows="4" placeholder="What did we get wrong? What features do you want?"></textarea></div>
 <button class="submit-btn" id="fb-btn" onclick="submitFeedback()"><i class="ti ti-send"></i> Send feedback</button>
 <div id="fb-result"></div>
-<script>
-async function submitFeedback() {
-var email = document.getElementById('fb-email').value.trim();
-var aircraft = document.getElementById('fb-aircraft').value.trim();
-var accuracy = document.getElementById('fb-accuracy').value;
-var message = document.getElementById('fb-message').value.trim();
-if (!message && !accuracy) { alert('Please enter feedback or select accuracy.'); return; }
-
-var btn = document.getElementById('fb-btn');
-var origHtml = btn.innerHTML;
-btn.disabled = true;
-btn.innerHTML = '<i class="ti ti-loader-2"></i> Sending...';
-
-var entry = { email:email, aircraft:aircraft, accuracy:accuracy, message:message, ts:new Date().toISOString() };
-
-// Local safety-net backup so feedback is never lost, even if the network fails.
-try { var fb = JSON.parse(localStorage.getItem('spv_feedback') || '[]'); fb.push(entry); localStorage.setItem('spv_feedback', JSON.stringify(fb)); } catch(e) {}
-
-var ok = false;
-try {
-  var resp = await fetch('/api/feedback', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email:email, aircraft:aircraft, accuracy:accuracy, message:message })
-  });
-  var d = await resp.json().catch(function(){ return {}; });
-  ok = resp.ok && !d.error;
-} catch(e) { ok = false; }
-
-document.getElementById('fb-result').innerHTML = '<p style="color:var(--success);font-size:14px;margin-top:1rem;font-weight:600">Thank you for your feedback! This helps us improve SmallPlaneValue.</p>';
-document.getElementById('fb-email').value='';
-document.getElementById('fb-aircraft').value='';
-document.getElementById('fb-accuracy').value='';
-document.getElementById('fb-message').value='';
-btn.disabled = false;
-btn.innerHTML = origHtml;
-}
-</script>
 </div>
 
 <!-- PRE-BUY CHECKLIST -->
@@ -2242,6 +2229,142 @@ updateValuationFreeNote();
 setLoading('v-spin','v-btn',false);
 }
 
+async function sendAppFeedback(opts) {
+  var entry = {
+    email: opts.email || '',
+    aircraft: opts.aircraft || '',
+    accuracy: opts.accuracy || '',
+    message: opts.message || '',
+    ts: new Date().toISOString()
+  };
+  try {
+    var fb = JSON.parse(localStorage.getItem('spv_feedback') || '[]');
+    fb.push(entry);
+    localStorage.setItem('spv_feedback', JSON.stringify(fb));
+  } catch (e) {}
+  try {
+    var resp = await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: entry.email || null,
+        aircraft: entry.aircraft || null,
+        accuracy: entry.accuracy || null,
+        message: entry.message || null
+      })
+    });
+    var d = await resp.json().catch(function() { return {}; });
+    return resp.ok && !d.error;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function submitFeedback() {
+  var email = document.getElementById('fb-email').value.trim();
+  var aircraft = document.getElementById('fb-aircraft').value.trim();
+  var accuracy = document.getElementById('fb-accuracy').value;
+  var message = document.getElementById('fb-message').value.trim();
+  if (!message && !accuracy) { alert('Please enter feedback or select accuracy.'); return; }
+  var btn = document.getElementById('fb-btn');
+  var origHtml = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader-2"></i> Sending...';
+  await sendAppFeedback({ email: email, aircraft: aircraft, accuracy: accuracy, message: message });
+  trackEvent('feedback_submitted', { source: 'feedback_tab', accuracy: accuracy || 'none' });
+  document.getElementById('fb-result').innerHTML = '<p style="color:var(--success);font-size:14px;margin-top:1rem;font-weight:600">Thank you for your feedback! This helps us improve SmallPlaneValue.</p>';
+  document.getElementById('fb-email').value = '';
+  document.getElementById('fb-aircraft').value = '';
+  document.getElementById('fb-accuracy').value = '';
+  document.getElementById('fb-message').value = '';
+  btn.disabled = false;
+  btn.innerHTML = origHtml;
+}
+
+async function submitValuationFeedback(accuracy) {
+  var ctx = window._lastValContext || {};
+  var row = document.getElementById('val-accuracy-row');
+  if (!row || row.dataset.submitted === '1') return;
+  var btns = row.querySelectorAll('.val-acc-btn');
+  btns.forEach(function(b) { b.disabled = true; });
+  var aircraft = [ctx.year, ctx.make, ctx.model].filter(Boolean).join(' ');
+  var msg = 'Post-valuation rating. FMV: $' + (ctx.fmv || 0).toLocaleString();
+  if (ctx.listingAsk) msg += ', Listing ask: $' + ctx.listingAsk.toLocaleString();
+  if (ctx.buyer) msg += ', Buyer target: $' + ctx.buyer.toLocaleString();
+  msg += '.';
+  await sendAppFeedback({ aircraft: aircraft, accuracy: accuracy, message: msg });
+  trackEvent('valuation_accuracy_feedback', {
+    accuracy: accuracy,
+    make: ctx.make || '',
+    model: ctx.model || '',
+    fmv: ctx.fmv || 0,
+    listing_ask: ctx.listingAsk || 0
+  });
+  row.dataset.submitted = '1';
+  btns.forEach(function(b) {
+    b.classList.toggle('selected', b.getAttribute('data-acc') === accuracy);
+  });
+  var msgEl = document.getElementById('val-accuracy-msg');
+  if (msgEl) {
+    msgEl.style.color = 'var(--success)';
+    msgEl.textContent = 'Thanks — your rating helps us improve valuations.';
+  }
+}
+
+function buildListingNarrative(listingAsk, fmv, buyer, marketAsk, v) {
+  var parts = [];
+  var drivers = [];
+  var el = window._lastEngineLife;
+  if (el && el.engines && el.engines.length) {
+    var minLife = 100;
+    el.engines.forEach(function(e) {
+      var pct = e.life && e.life.pctRemaining != null
+        ? e.life.pctRemaining
+        : Math.max(0, Math.round((1 - e.smoh / e.tbo) * 100));
+      if (pct < minLife) minLife = pct;
+      if (pct >= 55) drivers.push('low engine time (' + pct + '% TBO life remaining)');
+    });
+  }
+  if (v.engineVerdict && /fresh/i.test(v.engineVerdict) && !drivers.length) {
+    drivers.push('strong engine condition (' + v.engineVerdict + ')');
+  }
+  if (v.avVerdict && /above|modern|glass|premium/i.test(v.avVerdict)) {
+    drivers.push('above-average avionics');
+  }
+  if (listingAsk > 0 && fmv > 0) {
+    var gapD = listingAsk - fmv;
+    var gapPct = Math.round(gapD / fmv * 100);
+    var verdict = '';
+    if (gapPct > 20) verdict = 'This listing looks ambitious relative to our estimate.';
+    else if (gapPct > 10) verdict = 'This listing is priced toward the high end of the market.';
+    else if (gapPct > 5) verdict = 'This listing is slightly above our fair market value.';
+    else if (gapPct >= -5) verdict = 'This listing is roughly in line with our fair market value.';
+    else verdict = 'This listing may offer good value below our estimate.';
+    parts.push(
+      verdict + ' The ask of ' + fmt(listingAsk) + ' is ' + fmt(Math.abs(gapD)) + ' (' +
+      Math.abs(gapPct) + '%) ' + (gapPct >= 0 ? 'above' : 'below') + ' our ' + fmt(fmv) + ' fair market value.'
+    );
+    if (gapPct > 8 && drivers.length) {
+      parts.push(
+        'Even so, ' + drivers.join(' and ') +
+        ' supports paying toward the top of the range — consider opening near ' + fmt(buyer) +
+        ' and negotiating toward ' + fmt(fmv) + ' rather than the full ask.'
+      );
+    } else if (gapPct <= 8 && drivers.length) {
+      parts.push('Key value drivers: ' + drivers.join(' and ') + '.');
+    }
+    if (marketAsk && Math.abs(marketAsk - listingAsk) > 5000) {
+      parts.push('Typical comparable listings ask around ' + fmt(marketAsk) + '.');
+    }
+  } else if (fmv > 0) {
+    parts.push('Our fair market value is ' + fmt(fmv) + ', with a buyer target near ' + fmt(buyer) + '.');
+    if (marketAsk) parts.push('Similar aircraft are typically listed around ' + fmt(marketAsk) + '.');
+    if (drivers.length) parts.push('This estimate reflects ' + drivers.join(' and ') + '.');
+    parts.push('Enter a listing ask above to see how a specific price compares.');
+  }
+  return parts.join(' ');
+}
+
 function renderVal(v, make, model, year) {
 // Support both old and new format
 var apEl=document.getElementById("v-asking");
@@ -2252,6 +2375,11 @@ var fmv = v.fairMarketValue || v.askMid || 0;
 var buyer = v.buyerTarget || v.askLow || 0;
 var total = seller - buyer;
 var fmvPct = total > 0 ? Math.round((fmv - buyer) / total * 100) : 50;
+window._lastValContext = { make: make, model: model, year: year, fmv: fmv, buyer: buyer, listingAsk: listingAsk, marketAsk: marketAsk };
+var listingNarrative = buildListingNarrative(listingAsk, fmv, buyer, marketAsk, v);
+var listingNarrativeHtml = listingNarrative
+  ? '<div class="listing-narrative"><div class="listing-narrative-hdr"><i class="ti ti-report-analytics"></i> LISTING VS MARKET</div><div class="listing-narrative-body">' + listingNarrative + '</div></div>'
+  : '';
 var listingGapHtml = '';
 if (listingAsk > 0 && fmv > 0 && listingAsk !== marketAsk) {
   var gapPct = Math.round((listingAsk - fmv) / fmv * 100);
@@ -2286,6 +2414,7 @@ document.getElementById('v-result').innerHTML=`
 <span class="badge ${v.confidence==='high'?'bg-green':'bg-amber'}"><i class="ti ti-${v.confidence==='high'?'circle-check':'alert-circle'}" style="font-size:12px"></i> ${v.confidence==='high'?'High':'Moderate'} confidence</span>
 </div>
 ${listingGapHtml}
+${listingNarrativeHtml}
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:1rem">
 <div style="text-align:center;padding:14px 8px;background:var(--offwhite);border-radius:var(--radius)">
 <div style="font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em;margin-bottom:4px">BUYER TARGET</div>
@@ -2319,6 +2448,15 @@ ${listingGapHtml}
 <div class="metric"><div class="metric-val">${v.engineVerdict}</div><div class="metric-lbl">Engine</div><div class="metric-note ${ic(v.engineImpact)}">${v.engineImpact||'—'} vs avg</div></div>
 </div>
 ${engLifeHtml}
+<div class="val-accuracy-row" id="val-accuracy-row">
+<div class="val-accuracy-label">How was this valuation?</div>
+<div class="val-accuracy-btns">
+<button type="button" class="val-acc-btn" data-acc="low" onclick="submitValuationFeedback('low')">Too low</button>
+<button type="button" class="val-acc-btn" data-acc="right" onclick="submitValuationFeedback('right')">About right</button>
+<button type="button" class="val-acc-btn" data-acc="high" onclick="submitValuationFeedback('high')">Too high</button>
+</div>
+<div class="val-accuracy-msg" id="val-accuracy-msg"></div>
+</div>
 <div style="font-size:13px;font-weight:500;color:var(--sky);margin-bottom:.75rem;padding:10px 14px;background:rgba(19,64,116,0.06);border-radius:var(--radius)">${v.keyFinding}</div>
 <div class="analysis-text">${v.analysis}</div>
 ${tips?`<div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(11,37,69,0.08)"><div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:.04em">NEGOTIATING GUIDANCE</div><div class="tip-list">${tips}</div></div>`:''}

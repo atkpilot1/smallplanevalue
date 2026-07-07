@@ -49,6 +49,8 @@ Key events apply to **new data only** (not retroactive).
 |-------|--------|---------|
 | `lookup_success` | SPV + ntailnum | Registry lookup completed |
 | `valuation_completed` | SPV | Free valuation used |
+| `valuation_accuracy_feedback` | SPV | User rated FMV too low / right / too high on results card |
+| `feedback_submitted` | SPV | Feedback tab submission |
 | `generate_lead` | SPV | Email captured (GA4 recommended) |
 | `upgrade_intent_click` | SPV | Paid report interest ($24) |
 | `cta_click_spv` | ntailnum | Click through to SPV |
