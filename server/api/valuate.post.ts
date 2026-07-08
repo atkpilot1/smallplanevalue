@@ -34,6 +34,7 @@ const bodySchema = z.object({
   engineSmohL: z.coerce.number().optional(),
   engineSmohR: z.coerce.number().optional(),
   isTwin: z.boolean().optional().default(false),
+  engineConversion: z.string().optional().default(''),
 })
 
 const valSchema = z.object({
@@ -122,6 +123,51 @@ function isEquippedF33A(d: {
   if (!/f33/.test((d.make + ' ' + d.model).toLowerCase())) return false
   const blob = [d.engineInfo, d.notes, ...(d.avionics || [])].join(' ').toLowerCase()
   return /turbo|tornado|io-550|tks|g500|gtn|gfc|g600|g1000/.test(blob)
+}
+
+type Io550ConversionKind = 'stc' | 'turbo_norm'
+
+function detectIo550Conversion(d: {
+  year?: string
+  make: string
+  model: string
+  engineInfo?: string
+  notes?: string
+  engineModel?: string
+  engineConversion?: string
+}): Io550ConversionKind | null {
+  const blob = [d.engineConversion, d.notes, d.engineInfo, d.engineModel].join(' ').toLowerCase()
+  if (!/io[\s-]?550|o[\s-]?550/.test(blob)) return null
+
+  const turbo = /turbo\s*norm|tornado\s*alley|turbonormal/i.test(blob)
+  const stcSignals =
+    /conversion|stc|\bram\b|deshannon|black\s*gold|upgrade|\b520\b|skyway|field\s*oh/i.test(blob) ||
+    !!(d.engineConversion || '').trim()
+
+  const year = parseInt((d.year || '').replace(/\D/g, ''), 10) || 0
+  const bonanza = /bonanza|f33|a36|v35|debonair/i.test((d.make + ' ' + d.model).toLowerCase())
+  const factoryIo550 =
+    /io[\s-]?550/.test((d.engineModel || '').toLowerCase()) && !stcSignals && !turbo && bonanza && year >= 1996
+
+  if (factoryIo550) return null
+  if (turbo) return 'turbo_norm'
+  if (stcSignals || /io[\s-]?550/.test(blob)) return 'stc'
+  return null
+}
+
+/** IO-550 STC / turbo-norm premium scales with engine life — fresh conversion worth far more than run-out. */
+function io550ConversionPremium(
+  kind: Io550ConversionKind,
+  smoh: number | undefined,
+  tbo: number,
+): number {
+  const min = kind === 'turbo_norm' ? 12_000 : 8_000
+  const max = kind === 'turbo_norm' ? 58_000 : 45_000
+  if (smoh == null || smoh < 0) {
+    return Math.round(min + (max - min) * 0.5)
+  }
+  const life = engineLifeRemaining(smoh, tbo)
+  return Math.round(min + (max - min) * (life.pctRemaining / 100))
 }
 
 // Map a model year to its Cirrus generation for the given model family.
@@ -358,6 +404,10 @@ export default defineEventHandler(async (event) => {
     'IMPORTANT — LOGBOOKS and DAMAGE HISTORY are adjusted automatically AFTER your estimate, so DO NOT price them yourself. Price this aircraft assuming COMPLETE logbooks and NO damage history (a clean baseline). Ignore the "Logbooks:" and "Damage history:" lines above when setting sellerAsk, fairMarketValue and buyerTarget. Do not mention logbook completeness or damage history in keyFinding/analysis — a separate records adjustment is appended automatically.\n' +
     'OTHER VALUE-ADD ITEMS (credit when present in notes/equipment, cap combined positives at +15% of base): fresh/recent engine overhaul or factory reman, recently complied ADs/SBs, recent annual, fresh paint, fresh interior, useful STC mods, hangared storage, useful-load mods.\n' +
     'OTHER DEDUCTION ITEMS (subtract when present): run-out/high-time engine, corrosion, hail/hangar rash, outdated/inop equipment, overdue inspections.\n\n'
+  if (detectIo550Conversion(d)) {
+    prompt +=
+      'IMPORTANT — IO-550 CONVERSION: An IO-550 (or turbonormalized IO-550) STC is detected. A deterministic conversion premium scaled by engine SMOH vs TBO is applied AFTER your estimate — do NOT add IO-550 conversion value yourself in sellerAsk/fairMarketValue/buyerTarget.\n\n'
+  }
   prompt +=
     'CRITICAL PRICING RULES: 1) In your JSON, sellerAsk is typical MARKET list price from comps; fairMarketValue is 8–15% below that sellerAsk (buyers rarely pay full ask). This spread is internal to your three numbers — it is NOT relative to any LISTING ASK line above. 2) BASELINE ENGINE: assume MID-TIME engines (50% of TBO consumed) in your base numbers — a deterministic dollar adjustment is applied after your response from actual SMOH. Do NOT double-count engine time in your JSON. 3) A 1970s airplane is worth less than the same model from the 1990s, but major STCs (turbonormalized IO-550, TKS, A/C) stack additively on Bonanzas. 4) A 1976 A36 Bonanza with 4000+ hours and older avionics has fair value $240–290k even with IO-550 conversion; a glass-panel, low-time, turbonormalized F33A is a different tier ($320–420k). 5) Only modern glass cockpit A36s (G500/G1000, 1990s+, low time) reach $350k+ without turbo norm. Keep spread between your sellerAsk and buyerTarget within 10–15%.\n\n'
   // --- Internal database comparables (always injected) ----------------------
@@ -485,6 +535,26 @@ export default defineEventHandler(async (event) => {
   out = applyOutOfAnnualAdjustment(out, d.outOfAnnual)
   out = applyEngineTimeAdjustment(out, {
     engineModel: d.engineModel || '',
+    engineTbo: d.engineTbo,
+    smoh: d.engineSmoh,
+    smohL: d.engineSmohL,
+    smohR: d.engineSmohR,
+    isTwin: d.isTwin,
+    year: d.year,
+    make: d.make,
+    model: d.model,
+    engineInfo: d.engineInfo,
+    notes: d.notes,
+    engineConversion: d.engineConversion,
+  })
+  out = applyIo550ConversionAdjustment(out, {
+    year: d.year,
+    make: d.make,
+    model: d.model,
+    engineInfo: d.engineInfo,
+    notes: d.notes,
+    engineModel: d.engineModel,
+    engineConversion: d.engineConversion,
     engineTbo: d.engineTbo,
     smoh: d.engineSmoh,
     smohL: d.engineSmohL,
@@ -626,9 +696,25 @@ function applyEngineTimeAdjustment(
     smohL?: number
     smohR?: number
     isTwin?: boolean
+    year?: string
+    make?: string
+    model?: string
+    engineInfo?: string
+    notes?: string
+    engineConversion?: string
   },
 ): z.infer<typeof valSchema> {
-  const spec = lookupEngineTbo(params.engineModel || '', undefined, {
+  const conv = detectIo550Conversion({
+    year: params.year,
+    make: params.make || '',
+    model: params.model || '',
+    engineInfo: params.engineInfo,
+    notes: params.notes,
+    engineModel: params.engineModel,
+    engineConversion: params.engineConversion,
+  })
+  const modelForTbo = conv ? 'IO-550' : params.engineModel || ''
+  const spec = lookupEngineTbo(modelForTbo, undefined, {
     tboOverride: params.engineTbo && params.engineTbo > 0 ? params.engineTbo : undefined,
   })
   const tbo = spec.tbo
@@ -677,6 +763,75 @@ function applyEngineTimeAdjustment(
   const adjLabel = totalAdj >= 0 ? 'Engine time premium' : 'Engine time deduction'
   adjusted.keyFinding = (
     adjLabel + ' (' + sign + '$' + Math.abs(totalAdj).toLocaleString() + ' vs midtime baseline). ' + (v.keyFinding || '')
+  ).trim()
+
+  return adjusted
+}
+
+function applyIo550ConversionAdjustment(
+  v: z.infer<typeof valSchema>,
+  params: {
+    year?: string
+    make: string
+    model: string
+    engineInfo?: string
+    notes?: string
+    engineModel?: string
+    engineConversion?: string
+    engineTbo?: number
+    smoh?: number
+    smohL?: number
+    smohR?: number
+    isTwin?: boolean
+  },
+): z.infer<typeof valSchema> {
+  const kind = detectIo550Conversion(params)
+  if (!kind) return v
+
+  const spec = lookupEngineTbo('IO-550', undefined, {
+    tboOverride: params.engineTbo && params.engineTbo > 0 ? params.engineTbo : undefined,
+  })
+  const tbo = spec.tbo
+  const round = (n: number) => Math.round(n / 1000) * 1000
+  const clampPos = (n: number) => Math.max(0, n)
+
+  let premium = 0
+  if (params.isTwin) {
+    const premiums: number[] = []
+    if (params.smohL != null && params.smohL >= 0) {
+      premiums.push(io550ConversionPremium(kind, params.smohL, tbo))
+    }
+    if (params.smohR != null && params.smohR >= 0) {
+      premiums.push(io550ConversionPremium(kind, params.smohR, tbo))
+    }
+    if (!premiums.length) return v
+    premium = round(premiums.reduce((a, b) => a + b, 0) / premiums.length)
+  } else {
+    if (params.smoh == null || params.smoh < 0) {
+      premium = io550ConversionPremium(kind, undefined, tbo)
+    } else {
+      premium = io550ConversionPremium(kind, params.smoh, tbo)
+    }
+    premium = round(premium)
+  }
+
+  if (premium === 0) return v
+
+  const adjusted = {
+    ...v,
+    sellerAsk: clampPos(round(v.sellerAsk + premium)),
+    fairMarketValue: clampPos(round(v.fairMarketValue + premium)),
+    buyerTarget: clampPos(round(v.buyerTarget + premium)),
+  }
+
+  const label = kind === 'turbo_norm' ? 'Turbonormalized IO-550' : 'IO-550 conversion'
+  const convImpact = '+$' + premium.toLocaleString('en-US') + ' (' + label + ', time-weighted)'
+  adjusted.engineImpact = v.engineImpact ? v.engineImpact + '; ' + convImpact : convImpact
+  adjusted.engineVerdict = v.engineVerdict
+    ? v.engineVerdict + ' + ' + label
+    : label + ' — premium scales with engine life'
+  adjusted.keyFinding = (
+    label + ' premium +$' + premium.toLocaleString() + ' applied based on engine time vs TBO. ' + (v.keyFinding || '')
   ).trim()
 
   return adjusted

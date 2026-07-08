@@ -1988,6 +1988,13 @@ function currentEngineModelStr() {
   return fromLookup || fromDisp;
 }
 
+function modelForEngineLife() {
+  var convEl = document.getElementById('v-eng-conv');
+  var conv = convEl && convEl.value ? convEl.value.trim() : '';
+  if (/io[\s-]?550|o[\s-]?550/i.test(conv)) return 'IO-550';
+  return currentEngineModelStr();
+}
+
 async function fetchEngineTbo(model, smoh, tboOverride) {
   var key = (model || '').toUpperCase() + '|' + (smoh != null ? smoh : '') + '|' + (tboOverride || '');
   if (window._engineTboCache[key]) return window._engineTboCache[key];
@@ -2065,7 +2072,7 @@ function engineLifeBarHtml(label, smoh, tbo, life) {
 }
 
 async function refreshEngineLife() {
-  var model = currentEngineModelStr();
+  var model = modelForEngineLife();
   var tboEl = document.getElementById('v-tbo');
   var noteEl = document.getElementById('engine-tbo-note');
   var spec = await fetchEngineTbo(model, null, window._tboUserOverride ? getEffectiveTbo() : null);
@@ -2218,7 +2225,8 @@ var v=await apiPost('/api/valuate', {
   engineSmoh: engineSmoh,
   engineSmohL: engineSmohL,
   engineSmohR: engineSmohR,
-  isTwin: isTwin
+  isTwin: isTwin,
+  engineConversion: (engConvEl && engConvEl.value.trim()) ? engConvEl.value.trim() : ''
 });
 renderVal(v,make,model,year);
 trackEvent('valuation_completed', { make: make, model: model });
