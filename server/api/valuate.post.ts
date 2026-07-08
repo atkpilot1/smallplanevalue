@@ -68,18 +68,60 @@ function isBonanzaFamily(make: string, model: string): boolean {
   return /\bbeech\b|\bbonanza\b|\bf33|\ba36|\ba35|\bv35|\bbaron\b/.test(m)
 }
 
-function bonanzaGuide(): string {
-  return (
+function bonanzaGuide(d: {
+  year?: string
+  model?: string
+  engineInfo?: string
+  notes?: string
+  avionics?: string[]
+}): string {
+  const blob = [d.engineInfo, d.notes, ...(d.avionics || [])].join(' ').toLowerCase()
+  const isF33 = /f33/.test((d.model || '').toLowerCase())
+  const equipped =
+    /turbo|tornado|io-550|tks|g500|gtn|gfc|g600|g1000/.test(blob) ||
+    /smoh:\s*([0-9]|[1-9][0-9]|1[0-9]{2})\s*hrs/i.test(d.engineInfo || '')
+
+  let g =
     'BEECH BONANZA / F33A / A36 GUIDE — price by equipment stack, not year alone:\n' +
-    '- Base F33A (IO-520, legacy avionics, mid-time): late 1970s–1980s typically $200–280k asking.\n' +
+    '- Base F33A (IO-520, legacy avionics, mid-time): late 1970s–1980s typically $250–320k asking in 2025-2026.\n' +
     '- Turbonormalized IO-550 (Tornado Alley or similar STC): +$50–80k over IO-520 baseline — a major mod, not a minor conversion.\n' +
     '- Fresh IO-550 (under 200 SMOH): +$30–50k vs mid-time engine.\n' +
     '- Premium Garmin retrofit (G500 TXi / G500 + GTN 750 + GFC 500): +$45–65k over steam gauges.\n' +
     '- TKS known-ice + air conditioning: +$25–40k combined.\n' +
-    '- Fully loaded F33A (turbo norm, fresh IO-550, TKS, A/C, modern panel, clean logs): $320–420k fair market is realistic for 1980s examples.\n' +
     '- A36 six-seat: typically +$30–80k over a comparably equipped F33A.\n' +
-    '- Do NOT price a turbonormalized, fresh-engine, glass-panel F33A like a base IO-520 comp at $210–240k.\n\n'
-  )
+    '- Do NOT price a turbonormalized, fresh-engine, glass-panel F33A like a base IO-520 comp at $210–280k.\n'
+
+  if (isF33) {
+    g +=
+      '\nF33A CONTROLLER MARKET ANCHOR (2025-2026 active US listings — use as primary evidence):\n' +
+      '- Low end: ~$298k (1990, ~1,800 TT, average equipment)\n' +
+      '- Mid band: $340k–$430k (1980s–1990s, well equipped, typical TT)\n' +
+      '- High end: $395k–$499k (dealer listings, low TT or premium spec)\n' +
+      '- Major dealers (Latitude Aviation, Tomlinson, AIRMART, etc.) often list 12–20% above fair market — a $419k ask is common and does NOT mean FMV is $419k.\n'
+    if (equipped) {
+      g +=
+        '\nEQUIPPED F33A CALIBRATION (this aircraft signals turbo norm / IO-550 / glass / low SMOH):\n' +
+        '- Target sellerAsk (typical market list): $345k–$385k\n' +
+        '- Target fairMarketValue: $330k–$365k (peer tools like Windsock often land ~$350k–$360k for this tier)\n' +
+        '- Target buyerTarget: $310k–$340k\n' +
+        '- If your JSON sellerAsk is below $330k or fairMarketValue below $315k, you are almost certainly underpricing — re-check Controller comps.\n'
+    }
+    g += '\n'
+  }
+
+  return g
+}
+
+function isEquippedF33A(d: {
+  make: string
+  model: string
+  engineInfo?: string
+  notes?: string
+  avionics?: string[]
+}): boolean {
+  if (!/f33/.test((d.make + ' ' + d.model).toLowerCase())) return false
+  const blob = [d.engineInfo, d.notes, ...(d.avionics || [])].join(' ').toLowerCase()
+  return /turbo|tornado|io-550|tks|g500|gtn|gfc|g600|g1000/.test(blob)
 }
 
 // Map a model year to its Cirrus generation for the given model family.
@@ -268,7 +310,7 @@ export default defineEventHandler(async (event) => {
   }
 
   if (isBonanzaFamily(d.make, d.model)) {
-    prompt += bonanzaGuide()
+    prompt += bonanzaGuide(d)
   }
 
   const listingAsk = parseInt((d.asking || '').replace(/[^0-9]/g, ''), 10) || 0
@@ -278,6 +320,7 @@ export default defineEventHandler(async (event) => {
       listingAsk.toLocaleString('en-US') +
       '. Set fairMarketValue and buyerTarget from market evidence and comps — do NOT anchor FMV to this listing. ' +
       'Your sellerAsk in JSON is the typical MARKET list price for comparable aircraft (from comps), not this listing. ' +
+      'Dealer listings often run 12–20% above FMV; if this ask is $400k+, fair market may still be $330k–$370k for an equipped F33A. ' +
       'If this listing is materially above or below market, say so in keyFinding.\n\n'
   }
 
@@ -448,6 +491,7 @@ export default defineEventHandler(async (event) => {
     smohR: d.engineSmohR,
     isTwin: d.isTwin,
   })
+  out = applyEquippedF33AFloor(out, d)
 
   if (clientId) {
     await recordValuationUsage(clientId, d.email, {
@@ -635,5 +679,39 @@ function applyEngineTimeAdjustment(
     adjLabel + ' (' + sign + '$' + Math.abs(totalAdj).toLocaleString() + ' vs midtime baseline). ' + (v.keyFinding || '')
   ).trim()
 
+  return adjusted
+}
+
+/** Safety floor when AI underprices loaded F33As vs 2025-2026 Controller market. */
+function applyEquippedF33AFloor(
+  v: z.infer<typeof valSchema>,
+  d: {
+    make: string
+    model: string
+    engineInfo?: string
+    notes?: string
+    avionics?: string[]
+  },
+): z.infer<typeof valSchema> {
+  if (!isEquippedF33A(d)) return v
+
+  const minFmv = 330_000
+  const minSeller = 345_000
+  const minBuyer = 310_000
+  if (v.fairMarketValue >= minFmv && v.sellerAsk >= minSeller) return v
+
+  const round = (n: number) => Math.round(n / 1000) * 1000
+  const adjusted = {
+    ...v,
+    fairMarketValue: round(Math.max(v.fairMarketValue, minFmv)),
+    sellerAsk: round(Math.max(v.sellerAsk, minSeller)),
+    buyerTarget: round(Math.max(v.buyerTarget, minBuyer)),
+  }
+
+  if (adjusted.fairMarketValue !== v.fairMarketValue || adjusted.sellerAsk !== v.sellerAsk) {
+    adjusted.keyFinding = (
+      'Market calibration applied for equipped F33A (2025-2026 Controller band). ' + (v.keyFinding || '')
+    ).trim()
+  }
   return adjusted
 }

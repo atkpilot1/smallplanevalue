@@ -2344,8 +2344,12 @@ function buildListingNarrative(listingAsk, fmv, buyer, marketAsk, v) {
     var gapD = listingAsk - fmv;
     var gapPct = Math.round(gapD / fmv * 100);
     var verdict = '';
-    if (gapPct > 20) verdict = 'This listing looks ambitious relative to our estimate.';
-    else if (gapPct > 10) verdict = 'This listing is priced toward the high end of the market.';
+    if (gapPct > 20) {
+      verdict = 'This listing looks ambitious relative to our estimate.';
+      if (listingAsk >= 380000) {
+        parts.push('Dealer listings in this range often carry a 12–20% premium over fair market — the ask is not always the value.');
+      }
+    } else if (gapPct > 10) verdict = 'This listing is priced toward the high end of the market.';
     else if (gapPct > 5) verdict = 'This listing is slightly above our fair market value.';
     else if (gapPct >= -5) verdict = 'This listing is roughly in line with our fair market value.';
     else verdict = 'This listing may offer good value below our estimate.';
