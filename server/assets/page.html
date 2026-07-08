@@ -567,6 +567,19 @@ transition: background .1s;
 }
 .upgrade-btn:hover { background: var(--accent-light); }
 .val-free-note { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.eval-code-wrap { margin-top: 10px; }
+.eval-code-wrap summary {
+  font-size: 12px; color: var(--muted); cursor: pointer; user-select: none; list-style: none;
+}
+.eval-code-wrap summary::-webkit-details-marker { display: none; }
+.eval-code-row { display: flex; gap: 8px; margin-top: 8px; align-items: center; flex-wrap: wrap; }
+.eval-code-row input {
+  flex: 1; min-width: 160px; padding: 8px 10px; border: 1px solid rgba(19,64,116,0.2);
+  border-radius: var(--radius); font-size: 13px; font-family: var(--mono, monospace);
+}
+.eval-code-msg { font-size: 12px; margin-top: 6px; min-height: 16px; }
+.eval-code-msg.ok { color: var(--success); }
+.eval-code-msg.err { color: var(--danger); }
 .adv-section { border:1px solid rgba(19,64,116,0.12);border-radius:var(--radius);margin:14px 0;background:rgba(19,64,116,0.02); }
 .adv-section > summary { cursor:pointer;list-style:none;padding:11px 14px;font-size:12px;font-weight:600;color:var(--sky);letter-spacing:.03em;display:flex;align-items:center;gap:8px;user-select:none; }
 .adv-section > summary::-webkit-details-marker { display:none; }
@@ -1367,6 +1380,14 @@ ENGINE TIMES
 <div class="spin" id="v-spin"><div class="fly-track"><span class="fly-plane"><i class="ti ti-plane"></i></span></div><div>Searching live listings &amp; recent sales...</div></div>
 <div id="v-result"></div>
 <p class="val-free-note" id="v-free-note">Includes 1 free full valuation per month.</p>
+<details class="eval-code-wrap" id="eval-code-wrap">
+<summary>Evaluator / developer access code</summary>
+<div class="eval-code-row">
+<input type="password" id="v-eval-code" placeholder="Enter access code" autocomplete="off" />
+<button type="button" class="submit-btn" id="v-eval-code-btn" onclick="saveEvaluatorCode()" style="width:auto;padding:8px 14px;font-size:13px">Apply</button>
+</div>
+<p class="eval-code-msg" id="v-eval-code-msg"></p>
+</details>
 </div>
 
 <div class="val-gate-overlay" id="val-email-gate" onclick="if(event.target===this)hideValuationEmailGate()">
@@ -1378,6 +1399,14 @@ ENGINE TIMES
 <button class="submit-btn" id="val-gate-btn" type="button" onclick="submitValuationEmailGate()" style="width:auto;padding:10px 16px">Continue</button>
 </div>
 <div class="val-gate-msg" id="val-gate-msg"></div>
+<div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(19,64,116,0.12)">
+<div class="val-gate-sub" style="margin-bottom:8px">Have an evaluator access code?</div>
+<div class="eval-code-row">
+<input type="password" id="val-gate-eval-code" placeholder="Access code" autocomplete="off" />
+<button type="button" class="submit-btn" onclick="saveEvaluatorCodeFromGate()" style="width:auto;padding:10px 16px">Unlock</button>
+</div>
+<p class="eval-code-msg" id="val-gate-eval-msg"></p>
+</div>
 </div>
 </div>
 
@@ -1618,16 +1647,83 @@ function getValuationEmail() {
   return (localStorage.getItem('spv_email') || '').trim();
 }
 
+function getEvaluatorCode() {
+  return (localStorage.getItem('spv_evaluator_code') || '').trim();
+}
+
+function setEvaluatorCode(code) {
+  var normalized = (code || '').trim();
+  if (normalized) localStorage.setItem('spv_evaluator_code', normalized);
+  else localStorage.removeItem('spv_evaluator_code');
+}
+
 function setValuationEmail(email) {
   if (email) localStorage.setItem('spv_email', email.trim().toLowerCase());
 }
 
 async function fetchValuationAccess() {
   var cid = getOrCreateClientId();
-  var r = await fetch('/api/valuation-access?clientId=' + encodeURIComponent(cid));
+  var q = new URLSearchParams({ clientId: cid });
+  var evalCode = getEvaluatorCode();
+  if (evalCode) q.set('evaluatorCode', evalCode);
+  var r = await fetch('/api/valuation-access?' + q.toString());
   var data = await r.json().catch(function() { return {}; });
   if (!r.ok) return { limit: 1, used: 0, remaining: 1 };
   return data;
+}
+
+async function validateEvaluatorCode(code) {
+  var normalized = (code || '').trim();
+  if (!normalized) return false;
+  var q = new URLSearchParams({
+    clientId: getOrCreateClientId(),
+    evaluatorCode: normalized,
+  });
+  var r = await fetch('/api/valuation-access?' + q.toString());
+  var data = await r.json().catch(function() { return {}; });
+  return !!(r.ok && data.bypass);
+}
+
+async function saveEvaluatorCode() {
+  var input = document.getElementById('v-eval-code');
+  var msg = document.getElementById('v-eval-code-msg');
+  var code = (input && input.value || '').trim();
+  if (!code) {
+    if (msg) { msg.className = 'eval-code-msg err'; msg.textContent = 'Enter a code.'; }
+    return;
+  }
+  var btn = document.getElementById('v-eval-code-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Checking...'; }
+  var ok = await validateEvaluatorCode(code);
+  if (btn) { btn.disabled = false; btn.textContent = 'Apply'; }
+  if (!ok) {
+    if (msg) { msg.className = 'eval-code-msg err'; msg.textContent = 'Invalid code.'; }
+    return;
+  }
+  setEvaluatorCode(code);
+  if (msg) { msg.className = 'eval-code-msg ok'; msg.textContent = 'Unlimited valuations enabled on this browser.'; }
+  updateValuationFreeNote();
+}
+
+async function saveEvaluatorCodeFromGate() {
+  var input = document.getElementById('val-gate-eval-code');
+  var msg = document.getElementById('val-gate-eval-msg');
+  var code = (input && input.value || '').trim();
+  if (!code) {
+    if (msg) { msg.className = 'eval-code-msg err'; msg.textContent = 'Enter a code.'; }
+    return;
+  }
+  var ok = await validateEvaluatorCode(code);
+  if (!ok) {
+    if (msg) { msg.className = 'eval-code-msg err'; msg.textContent = 'Invalid code.'; }
+    return;
+  }
+  setEvaluatorCode(code);
+  hideValuationEmailGate();
+  var ctx = _valGateContext || {};
+  if (msg) { msg.className = 'eval-code-msg ok'; msg.textContent = ''; }
+  updateValuationFreeNote();
+  if (ctx.make && ctx.model) doValuation();
 }
 
 var _valGateContext = null;
@@ -1689,9 +1785,33 @@ function renderValuationUpgradeGate(make, model, year, email) {
     + (aircraft ? ' We saved your interest in <strong>' + aircraft + '</strong>.' : '')
     + ' Full reports with negotiating tips and comps will be <strong>$24</strong> — launching soon.</p>'
     + '<button type="button" class="upgrade-btn" onclick="trackUpgradeIntent()"><i class="ti ti-report-money"></i> Get full report — notify me</button>'
+    + '<div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.2)">'
+    + '<p style="font-size:13px;margin-bottom:8px">Evaluator access code</p>'
+    + '<div class="eval-code-row"><input type="password" id="upgrade-eval-code" placeholder="Access code" autocomplete="off" />'
+    + '<button type="button" class="upgrade-btn" onclick="saveEvaluatorCodeFromUpgrade()">Unlock</button></div>'
+    + '<p class="eval-code-msg" id="upgrade-eval-msg"></p></div>'
     + (email ? '<p style="font-size:12px;margin-top:12px;opacity:0.85">We will email <strong>' + email + '</strong> when paid reports go live.</p>' : '')
     + '</div>';
   trackEvent('valuation_limit_reached', { step: 'upgrade_gate' });
+}
+
+async function saveEvaluatorCodeFromUpgrade() {
+  var input = document.getElementById('upgrade-eval-code');
+  var msg = document.getElementById('upgrade-eval-msg');
+  var code = (input && input.value || '').trim();
+  if (!code) {
+    if (msg) { msg.className = 'eval-code-msg err'; msg.textContent = 'Enter a code.'; }
+    return;
+  }
+  var ok = await validateEvaluatorCode(code);
+  if (!ok) {
+    if (msg) { msg.className = 'eval-code-msg err'; msg.textContent = 'Invalid code.'; }
+    return;
+  }
+  setEvaluatorCode(code);
+  if (msg) { msg.className = 'eval-code-msg ok'; msg.textContent = 'Unlocked — running valuation...'; }
+  updateValuationFreeNote();
+  doValuation();
 }
 
 function trackUpgradeIntent() {
@@ -1716,6 +1836,10 @@ async function updateValuationFreeNote() {
   if (!note) return;
   try {
     var access = await fetchValuationAccess();
+    if (access.bypass) {
+      note.textContent = 'Evaluator access — unlimited valuations on this browser.';
+      return;
+    }
     if (access.remaining > 0) {
       note.textContent = access.remaining + ' free full valuation' + (access.remaining === 1 ? '' : 's') + ' remaining this month.';
     } else {
@@ -1725,6 +1849,16 @@ async function updateValuationFreeNote() {
     note.textContent = 'Includes 1 free full valuation per month.';
   }
 }
+
+(function initEvaluatorCodeUi() {
+  var saved = getEvaluatorCode();
+  var input = document.getElementById('v-eval-code');
+  var wrap = document.getElementById('eval-code-wrap');
+  if (input && saved) {
+    input.value = saved;
+    if (wrap) wrap.open = true;
+  }
+})();
 
 updateValuationFreeNote();
 
@@ -1988,6 +2122,13 @@ function currentEngineModelStr() {
   return fromLookup || fromDisp;
 }
 
+function modelForEngineLife() {
+  var convEl = document.getElementById('v-eng-conv');
+  var conv = convEl && convEl.value ? convEl.value.trim() : '';
+  if (/io[\s-]?550|o[\s-]?550/i.test(conv)) return 'IO-550';
+  return currentEngineModelStr();
+}
+
 async function fetchEngineTbo(model, smoh, tboOverride) {
   var key = (model || '').toUpperCase() + '|' + (smoh != null ? smoh : '') + '|' + (tboOverride || '');
   if (window._engineTboCache[key]) return window._engineTboCache[key];
@@ -2065,7 +2206,7 @@ function engineLifeBarHtml(label, smoh, tbo, life) {
 }
 
 async function refreshEngineLife() {
-  var model = currentEngineModelStr();
+  var model = modelForEngineLife();
   var tboEl = document.getElementById('v-tbo');
   var noteEl = document.getElementById('engine-tbo-note');
   var spec = await fetchEngineTbo(model, null, window._tboUserOverride ? getEffectiveTbo() : null);
@@ -2218,7 +2359,9 @@ var v=await apiPost('/api/valuate', {
   engineSmoh: engineSmoh,
   engineSmohL: engineSmohL,
   engineSmohR: engineSmohR,
-  isTwin: isTwin
+  isTwin: isTwin,
+  engineConversion: (engConvEl && engConvEl.value.trim()) ? engConvEl.value.trim() : '',
+  evaluatorCode: getEvaluatorCode()
 });
 renderVal(v,make,model,year);
 trackEvent('valuation_completed', { make: make, model: model });
