@@ -6,6 +6,7 @@ import {
   recordValuationUsage,
   FREE_VALUATIONS_PER_MONTH,
 } from '../utils/valuationAccess'
+import { isValidEvaluatorCode } from '../utils/evaluatorCode'
 import { engineAdjustment } from '../utils/valuationEngine'
 import { engineLifeRemaining, lookupEngineTbo } from '../data/engineTbo'
 
@@ -35,6 +36,7 @@ const bodySchema = z.object({
   engineSmohR: z.coerce.number().optional(),
   isTwin: z.boolean().optional().default(false),
   engineConversion: z.string().optional().default(''),
+  evaluatorCode: z.string().optional().default(''),
 })
 
 const valSchema = z.object({
@@ -322,8 +324,9 @@ export default defineEventHandler(async (event) => {
   const d = parsed.data
   const avs = d.avionics
   const clientId = (d.clientId || '').trim()
+  const evaluatorBypass = isValidEvaluatorCode(d.evaluatorCode)
 
-  if (clientId) {
+  if (clientId && !evaluatorBypass) {
     const used = await countValuationsThisMonth(clientId)
     if (used >= FREE_VALUATIONS_PER_MONTH) {
       throw createError({
@@ -564,11 +567,16 @@ export default defineEventHandler(async (event) => {
   out = applyEquippedF33AFloor(out, d)
 
   if (clientId) {
-    await recordValuationUsage(clientId, d.email, {
-      make: d.make,
-      model: d.model,
-      year: d.year || null,
-    })
+    await recordValuationUsage(
+      clientId,
+      d.email,
+      {
+        make: d.make,
+        model: d.model,
+        year: d.year || null,
+      },
+      { evaluatorBypass },
+    )
   }
 
   return out

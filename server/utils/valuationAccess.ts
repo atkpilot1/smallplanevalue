@@ -15,7 +15,17 @@ export async function countValuationsThisMonth(clientId: string): Promise<number
   return Array.isArray(rows) ? rows.length : 0
 }
 
-export async function getValuationAccess(clientId: string) {
+export async function getValuationAccess(clientId: string, options?: { bypass?: boolean }) {
+  if (options?.bypass) {
+    return {
+      limit: FREE_VALUATIONS_PER_MONTH,
+      used: 0,
+      remaining: FREE_VALUATIONS_PER_MONTH,
+      bypass: true,
+      periodStart: monthStartIso(),
+    }
+  }
+
   const used = clientId ? await countValuationsThisMonth(clientId) : 0
   const limit = FREE_VALUATIONS_PER_MONTH
   return {
@@ -30,11 +40,12 @@ export async function recordValuationUsage(
   clientId: string,
   email: string | null | undefined,
   metadata: Record<string, unknown>,
+  options?: { evaluatorBypass?: boolean },
 ): Promise<void> {
   await supabaseInsert('usage_events', {
     client_id: clientId,
     email: email || null,
-    feature: 'valuate',
+    feature: options?.evaluatorBypass ? 'valuate_evaluator' : 'valuate',
     metadata,
   })
 }

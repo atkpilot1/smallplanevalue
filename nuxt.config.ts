@@ -16,7 +16,9 @@ export default defineNuxtConfig({
     supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
     // Model selection (overridable via env)
     modelMain: process.env.SPV_MODEL_MAIN || 'claude-sonnet-4-6',
-    modelFast: process.env.SPV_MODEL_FAST || 'claude-haiku-4-5-20251001'
+    modelFast: process.env.SPV_MODEL_FAST || 'claude-haiku-4-5-20251001',
+    /** Comma-separated bypass codes for developers and evaluators (server-only). */
+    evaluatorCodes: process.env.SPV_EVALUATOR_CODES || '',
   },
 
   app: {
