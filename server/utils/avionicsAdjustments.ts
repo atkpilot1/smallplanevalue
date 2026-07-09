@@ -112,9 +112,13 @@ export const AVIONICS_ROWS: AvionicsRow[] = [
 
   // Safety & awareness (do not double-count SVT bundled in G1000 NXi / Perspective+)
   { item: 'Angle of attack (AOA)', category: 'Safety', installedCost: 4000, retainedNew: 0.5, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 5, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Angle of attack (AOA)'] },
-  { item: 'FIKI / TKS known ice', category: 'Safety', installedCost: 28000, retainedNew: 0.55, annualDecay: 0.04, floorPct: 0.35, yearsSinceInstall: 8, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['FIKI / TKS known ice'] },
+  { item: 'FIKI certified (known ice)', category: 'Safety', installedCost: 28000, retainedNew: 0.55, annualDecay: 0.04, floorPct: 0.35, yearsSinceInstall: 8, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['FIKI certified (known ice)'] },
+  { item: 'Known ice / inadvertent TKS', category: 'Safety', installedCost: 12000, retainedNew: 0.45, annualDecay: 0.05, floorPct: 0.25, yearsSinceInstall: 10, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Known ice / inadvertent TKS'] },
   { item: 'TAWS (terrain awareness)', category: 'Safety', installedCost: 11000, retainedNew: 0.42, annualDecay: 0.06, floorPct: 0.25, yearsSinceInstall: 8, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['TAWS (terrain awareness)'] },
   { item: 'Synthetic vision (add-on)', category: 'Safety', installedCost: 5500, retainedNew: 0.48, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 4, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Synthetic vision'] },
+
+  // Pedigree (experimental/homebuilt market — modest on certified production aircraft)
+  { item: 'Oshkosh / EAA award winner', category: 'Pedigree', installedCost: 10000, retainedNew: 0.6, annualDecay: 0.03, floorPct: 0.4, yearsSinceInstall: 5, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Oshkosh / EAA award winner'] },
 ]
 
 const ADSB_NONCOMPLIANT_PENALTY = -7000
@@ -176,6 +180,11 @@ export function computeAvionicsAdjustment(
     const row = findRow(s)
     if (!row) continue
     counts.set(row.item, (counts.get(row.item) || 0) + 1)
+  }
+
+  // FIKI supersedes inadvertent/known-ice TKS — do not stack both.
+  if (counts.has('FIKI certified (known ice)') && counts.has('Known ice / inadvertent TKS')) {
+    counts.delete('Known ice / inadvertent TKS')
   }
 
   const lineItems: AvionicsLineItem[] = []
