@@ -30,7 +30,8 @@ export default defineEventHandler(async (event) => {
   const txt = parsed.data.text.substring(0, 5000)
   const prompt =
     'Parse this aircraft listing and extract structured data. Use null for any unknown field. ' +
-    'Example shape: {"make":"BEECH","model":"B58","year":1981,"ttaf":4673,"engines":2,"smoh":0,"smohR":0,"propHrs":689,"propHrsR":689,"condition":"Good","cosmetics":"Average","avionics":["GTX345","KFC200","GNS480"],"notes":"RAM engines, Bose LEMO jacks, dual Insight G2 monitors"}\n\n' +
+    'Example shape: {"make":"BEECH","model":"B58","year":1981,"ttaf":4673,"engines":2,"smoh":0,"smohR":0,"propHrs":689,"propHrsR":689,"condition":"Good","cosmetics":"Average","avionics":["GTX345","KFC200","GNS480","A/C","TAWS"],"notes":"RAM engines, Bose LEMO jacks, dual Insight G2 monitors"}\n\n' +
+    'In avionics[], include comfort/safety tokens when mentioned: A/C or air conditioning, AOA, TAWS, synthetic vision/SVT.\n\n' +
     'LISTING:\n' +
     txt
 
