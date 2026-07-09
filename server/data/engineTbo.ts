@@ -77,18 +77,24 @@ const EXACT: Record<string, { tbo: number; overhaulCost?: number }> = {
   'IO-520-E': { tbo: 1700, overhaulCost: 55000 },
   'IO-520-F': { tbo: 1700, overhaulCost: 55000 },
   'IO-520-M': { tbo: 1700, overhaulCost: 55000 },
-  'IO-550-A': { tbo: 1700, overhaulCost: 60000 },
+  // IO-550 — TCM recommended TBO (hours; calendar limits not modeled here)
+  'IO-550-A': { tbo: 1900, overhaulCost: 62000 },
   'IO-550-B': { tbo: 1700, overhaulCost: 60000 },
-  'IO-550-C': { tbo: 1700, overhaulCost: 60000 },
-  'IO-550-D': { tbo: 1700, overhaulCost: 60000 },
-  'IO-550-G': { tbo: 1700, overhaulCost: 60000 },
-  'IO-550-N': { tbo: 2000, overhaulCost: 65000 },
+  'IO-550-C': { tbo: 2000, overhaulCost: 62000 },
+  'IO-550-D': { tbo: 2000, overhaulCost: 62000 },
+  'IO-550-F': { tbo: 2200, overhaulCost: 65000 },
+  'IO-550-G': { tbo: 2200, overhaulCost: 65000 },
+  'IO-550-L': { tbo: 2200, overhaulCost: 65000 },
+  'IO-550-N': { tbo: 2200, overhaulCost: 65000 },
+  'IO-550-P': { tbo: 2200, overhaulCost: 65000 },
+  'IO-550-R': { tbo: 2200, overhaulCost: 65000 },
   'TSIO-520-BE': { tbo: 1600, overhaulCost: 70000 },
   'TSIO-520-UB': { tbo: 1600, overhaulCost: 70000 },
   'TSIO-520-VB': { tbo: 1600, overhaulCost: 70000 },
   'TSIO-550-A': { tbo: 1800, overhaulCost: 80000 },
   'TSIO-550-B': { tbo: 1800, overhaulCost: 80000 },
   'TSIO-550-C': { tbo: 1800, overhaulCost: 80000 },
+  'TSIO-550-K': { tbo: 1800, overhaulCost: 80000 },
   'GTSIO-520-F': { tbo: 1600, overhaulCost: 75000 },
   'GTSIO-520-H': { tbo: 1600, overhaulCost: 75000 },
   // Rotax
@@ -176,8 +182,16 @@ const PREFIX: Array<{ prefix: string; tbo: number; overhaulCost: number }> = [
   { prefix: '915IS', tbo: 1200, overhaulCost: 35000 },
   { prefix: '914', tbo: 2000, overhaulCost: 22000 },
   { prefix: '912', tbo: 2000, overhaulCost: 18000 },
-  { prefix: 'IO-550', tbo: 1700, overhaulCost: 60000 },
-  { prefix: 'IO550', tbo: 1700, overhaulCost: 60000 },
+  { prefix: 'IO-550-G', tbo: 2200, overhaulCost: 65000 },
+  { prefix: 'IO-550-F', tbo: 2200, overhaulCost: 65000 },
+  { prefix: 'IO-550-L', tbo: 2200, overhaulCost: 65000 },
+  { prefix: 'IO-550-N', tbo: 2200, overhaulCost: 65000 },
+  { prefix: 'IO-550-P', tbo: 2200, overhaulCost: 65000 },
+  { prefix: 'IO-550-R', tbo: 2200, overhaulCost: 65000 },
+  { prefix: 'IO-550-A', tbo: 1900, overhaulCost: 62000 },
+  { prefix: 'IO-550-B', tbo: 1700, overhaulCost: 60000 },
+  { prefix: 'IO-550', tbo: 2000, overhaulCost: 62000 },
+  { prefix: 'IO550', tbo: 2000, overhaulCost: 62000 },
   { prefix: 'IO-520', tbo: 1700, overhaulCost: 55000 },
   { prefix: 'IO520', tbo: 1700, overhaulCost: 55000 },
   { prefix: 'IO-540', tbo: 2000, overhaulCost: 48000 },
@@ -209,7 +223,7 @@ export function normalizeEngineModel(raw: string): string {
   return s
 }
 
-const BIG_BORE_CONTINENTAL = /^IO-5(20|50)/
+const IO_520_FAMILY = /^IO-520/
 
 function isContinentalMake(make?: string): boolean {
   const m = (make || '').toUpperCase()
@@ -242,12 +256,12 @@ export function lookupEngineTbo(
       : { ...DEFAULT, matchType: 'default', matchedKey: 'default' }
   }
 
-  // Big-bore Continental IO-520/550 (non-turbo) — 1700 hrs unless exact entry says otherwise (e.g. IO-550-N)
+  // IO-520 big-bore Continental — 1700 hrs when no exact/prefix match
   if (
     spec.matchType === 'default' &&
-    (BIG_BORE_CONTINENTAL.test(key) || (isContinentalMake(engineMake) && /IO-?5(20|50)/i.test(engineModel)))
+    (IO_520_FAMILY.test(key) || (isContinentalMake(engineMake) && /IO-?520/i.test(engineModel)))
   ) {
-    spec = { tbo: 1700, overhaulCost: 58000, matchType: 'family', matchedKey: 'IO-520/550 big-bore' }
+    spec = { tbo: 1700, overhaulCost: 55000, matchType: 'family', matchedKey: 'IO-520' }
   }
 
   const override = options?.tboOverride

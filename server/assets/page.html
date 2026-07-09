@@ -1161,7 +1161,7 @@ ENGINE TIMES
 </div>
 <div class="engine-section-body">
 <div class="form-grid-2" style="margin-bottom:10px">
-<div class="form-group"><label style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span>RECOMMENDED TBO (HRS)</span><button type="button" id="v-tbo-reset" class="tbo-reset-btn" onclick="resetTboAuto()" style="display:none">Use auto</button></label><input type="number" id="v-tbo" placeholder="Auto from engine type" min="500" max="8000" step="100" oninput="onTboOverride()" /></div>
+<div class="form-group"><label style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span>RECOMMENDED TBO (HRS)</span><button type="button" id="v-tbo-reset" class="tbo-reset-btn" onclick="resetTboAuto()" style="display:none">Use auto</button></label><select id="v-tbo" onchange="onTboOverride()"><option value="1500">1,500 hrs</option><option value="1600">1,600 hrs</option><option value="1700">1,700 hrs</option><option value="1800">1,800 hrs</option><option value="1900">1,900 hrs</option><option value="2000" selected>2,000 hrs</option><option value="2100">2,100 hrs</option><option value="2200">2,200 hrs</option></select></div>
 <div class="form-group"><label>ENGINE CONVERSION / STC</label><input type="text" id="v-eng-conv" placeholder="e.g. IO-550 conversion, RAM, tip tanks..." oninput="refreshEngineLife()" /></div>
 </div>
 
@@ -2096,7 +2096,7 @@ var annualM = document.getElementById('v-annual-month'); if (annualM) annualM.va
 var annualY = document.getElementById('v-annual-year'); if (annualY) annualY.value = '';
 var outAnnual = document.getElementById('v-out-of-annual'); if (outAnnual) outAnnual.checked = false;
 var engConv = document.getElementById('v-eng-conv'); if (engConv) engConv.value = '';
-var tboIn = document.getElementById('v-tbo'); if (tboIn) tboIn.value = '';
+var tboIn = document.getElementById('v-tbo'); if (tboIn) { removeAutoExtraTboOptions(); tboIn.value = '2000'; }
 window._tboUserOverride = false;
 var tboReset = document.getElementById('v-tbo-reset'); if (tboReset) tboReset.style.display = 'none';
 var engNote = document.getElementById('engine-tbo-note'); if (engNote) engNote.textContent = '';
@@ -2153,6 +2153,32 @@ window._lastEngineLife = null;
 window._tboUserOverride = false;
 window._engineTboAuto = 2000;
 
+function ensureTboOption(hours) {
+  var sel = document.getElementById('v-tbo');
+  if (!sel || !hours) return;
+  var v = String(Math.round(hours));
+  if (!sel.querySelector('option[value="' + v + '"]')) {
+    var opt = document.createElement('option');
+    opt.value = v;
+    opt.textContent = Number(v).toLocaleString() + ' hrs (auto)';
+    opt.dataset.autoExtra = '1';
+    sel.appendChild(opt);
+  }
+}
+
+function setTboSelectValue(hours) {
+  var sel = document.getElementById('v-tbo');
+  if (!sel || !hours) return;
+  ensureTboOption(hours);
+  sel.value = String(Math.round(hours));
+}
+
+function removeAutoExtraTboOptions() {
+  var sel = document.getElementById('v-tbo');
+  if (!sel) return;
+  sel.querySelectorAll('option[data-auto-extra="1"]').forEach(function(o) { o.remove(); });
+}
+
 function currentEngineModelStr() {
   var disp = document.getElementById('v-engine-display');
   var fromDisp = disp && disp.value ? disp.value.trim() : '';
@@ -2188,9 +2214,11 @@ function getEffectiveTbo() {
 }
 
 function onTboOverride() {
-  window._tboUserOverride = true;
+  var v = getEffectiveTbo();
+  var auto = window._engineTboAuto || 2000;
+  window._tboUserOverride = (v !== auto);
   var btn = document.getElementById('v-tbo-reset');
-  if (btn) btn.style.display = '';
+  if (btn) btn.style.display = window._tboUserOverride ? '' : 'none';
   refreshEngineLifeBars();
 }
 
@@ -2250,12 +2278,15 @@ async function refreshEngineLife() {
   var noteEl = document.getElementById('engine-tbo-note');
   var spec = await fetchEngineTbo(model, null, window._tboUserOverride ? getEffectiveTbo() : null);
   window._engineTboAuto = spec.tbo || 2000;
-  if (tboEl && !window._tboUserOverride) tboEl.value = window._engineTboAuto;
+  if (tboEl && !window._tboUserOverride) {
+    removeAutoExtraTboOptions();
+    setTboSelectValue(window._engineTboAuto);
+  }
   if (noteEl) {
     var note = window._tboUserOverride
       ? 'TBO manually set to ' + getEffectiveTbo().toLocaleString() + ' hrs (auto would be ' + window._engineTboAuto.toLocaleString() + ').'
       : (spec.matchType === 'default'
-        ? 'TBO defaulting to ' + (spec.tbo || 2000).toLocaleString() + ' hrs — edit above if your engine has a different interval.'
+        ? 'TBO defaulting to ' + (spec.tbo || 2000).toLocaleString() + ' hrs — select above if your engine has a different interval.'
         : 'TBO ' + spec.tbo.toLocaleString() + ' hrs (' + spec.matchType + ' match: ' + spec.matchedKey + ').');
     noteEl.textContent = note;
   }
