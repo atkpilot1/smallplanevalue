@@ -351,7 +351,7 @@ export default defineEventHandler(async (event) => {
     '- Piper Cherokee/Archer: $50k-$150k. Saratoga/Lance: $180k-$400k. Mooney M20: $100k-$350k.\n'
   prompt +=
     '- Avionics: G1000 NXi +$25-35k, G500 TXi +$18-25k, Aspen EFD +$8-12k, GTN 750Xi +$12-18k. Radar on twins +$5-10k.\n' +
-    '- Comfort/safety add-ons (when itemized): factory/STC air conditioning +$12-22k retained; AOA +$2-4k; TAWS +$6-12k; synthetic vision retrofit +$3-6k (skip SVT if already in G1000 NXi/Perspective+).\n'
+    '- Comfort/safety add-ons (when itemized): factory/STC air conditioning +$12-22k retained; FIKI/TKS known ice +$12-25k (skip if standard on late Cirrus G6+); AOA +$2-4k; TAWS +$6-12k; synthetic vision retrofit +$3-6k (skip SVT if already in G1000 NXi/Perspective+).\n'
   prompt +=
     '- Twins: matched engine times=premium. Factory new engines $15-20k more than field OH. 3-blade props +$3-8k.\n\n'
 
