@@ -60,6 +60,26 @@ async function mockApis(page: Page) {
     })
   )
 
+  await page.route('**/api/parse-sale', (route) =>
+    route.fulfill({
+      json: {
+        make: 'Beechcraft',
+        model: 'A36',
+        year: 1998,
+        salePrice: 285000,
+        askingPrice: 310000,
+        ttaf: 4200,
+        smoh: 650,
+        saleMonth: '2025-11',
+        region: 'Southeast US',
+        avionicsTier: 'Modern IFR (GTN/Avidyne + ADS-B)',
+        daysOnMarket: '3-6 months',
+        avionics: ['GTN750', 'G5'],
+        notes: 'Turbonormalized IO-550'
+      }
+    })
+  )
+
   await page.route('**/api/valuate', (route) =>
     route.fulfill({
       json: {
@@ -111,7 +131,16 @@ async function mockApis(page: Page) {
 
   await page.route('**/api/valuation-access**', (route) => {
     if (route.request().method() === 'GET') {
-      return route.fulfill({ json: { limit: 1, used: 0, remaining: 1, periodStart: '2026-07-01T00:00:00.000Z' } })
+      return route.fulfill({
+        json: {
+          limit: 1,
+          used: 0,
+          remaining: 999,
+          bypass: true,
+          betaFreeAccess: true,
+          periodStart: '2026-07-01T00:00:00.000Z',
+        },
+      })
     }
     return route.fulfill({ json: { ok: true } })
   })
@@ -195,6 +224,18 @@ test('report a sale validates required fields', async ({ page }) => {
   await page.locator('#tab-btn-sold').click()
   await page.locator('#sd-btn').click()
   await expect(page.locator('#sd-result')).toContainText('at least make, model, year')
+})
+
+test('report a sale auto-fills from pasted post', async ({ page }) => {
+  await page.locator('#tab-btn-sold').click()
+  await page.locator('#sd-paste').fill('SOLD 1998 Beechcraft A36 for $285k, was asking $310k, 4200 TT, 650 SMOH')
+  await page.locator('#sd-paste-btn').click()
+  await expect(page.locator('#sd-make')).toHaveValue('Beechcraft')
+  await expect(page.locator('#sd-model')).toHaveValue('A36')
+  await expect(page.locator('#sd-year')).toHaveValue('1998')
+  await expect(page.locator('#sd-price')).toHaveValue('285000')
+  await expect(page.locator('#sd-ask')).toHaveValue('310000')
+  await expect(page.locator('#sd-result')).toContainText('Fields filled from post')
 })
 
 test('report a sale stores submission in localStorage and renders recent sales', async ({ page }) => {

@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { getValuationAccess } from '../utils/valuationAccess'
+import { getValuationAccess, VALUATION_LIMITS_ENABLED } from '../utils/valuationAccess'
 import { evaluatorCodesConfigured, isValidEvaluatorCode } from '../utils/evaluatorCode'
 
 const querySchema = z.object({
@@ -13,9 +13,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'clientId required' })
   }
 
-  const bypass = isValidEvaluatorCode(parsed.data.evaluatorCode)
+  const bypass = !VALUATION_LIMITS_ENABLED || isValidEvaluatorCode(parsed.data.evaluatorCode)
   return {
     ...(await getValuationAccess(parsed.data.clientId, { bypass })),
     codesConfigured: evaluatorCodesConfigured(),
+    betaFreeAccess: !VALUATION_LIMITS_ENABLED,
   }
 })

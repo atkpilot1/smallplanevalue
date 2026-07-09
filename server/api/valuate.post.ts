@@ -5,6 +5,7 @@ import {
   countValuationsThisMonth,
   recordValuationUsage,
   FREE_VALUATIONS_PER_MONTH,
+  VALUATION_LIMITS_ENABLED,
 } from '../utils/valuationAccess'
 import { isValidEvaluatorCode } from '../utils/evaluatorCode'
 import { engineAdjustment } from '../utils/valuationEngine'
@@ -326,7 +327,7 @@ export default defineEventHandler(async (event) => {
   const clientId = (d.clientId || '').trim()
   const evaluatorBypass = isValidEvaluatorCode(d.evaluatorCode)
 
-  if (clientId && !evaluatorBypass) {
+  if (VALUATION_LIMITS_ENABLED && clientId && !evaluatorBypass) {
     const used = await countValuationsThisMonth(clientId)
     if (used >= FREE_VALUATIONS_PER_MONTH) {
       throw createError({
