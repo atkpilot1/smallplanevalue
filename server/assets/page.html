@@ -580,6 +580,16 @@ transition: background .1s;
 .eval-code-msg { font-size: 12px; margin-top: 6px; min-height: 16px; }
 .eval-code-msg.ok { color: var(--success); }
 .eval-code-msg.err { color: var(--danger); }
+.equip-prominent {
+  border: 1.5px solid rgba(19,64,116,0.18); border-radius: var(--radius-lg);
+  margin: 0 0 16px; padding: 14px 16px; background: rgba(19,64,116,0.04);
+}
+.equip-prominent-hdr {
+  font-size: 11px; font-weight: 600; color: var(--sky); letter-spacing: .04em;
+  margin: 12px 0 6px;
+}
+.equip-prominent-hdr:first-child { margin-top: 0; }
+.equip-prominent-note { font-size: 12px; color: var(--muted); margin: 0 0 10px; line-height: 1.45; }
 .adv-section { border:1px solid rgba(19,64,116,0.12);border-radius:var(--radius);margin:14px 0;background:rgba(19,64,116,0.02); }
 .adv-section > summary { cursor:pointer;list-style:none;padding:11px 14px;font-size:12px;font-weight:600;color:var(--sky);letter-spacing:.03em;display:flex;align-items:center;gap:8px;user-select:none; }
 .adv-section > summary::-webkit-details-marker { display:none; }
@@ -1231,6 +1241,16 @@ ENGINE TIMES
 </select>
 </div>
 
+<div class="equip-prominent">
+<p class="equip-prominent-note">Comfort and safety options — always counted in your valuation when checked.</p>
+<div class="equip-prominent-hdr">COMFORT &amp; ENVIRONMENT</div>
+<label class="chk-label"><input type="checkbox" id="av-ac" /> Air conditioning (factory or STC)</label>
+<div class="equip-prominent-hdr">SAFETY &amp; AWARENESS</div>
+<label class="chk-label"><input type="checkbox" id="av-aoa" /> Angle of attack (AOA) indicator</label>
+<label class="chk-label"><input type="checkbox" id="av-taws" /> TAWS (terrain awareness / avoidance)</label>
+<label class="chk-label"><input type="checkbox" id="av-svt" /> Synthetic vision (add-on or retrofit — skip if G1000 NXi / Perspective+)</label>
+</div>
+
 <details class="adv-section">
 <summary>AVIONICS — itemize for precision <span class="adv-hint">optional — overrides panel above</span></summary>
 <div class="adv-body">
@@ -1355,16 +1375,6 @@ ENGINE TIMES
 <div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> OTHER</div>
 <div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
 <label class="chk-label"><input type="checkbox" id="av-wx" /> XM/SiriusXM weather</label>
-</div>
-<div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> COMFORT &amp; ENVIRONMENT</div>
-<div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
-<label class="chk-label"><input type="checkbox" id="av-ac" /> Air conditioning (factory or STC)</label>
-</div>
-<div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> SAFETY &amp; AWARENESS</div>
-<div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
-<label class="chk-label"><input type="checkbox" id="av-aoa" /> Angle of attack (AOA) indicator</label>
-<label class="chk-label"><input type="checkbox" id="av-taws" /> TAWS (terrain awareness / avoidance)</label>
-<label class="chk-label"><input type="checkbox" id="av-svt" /> Synthetic vision (add-on or retrofit)</label>
 </div>
 <div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> UPGRADES &amp; MODIFICATIONS</div>
 <div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
