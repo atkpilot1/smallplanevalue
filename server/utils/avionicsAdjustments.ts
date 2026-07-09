@@ -106,6 +106,14 @@ export const AVIONICS_ROWS: AvionicsRow[] = [
 
   // Traffic
   { item: 'Active traffic (TAS/Skywatch)', category: 'Traffic', installedCost: 10000, retainedNew: 0.35, annualDecay: 0.08, floorPct: 0.15, yearsSinceInstall: 8, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Traffic TAS'] },
+
+  // Comfort & environment
+  { item: 'Air conditioning', category: 'Comfort', installedCost: 20000, retainedNew: 0.55, annualDecay: 0.04, floorPct: 0.35, yearsSinceInstall: 10, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Air conditioning'] },
+
+  // Safety & awareness (do not double-count SVT bundled in G1000 NXi / Perspective+)
+  { item: 'Angle of attack (AOA)', category: 'Safety', installedCost: 4000, retainedNew: 0.5, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 5, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Angle of attack (AOA)'] },
+  { item: 'TAWS (terrain awareness)', category: 'Safety', installedCost: 11000, retainedNew: 0.42, annualDecay: 0.06, floorPct: 0.25, yearsSinceInstall: 8, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['TAWS (terrain awareness)'] },
+  { item: 'Synthetic vision (add-on)', category: 'Safety', installedCost: 5500, retainedNew: 0.48, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 4, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Synthetic vision'] },
 ]
 
 const ADSB_NONCOMPLIANT_PENALTY = -7000
