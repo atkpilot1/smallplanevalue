@@ -2168,7 +2168,8 @@ function modelForEngineLife() {
 }
 
 async function fetchEngineTbo(model, smoh, tboOverride) {
-  var key = (model || '').toUpperCase() + '|' + (smoh != null ? smoh : '') + '|' + (tboOverride || '');
+  var make = window._valEngMake || '';
+  var key = (model || '').toUpperCase() + '|' + make.toUpperCase() + '|' + (smoh != null ? smoh : '') + '|' + (tboOverride || '');
   if (window._engineTboCache[key]) return window._engineTboCache[key];
   var q = new URLSearchParams();
   if (model) q.set('model', model);
@@ -2254,7 +2255,7 @@ async function refreshEngineLife() {
     var note = window._tboUserOverride
       ? 'TBO manually set to ' + getEffectiveTbo().toLocaleString() + ' hrs (auto would be ' + window._engineTboAuto.toLocaleString() + ').'
       : (spec.matchType === 'default'
-        ? 'TBO defaulting to 2,000 hrs — edit above if your engine has a different interval.'
+        ? 'TBO defaulting to ' + (spec.tbo || 2000).toLocaleString() + ' hrs — edit above if your engine has a different interval.'
         : 'TBO ' + spec.tbo.toLocaleString() + ' hrs (' + spec.matchType + ' match: ' + spec.matchedKey + ').');
     noteEl.textContent = note;
   }
