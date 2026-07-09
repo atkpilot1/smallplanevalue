@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { getValuationAccess } from '../utils/valuationAccess'
-import { isValidEvaluatorCode } from '../utils/evaluatorCode'
+import { evaluatorCodesConfigured, isValidEvaluatorCode } from '../utils/evaluatorCode'
 
 const querySchema = z.object({
   clientId: z.string().min(8),
@@ -14,5 +14,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const bypass = isValidEvaluatorCode(parsed.data.evaluatorCode)
-  return await getValuationAccess(parsed.data.clientId, { bypass })
+  return {
+    ...(await getValuationAccess(parsed.data.clientId, { bypass })),
+    codesConfigured: evaluatorCodesConfigured(),
+  }
 })

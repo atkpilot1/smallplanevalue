@@ -1681,7 +1681,10 @@ async function validateEvaluatorCode(code) {
   });
   var r = await fetch('/api/valuation-access?' + q.toString());
   var data = await r.json().catch(function() { return {}; });
-  return !!(r.ok && data.bypass);
+  if (!r.ok) return { ok: false, reason: 'request_failed' };
+  if (data.bypass) return { ok: true };
+  if (!data.codesConfigured) return { ok: false, reason: 'not_configured' };
+  return { ok: false, reason: 'invalid' };
 }
 
 async function saveEvaluatorCode() {
@@ -1694,10 +1697,15 @@ async function saveEvaluatorCode() {
   }
   var btn = document.getElementById('v-eval-code-btn');
   if (btn) { btn.disabled = true; btn.textContent = 'Checking...'; }
-  var ok = await validateEvaluatorCode(code);
+  var result = await validateEvaluatorCode(code);
   if (btn) { btn.disabled = false; btn.textContent = 'Apply'; }
-  if (!ok) {
-    if (msg) { msg.className = 'eval-code-msg err'; msg.textContent = 'Invalid code.'; }
+  if (!result.ok) {
+    if (msg) {
+      msg.className = 'eval-code-msg err';
+      msg.textContent = result.reason === 'not_configured'
+        ? 'Access codes are not configured on the server yet. Set SPV_EVALUATOR_CODES in Vercel and redeploy.'
+        : 'Invalid code — check spelling and try again.';
+    }
     return;
   }
   setEvaluatorCode(code);
@@ -1713,9 +1721,12 @@ async function saveEvaluatorCodeFromGate() {
     if (msg) { msg.className = 'eval-code-msg err'; msg.textContent = 'Enter a code.'; }
     return;
   }
-  var ok = await validateEvaluatorCode(code);
-  if (!ok) {
-    if (msg) { msg.className = 'eval-code-msg err'; msg.textContent = 'Invalid code.'; }
+  var result = await validateEvaluatorCode(code);
+  if (!result.ok) {
+    if (msg) {
+      msg.className = 'eval-code-msg err';
+      msg.textContent = result.reason === 'not_configured' ? 'Access codes not configured on server.' : 'Invalid code.';
+    }
     return;
   }
   setEvaluatorCode(code);
@@ -1803,9 +1814,12 @@ async function saveEvaluatorCodeFromUpgrade() {
     if (msg) { msg.className = 'eval-code-msg err'; msg.textContent = 'Enter a code.'; }
     return;
   }
-  var ok = await validateEvaluatorCode(code);
-  if (!ok) {
-    if (msg) { msg.className = 'eval-code-msg err'; msg.textContent = 'Invalid code.'; }
+  var result = await validateEvaluatorCode(code);
+  if (!result.ok) {
+    if (msg) {
+      msg.className = 'eval-code-msg err';
+      msg.textContent = result.reason === 'not_configured' ? 'Access codes not configured on server.' : 'Invalid code.';
+    }
     return;
   }
   setEvaluatorCode(code);

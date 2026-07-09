@@ -17,8 +17,8 @@ export default defineNuxtConfig({
     // Model selection (overridable via env)
     modelMain: process.env.SPV_MODEL_MAIN || 'claude-sonnet-4-6',
     modelFast: process.env.SPV_MODEL_FAST || 'claude-haiku-4-5-20251001',
-    /** Comma-separated bypass codes for developers and evaluators (server-only). */
-    evaluatorCodes: process.env.SPV_EVALUATOR_CODES || '',
+    /** Comma-separated bypass codes — set SPV_EVALUATOR_CODES or NUXT_EVALUATOR_CODES in Vercel. */
+    evaluatorCodes: '',
   },
 
   app: {

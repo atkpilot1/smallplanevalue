@@ -18,14 +18,28 @@ function codesMatch(provided: string, expected: string): boolean {
   }
 }
 
+function evaluatorCodesRaw(): string {
+  const config = useRuntimeConfig()
+  // Read env at request time — Vercel injects SPV_EVALUATOR_CODES on each invocation.
+  // NUXT_EVALUATOR_CODES is the Nuxt runtime override when evaluatorCodes defaults to ''.
+  return (
+    process.env.SPV_EVALUATOR_CODES ||
+    process.env.NUXT_EVALUATOR_CODES ||
+    String(config.evaluatorCodes || '')
+  )
+}
+
 /** True when `code` matches one of the comma-separated SPV_EVALUATOR_CODES env values. */
 export function isValidEvaluatorCode(code: string | null | undefined): boolean {
   const normalized = (code || '').trim()
   if (!normalized) return false
 
-  const config = useRuntimeConfig()
-  const codes = parseEvaluatorCodes(config.evaluatorCodes as string | undefined)
+  const codes = parseEvaluatorCodes(evaluatorCodesRaw())
   if (!codes.length) return false
 
   return codes.some((valid) => codesMatch(normalized, valid))
+}
+
+export function evaluatorCodesConfigured(): boolean {
+  return parseEvaluatorCodes(evaluatorCodesRaw()).length > 0
 }
