@@ -580,6 +580,18 @@ transition: background .1s;
 .eval-code-msg { font-size: 12px; margin-top: 6px; min-height: 16px; }
 .eval-code-msg.ok { color: var(--success); }
 .eval-code-msg.err { color: var(--danger); }
+.share-pilot-box {
+  background: rgba(19,64,116,0.05); border: 1px solid rgba(19,64,116,0.12);
+  border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 1.25rem;
+}
+.share-btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.share-btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px;
+  font-size: 13px; font-weight: 500; border-radius: 6px; border: 1px solid rgba(19,64,116,0.2);
+  background: #fff; color: var(--sky); cursor: pointer; text-decoration: none; font-family: var(--body);
+}
+.share-btn:hover { background: rgba(19,64,116,0.06); }
+.share-copy-msg { font-size: 12px; color: var(--success); margin-top: 8px; min-height: 16px; }
 .equip-prominent {
   border: 1.5px solid rgba(19,64,116,0.18); border-radius: var(--radius-lg);
   margin: 0 0 16px; padding: 14px 16px; background: rgba(19,64,116,0.04);
@@ -1161,7 +1173,7 @@ ENGINE TIMES
 </div>
 <div class="engine-section-body">
 <div class="form-grid-2" style="margin-bottom:10px">
-<div class="form-group"><label style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span>RECOMMENDED TBO (HRS)</span><button type="button" id="v-tbo-reset" class="tbo-reset-btn" onclick="resetTboAuto()" style="display:none">Use auto</button></label><input type="number" id="v-tbo" placeholder="Auto from engine type" min="500" max="8000" step="100" oninput="onTboOverride()" /></div>
+<div class="form-group"><label style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span>RECOMMENDED TBO (HRS)</span><button type="button" id="v-tbo-reset" class="tbo-reset-btn" onclick="resetTboAuto()" style="display:none">Use auto</button></label><select id="v-tbo" onchange="onTboOverride()"><option value="1500">1,500 hrs</option><option value="1600">1,600 hrs</option><option value="1700">1,700 hrs</option><option value="1800">1,800 hrs</option><option value="1900">1,900 hrs</option><option value="2000" selected>2,000 hrs</option><option value="2100">2,100 hrs</option><option value="2200">2,200 hrs</option></select></div>
 <div class="form-group"><label>ENGINE CONVERSION / STC</label><input type="text" id="v-eng-conv" placeholder="e.g. IO-550 conversion, RAM, tip tanks..." oninput="refreshEngineLife()" /></div>
 </div>
 
@@ -1403,35 +1415,7 @@ ENGINE TIMES
 </button>
 <div class="spin" id="v-spin"><div class="fly-track"><span class="fly-plane"><i class="ti ti-plane"></i></span></div><div>Searching live listings &amp; recent sales...</div></div>
 <div id="v-result"></div>
-<p class="val-free-note" id="v-free-note">Includes 1 free full valuation per month.</p>
-<details class="eval-code-wrap" id="eval-code-wrap">
-<summary>Evaluator / developer access code</summary>
-<div class="eval-code-row">
-<input type="password" id="v-eval-code" placeholder="Enter access code" autocomplete="off" />
-<button type="button" class="submit-btn" id="v-eval-code-btn" onclick="saveEvaluatorCode()" style="width:auto;padding:8px 14px;font-size:13px">Apply</button>
-</div>
-<p class="eval-code-msg" id="v-eval-code-msg"></p>
-</details>
-</div>
-
-<div class="val-gate-overlay" id="val-email-gate" onclick="if(event.target===this)hideValuationEmailGate()">
-<div class="val-gate-card" onclick="event.stopPropagation()">
-<div class="val-gate-title">One free valuation per month</div>
-<div class="val-gate-sub">Enter your email to get notified when additional full reports are available ($24/report — launching soon).</div>
-<div class="val-gate-row">
-<input type="email" id="val-gate-email" placeholder="you@email.com" autocomplete="email" />
-<button class="submit-btn" id="val-gate-btn" type="button" onclick="submitValuationEmailGate()" style="width:auto;padding:10px 16px">Continue</button>
-</div>
-<div class="val-gate-msg" id="val-gate-msg"></div>
-<div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(19,64,116,0.12)">
-<div class="val-gate-sub" style="margin-bottom:8px">Have an evaluator access code?</div>
-<div class="eval-code-row">
-<input type="password" id="val-gate-eval-code" placeholder="Access code" autocomplete="off" />
-<button type="button" class="submit-btn" onclick="saveEvaluatorCodeFromGate()" style="width:auto;padding:10px 16px">Unlock</button>
-</div>
-<p class="eval-code-msg" id="val-gate-eval-msg"></p>
-</div>
-</div>
+<p class="val-free-note" id="v-free-note">Free beta — unlimited valuations while we gather pilot feedback.</p>
 </div>
 
 <!-- MARKET COMPS -->
@@ -1455,7 +1439,17 @@ ENGINE TIMES
 
 <!-- FEEDBACK -->
 <div class="tab-pane" id="pane-feedback">
-<p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:1rem">Help us improve SmallPlaneValue.</p>
+<p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:1rem">Help us improve SmallPlaneValue — we're in free beta and want your honest take.</p>
+<div class="share-pilot-box">
+<div style="font-size:14px;font-weight:600;color:var(--sky);margin-bottom:6px">Spread the word</div>
+<p style="font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:12px">Share with BeechTalk, Facebook groups, Instagram, or X — every pilot who tries it makes valuations better for everyone.</p>
+<div class="share-btn-row">
+<a class="share-btn" id="share-fb" href="#" target="_blank" rel="noopener noreferrer"><i class="ti ti-brand-facebook"></i> Facebook</a>
+<a class="share-btn" id="share-x" href="#" target="_blank" rel="noopener noreferrer"><i class="ti ti-brand-x"></i> X</a>
+<button type="button" class="share-btn" onclick="copyShareBlurb()"><i class="ti ti-copy"></i> Copy for BeechTalk / FB</button>
+</div>
+<p class="share-copy-msg" id="share-copy-msg"></p>
+</div>
 <div class="form-group"><label>YOUR EMAIL (optional)</label><input type="text" id="fb-email" placeholder="pilot@email.com" /></div>
 <div class="form-group"><label>AIRCRAFT</label><input type="text" id="fb-aircraft" placeholder="e.g. 1981 Beech B58 Baron" /></div>
 <div class="form-group"><label>VALUATION ACCURACY</label><select id="fb-accuracy"><option value="">N/A</option><option value="low">Too low</option><option value="right">About right</option><option value="high">Too high</option></select></div>
@@ -1513,6 +1507,11 @@ ENGINE TIMES
 <div style="font-size:13px;color:var(--muted);line-height:1.6">GA aircraft sale prices aren't recorded anywhere publicly. Every submission here — fully anonymous — helps build real transaction data that makes valuations more accurate for every buyer and seller.</div>
 </div>
 </div>
+
+<div style="font-size:12px;font-weight:500;color:var(--sky);margin-bottom:8px;letter-spacing:.03em">PASTE A SALE POST (optional)</div>
+<textarea id="sd-paste" rows="4" style="width:100%;font-size:13px;margin-bottom:8px" placeholder="Paste a BeechTalk sold thread, forum recap, or listing text — we'll auto-fill the fields below..."></textarea>
+<button class="n-lookup-btn" id="sd-paste-btn" onclick="parseSalePost()" style="width:auto;padding:8px 20px;margin-bottom:1.25rem">Auto-fill from post</button>
+<div class="spin" id="sd-paste-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Parsing sale post...</div></div>
 
 <div class="form-grid-2">
 <div class="form-group"><label>AIRCRAFT MAKE</label><input type="text" id="sd-make" placeholder="Cessna, Piper, Beechcraft, Cirrus..." /></div>
@@ -1600,6 +1599,8 @@ I confirm this is a real transaction I was involved in. I understand this data i
 <a href="#tools">Tools</a>
 <a href="#how-it-works">How it works</a>
 <a href="#aircraft-types">Aircraft types</a>
+<a href="#" id="footer-share-fb" target="_blank" rel="noopener noreferrer">Share on Facebook</a>
+<a href="#" id="footer-share-x" target="_blank" rel="noopener noreferrer">Share on X</a>
 </div>
 </div>
 <div class="footer-bottom">
@@ -1671,234 +1672,62 @@ function getValuationEmail() {
   return (localStorage.getItem('spv_email') || '').trim();
 }
 
-function getEvaluatorCode() {
-  return (localStorage.getItem('spv_evaluator_code') || '').trim();
-}
-
-function setEvaluatorCode(code) {
-  var normalized = (code || '').trim();
-  if (normalized) localStorage.setItem('spv_evaluator_code', normalized);
-  else localStorage.removeItem('spv_evaluator_code');
-}
-
 function setValuationEmail(email) {
   if (email) localStorage.setItem('spv_email', email.trim().toLowerCase());
 }
 
-async function fetchValuationAccess() {
-  var cid = getOrCreateClientId();
-  var q = new URLSearchParams({ clientId: cid });
-  var evalCode = getEvaluatorCode();
-  if (evalCode) q.set('evaluatorCode', evalCode);
-  var r = await fetch('/api/valuation-access?' + q.toString());
-  var data = await r.json().catch(function() { return {}; });
-  if (!r.ok) return { limit: 1, used: 0, remaining: 1 };
-  return data;
+function siteShareUrl() {
+  return (window.location.origin || 'https://smallplanevalue.com').replace(/\/$/, '');
 }
 
-async function validateEvaluatorCode(code) {
-  var normalized = (code || '').trim();
-  if (!normalized) return false;
-  var q = new URLSearchParams({
-    clientId: getOrCreateClientId(),
-    evaluatorCode: normalized,
+function shareBlurbText() {
+  return 'Free GA aircraft valuations at ' + siteShareUrl() + ' — honest asking ranges and fair-market estimates, no fabricated sale prices. Paste a listing or enter your aircraft. Looking for feedback from pilots — especially BeechTalk and type-club folks. Try it and tell us what we got right or wrong.';
+}
+
+function initShareLinks() {
+  var url = encodeURIComponent(siteShareUrl());
+  var text = encodeURIComponent(shareBlurbText());
+  var fb = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
+  var x = 'https://twitter.com/intent/tweet?text=' + text;
+  ['share-fb', 'footer-share-fb'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.href = fb;
   });
-  var r = await fetch('/api/valuation-access?' + q.toString());
-  var data = await r.json().catch(function() { return {}; });
-  if (!r.ok) return { ok: false, reason: 'request_failed' };
-  if (data.bypass) return { ok: true };
-  if (!data.codesConfigured) return { ok: false, reason: 'not_configured' };
-  return { ok: false, reason: 'invalid' };
-}
-
-async function saveEvaluatorCode() {
-  var input = document.getElementById('v-eval-code');
-  var msg = document.getElementById('v-eval-code-msg');
-  var code = (input && input.value || '').trim();
-  if (!code) {
-    if (msg) { msg.className = 'eval-code-msg err'; msg.textContent = 'Enter a code.'; }
-    return;
-  }
-  var btn = document.getElementById('v-eval-code-btn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Checking...'; }
-  var result = await validateEvaluatorCode(code);
-  if (btn) { btn.disabled = false; btn.textContent = 'Apply'; }
-  if (!result.ok) {
-    if (msg) {
-      msg.className = 'eval-code-msg err';
-      msg.textContent = result.reason === 'not_configured'
-        ? 'Access codes are not configured on the server yet. Set SPV_EVALUATOR_CODES in Vercel and redeploy.'
-        : 'Invalid code — check spelling and try again.';
-    }
-    return;
-  }
-  setEvaluatorCode(code);
-  if (msg) { msg.className = 'eval-code-msg ok'; msg.textContent = 'Unlimited valuations enabled on this browser.'; }
-  updateValuationFreeNote();
-}
-
-async function saveEvaluatorCodeFromGate() {
-  var input = document.getElementById('val-gate-eval-code');
-  var msg = document.getElementById('val-gate-eval-msg');
-  var code = (input && input.value || '').trim();
-  if (!code) {
-    if (msg) { msg.className = 'eval-code-msg err'; msg.textContent = 'Enter a code.'; }
-    return;
-  }
-  var result = await validateEvaluatorCode(code);
-  if (!result.ok) {
-    if (msg) {
-      msg.className = 'eval-code-msg err';
-      msg.textContent = result.reason === 'not_configured' ? 'Access codes not configured on server.' : 'Invalid code.';
-    }
-    return;
-  }
-  setEvaluatorCode(code);
-  hideValuationEmailGate();
-  var ctx = _valGateContext || {};
-  if (msg) { msg.className = 'eval-code-msg ok'; msg.textContent = ''; }
-  updateValuationFreeNote();
-  if (ctx.make && ctx.model) doValuation();
-}
-
-var _valGateContext = null;
-
-function showValuationEmailGate(ctx) {
-  _valGateContext = ctx;
-  var gate = document.getElementById('val-email-gate');
-  var msg = document.getElementById('val-gate-msg');
-  var emailEl = document.getElementById('val-gate-email');
-  if (msg) { msg.textContent = ''; msg.style.color = ''; }
-  if (emailEl) emailEl.value = getValuationEmail() || '';
-  if (gate) gate.classList.add('on');
-  trackEvent('valuation_limit_reached', { step: 'email_gate' });
-}
-
-function hideValuationEmailGate() {
-  var gate = document.getElementById('val-email-gate');
-  if (gate) gate.classList.remove('on');
-  _valGateContext = null;
-}
-
-async function submitValuationEmailGate() {
-  var emailEl = document.getElementById('val-gate-email');
-  var btn = document.getElementById('val-gate-btn');
-  var msg = document.getElementById('val-gate-msg');
-  var email = (emailEl && emailEl.value || '').trim().toLowerCase();
-  if (!email || email.indexOf('@') < 1) {
-    if (msg) { msg.style.color = 'var(--danger)'; msg.textContent = 'Enter a valid email.'; }
-    return;
-  }
-  var ctx = _valGateContext || {};
-  if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
-  try {
-    await apiPost('/api/valuation-access', {
-      clientId: getOrCreateClientId(),
-      email: email,
-      make: ctx.make || null,
-      model: ctx.model || null,
-      year: ctx.year || null,
-    });
-    setValuationEmail(email);
-    trackEvent('valuation_email_captured', { source: 'limit_gate' });
-    trackGenerateLead('valuation_limit_gate', 24);
-    hideValuationEmailGate();
-    renderValuationUpgradeGate(ctx.make, ctx.model, ctx.year, email);
-  } catch (e) {
-    if (msg) { msg.style.color = 'var(--danger)'; msg.textContent = 'Could not save. Try again.'; }
-  }
-  if (btn) { btn.disabled = false; btn.textContent = 'Continue'; }
-}
-
-function renderValuationUpgradeGate(make, model, year, email) {
-  var el = document.getElementById('v-result');
-  if (!el) return;
-  var aircraft = [year, make, model].filter(Boolean).join(' ');
-  el.innerHTML = '<div class="upgrade-card">'
-    + '<h3>Free valuation used this month</h3>'
-    + '<p>You have used your 1 free full report for ' + new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' }) + '.'
-    + (aircraft ? ' We saved your interest in <strong>' + aircraft + '</strong>.' : '')
-    + ' Full reports with negotiating tips and comps will be <strong>$24</strong> — launching soon.</p>'
-    + '<button type="button" class="upgrade-btn" onclick="trackUpgradeIntent()"><i class="ti ti-report-money"></i> Get full report — notify me</button>'
-    + '<div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.2)">'
-    + '<p style="font-size:13px;margin-bottom:8px">Evaluator access code</p>'
-    + '<div class="eval-code-row"><input type="password" id="upgrade-eval-code" placeholder="Access code" autocomplete="off" />'
-    + '<button type="button" class="upgrade-btn" onclick="saveEvaluatorCodeFromUpgrade()">Unlock</button></div>'
-    + '<p class="eval-code-msg" id="upgrade-eval-msg"></p></div>'
-    + (email ? '<p style="font-size:12px;margin-top:12px;opacity:0.85">We will email <strong>' + email + '</strong> when paid reports go live.</p>' : '')
-    + '</div>';
-  trackEvent('valuation_limit_reached', { step: 'upgrade_gate' });
-}
-
-async function saveEvaluatorCodeFromUpgrade() {
-  var input = document.getElementById('upgrade-eval-code');
-  var msg = document.getElementById('upgrade-eval-msg');
-  var code = (input && input.value || '').trim();
-  if (!code) {
-    if (msg) { msg.className = 'eval-code-msg err'; msg.textContent = 'Enter a code.'; }
-    return;
-  }
-  var result = await validateEvaluatorCode(code);
-  if (!result.ok) {
-    if (msg) {
-      msg.className = 'eval-code-msg err';
-      msg.textContent = result.reason === 'not_configured' ? 'Access codes not configured on server.' : 'Invalid code.';
-    }
-    return;
-  }
-  setEvaluatorCode(code);
-  if (msg) { msg.className = 'eval-code-msg ok'; msg.textContent = 'Unlocked — running valuation...'; }
-  updateValuationFreeNote();
-  doValuation();
-}
-
-function trackUpgradeIntent() {
-  trackEvent('upgrade_intent_click', {
-    product: 'valuation_single_24',
-    phase: 1,
-    currency: 'USD',
-    value: 24,
-    event_category: 'monetization',
+  ['share-x', 'footer-share-x'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.href = x;
   });
-  var el = document.getElementById('v-result');
-  if (el) {
-    var note = document.createElement('p');
-    note.style.cssText = 'font-size:13px;color:var(--success);margin-top:12px;font-weight:600';
-    note.textContent = 'Thanks — you are on the list. We will email you when $24 full reports launch.';
-    el.querySelector('.upgrade-card').appendChild(note);
+}
+
+function copyShareBlurb() {
+  var msg = document.getElementById('share-copy-msg');
+  var blurb = shareBlurbText();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(blurb).then(function() {
+      if (msg) msg.textContent = 'Copied — paste into BeechTalk, Facebook groups, or Instagram.';
+    }).catch(function() { fallbackCopy(blurb, msg); });
+  } else {
+    fallbackCopy(blurb, msg);
   }
 }
 
-async function updateValuationFreeNote() {
-  var note = document.getElementById('v-free-note');
-  if (!note) return;
+function fallbackCopy(text, msgEl) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
   try {
-    var access = await fetchValuationAccess();
-    if (access.bypass) {
-      note.textContent = 'Evaluator access — unlimited valuations on this browser.';
-      return;
-    }
-    if (access.remaining > 0) {
-      note.textContent = access.remaining + ' free full valuation' + (access.remaining === 1 ? '' : 's') + ' remaining this month.';
-    } else {
-      note.textContent = 'Free valuation used this month — email required for additional reports.';
-    }
+    document.execCommand('copy');
+    if (msgEl) msgEl.textContent = 'Copied — paste into BeechTalk, Facebook groups, or Instagram.';
   } catch (e) {
-    note.textContent = 'Includes 1 free full valuation per month.';
+    if (msgEl) msgEl.textContent = 'Copy failed — select and copy manually from the address bar.';
   }
+  document.body.removeChild(ta);
 }
 
-(function initEvaluatorCodeUi() {
-  var saved = getEvaluatorCode();
-  var input = document.getElementById('v-eval-code');
-  var wrap = document.getElementById('eval-code-wrap');
-  if (input && saved) {
-    input.value = saved;
-    if (wrap) wrap.open = true;
-  }
-})();
-
-updateValuationFreeNote();
+initShareLinks();
 
 function setLoading(spinId, btnId, on) {
 document.getElementById(spinId).classList.toggle('on', on);
@@ -1992,8 +1821,20 @@ ${d.adNotes ? `<div style="background:rgba(232,160,32,0.1);border-radius:var(--r
 <div class="note-box" style="margin-top:.75rem">Data sourced from FAA aircraft registry (registry.faa.gov). Owner names are public FAA records.</div>`;
 }
 
+function cleanPastedText(raw) {
+  return (raw || '').trim()
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&[a-z]+;/g, ' ')
+    .replace(/[\r]/g, '')
+    .replace(/[\u2022]/g, '- ')
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/[\u2013\u2014]/g, '-')
+    .replace(/  +/g, ' ');
+}
+
 async function parseListing() {
-var txt = document.getElementById('v-paste').value.trim().replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/g, ' ').replace(/[\r]/g, '').replace(/[\u2022]/g, '- ').replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"').replace(/[\u2013\u2014]/g, '-').replace(/  +/g, ' ');
+var txt = cleanPastedText(document.getElementById('v-paste').value);
 if (!txt) { alert('Paste a listing first.'); return; }
 document.getElementById('paste-spin').classList.add('on');
 document.getElementById('paste-btn').disabled = true;
@@ -2096,7 +1937,7 @@ var annualM = document.getElementById('v-annual-month'); if (annualM) annualM.va
 var annualY = document.getElementById('v-annual-year'); if (annualY) annualY.value = '';
 var outAnnual = document.getElementById('v-out-of-annual'); if (outAnnual) outAnnual.checked = false;
 var engConv = document.getElementById('v-eng-conv'); if (engConv) engConv.value = '';
-var tboIn = document.getElementById('v-tbo'); if (tboIn) tboIn.value = '';
+var tboIn = document.getElementById('v-tbo'); if (tboIn) { removeAutoExtraTboOptions(); tboIn.value = '2000'; }
 window._tboUserOverride = false;
 var tboReset = document.getElementById('v-tbo-reset'); if (tboReset) tboReset.style.display = 'none';
 var engNote = document.getElementById('engine-tbo-note'); if (engNote) engNote.textContent = '';
@@ -2153,6 +1994,32 @@ window._lastEngineLife = null;
 window._tboUserOverride = false;
 window._engineTboAuto = 2000;
 
+function ensureTboOption(hours) {
+  var sel = document.getElementById('v-tbo');
+  if (!sel || !hours) return;
+  var v = String(Math.round(hours));
+  if (!sel.querySelector('option[value="' + v + '"]')) {
+    var opt = document.createElement('option');
+    opt.value = v;
+    opt.textContent = Number(v).toLocaleString() + ' hrs (auto)';
+    opt.dataset.autoExtra = '1';
+    sel.appendChild(opt);
+  }
+}
+
+function setTboSelectValue(hours) {
+  var sel = document.getElementById('v-tbo');
+  if (!sel || !hours) return;
+  ensureTboOption(hours);
+  sel.value = String(Math.round(hours));
+}
+
+function removeAutoExtraTboOptions() {
+  var sel = document.getElementById('v-tbo');
+  if (!sel) return;
+  sel.querySelectorAll('option[data-auto-extra="1"]').forEach(function(o) { o.remove(); });
+}
+
 function currentEngineModelStr() {
   var disp = document.getElementById('v-engine-display');
   var fromDisp = disp && disp.value ? disp.value.trim() : '';
@@ -2168,7 +2035,8 @@ function modelForEngineLife() {
 }
 
 async function fetchEngineTbo(model, smoh, tboOverride) {
-  var key = (model || '').toUpperCase() + '|' + (smoh != null ? smoh : '') + '|' + (tboOverride || '');
+  var make = window._valEngMake || '';
+  var key = (model || '').toUpperCase() + '|' + make.toUpperCase() + '|' + (smoh != null ? smoh : '') + '|' + (tboOverride || '');
   if (window._engineTboCache[key]) return window._engineTboCache[key];
   var q = new URLSearchParams();
   if (model) q.set('model', model);
@@ -2187,9 +2055,11 @@ function getEffectiveTbo() {
 }
 
 function onTboOverride() {
-  window._tboUserOverride = true;
+  var v = getEffectiveTbo();
+  var auto = window._engineTboAuto || 2000;
+  window._tboUserOverride = (v !== auto);
   var btn = document.getElementById('v-tbo-reset');
-  if (btn) btn.style.display = '';
+  if (btn) btn.style.display = window._tboUserOverride ? '' : 'none';
   refreshEngineLifeBars();
 }
 
@@ -2249,12 +2119,15 @@ async function refreshEngineLife() {
   var noteEl = document.getElementById('engine-tbo-note');
   var spec = await fetchEngineTbo(model, null, window._tboUserOverride ? getEffectiveTbo() : null);
   window._engineTboAuto = spec.tbo || 2000;
-  if (tboEl && !window._tboUserOverride) tboEl.value = window._engineTboAuto;
+  if (tboEl && !window._tboUserOverride) {
+    removeAutoExtraTboOptions();
+    setTboSelectValue(window._engineTboAuto);
+  }
   if (noteEl) {
     var note = window._tboUserOverride
       ? 'TBO manually set to ' + getEffectiveTbo().toLocaleString() + ' hrs (auto would be ' + window._engineTboAuto.toLocaleString() + ').'
       : (spec.matchType === 'default'
-        ? 'TBO defaulting to 2,000 hrs — edit above if your engine has a different interval.'
+        ? 'TBO defaulting to ' + (spec.tbo || 2000).toLocaleString() + ' hrs — select above if your engine has a different interval.'
         : 'TBO ' + spec.tbo.toLocaleString() + ' hrs (' + spec.matchType + ' match: ' + spec.matchedKey + ').');
     noteEl.textContent = note;
   }
@@ -2312,16 +2185,6 @@ var make=document.getElementById('v-make').value.trim();
 var model=document.getElementById('v-model').value.trim();
 var year=document.getElementById('v-year').value;
 if (!make||!model) { alert('Enter make and model.'); return; }
-
-var access = await fetchValuationAccess();
-if (access.remaining <= 0) {
-  if (!getValuationEmail()) {
-    showValuationEmailGate({ make: make, model: model, year: year });
-    return;
-  }
-  renderValuationUpgradeGate(make, model, year, getValuationEmail());
-  return;
-}
 
 var ttaf=document.getElementById('v-ttaf').value;
 var cond=document.getElementById('v-cond').value;
@@ -2398,23 +2261,13 @@ var v=await apiPost('/api/valuate', {
   engineSmohL: engineSmohL,
   engineSmohR: engineSmohR,
   isTwin: isTwin,
-  engineConversion: (engConvEl && engConvEl.value.trim()) ? engConvEl.value.trim() : '',
-  evaluatorCode: getEvaluatorCode()
+  engineConversion: (engConvEl && engConvEl.value.trim()) ? engConvEl.value.trim() : ''
 });
 renderVal(v,make,model,year);
 trackEvent('valuation_completed', { make: make, model: model });
-updateValuationFreeNote();
 } catch(e) {
-  if (e.status === 402 || e.code === 'limit_reached') {
-    if (!getValuationEmail()) {
-      showValuationEmailGate({ make: make, model: model, year: year });
-    } else {
-      renderValuationUpgradeGate(make, model, year, getValuationEmail());
-    }
-  } else {
     console.error('Valuation error:', e);
     document.getElementById('v-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed: ' + (e.message || e) + '</p>';
-  }
 }
 setLoading('v-spin','v-btn',false);
 }
@@ -2932,6 +2785,74 @@ ${flagHtml}
 }
 
 /* ── REPORT A SALE ─────────────────────────────────── */
+function matchSelectOption(selectId, value) {
+  if (!value) return '';
+  var sel = document.getElementById(selectId);
+  if (!sel) return '';
+  var target = String(value).trim().toLowerCase();
+  for (var i = 0; i < sel.options.length; i++) {
+    var opt = sel.options[i];
+    if (!opt.value && !opt.textContent.trim()) continue;
+    var text = (opt.textContent || '').trim().toLowerCase();
+    if (text === target || text.indexOf(target) >= 0 || target.indexOf(text) >= 0) return opt.value || opt.textContent;
+  }
+  return '';
+}
+
+function inferAvionicsTier(avionics) {
+  if (!avionics || !avionics.length) return '';
+  var s = avionics.join(' ').toUpperCase();
+  if (/G1000|G3X|G500 TXI|G600 TXI|ENTEGRA|AVIDYNE R9|DYNON HDX|SKYVIEW HDX/.test(s)) {
+    return 'Full glass (G1000, Avidyne Entegra)';
+  }
+  if (/GTN|GNS430W|GNS530W|IFD ?5|GTX ?3|ADS-?B/.test(s)) {
+    return 'Modern IFR (GTN/Avidyne + ADS-B)';
+  }
+  if (/GNS ?4|GNS ?5|430W|530W|430\/530/.test(s)) {
+    return 'Mid panel (430/530 or equivalent)';
+  }
+  if (/NAV\/COM|KX155|IFR/.test(s)) {
+    return 'Basic IFR (one nav/com, no GPS)';
+  }
+  return 'Steam gauges / basic VFR';
+}
+
+async function parseSalePost() {
+  var txt = cleanPastedText(document.getElementById('sd-paste').value);
+  if (!txt) { alert('Paste a sale post first.'); return; }
+  document.getElementById('sd-paste-spin').classList.add('on');
+  document.getElementById('sd-paste-btn').disabled = true;
+  try {
+    var d = await apiPost('/api/parse-sale', { text: txt.substring(0, 5000) });
+    if (d.make) document.getElementById('sd-make').value = d.make;
+    if (d.model) document.getElementById('sd-model').value = d.model;
+    if (d.year) document.getElementById('sd-year').value = d.year;
+    if (d.salePrice) document.getElementById('sd-price').value = d.salePrice;
+    if (d.askingPrice) document.getElementById('sd-ask').value = d.askingPrice;
+    if (d.ttaf) document.getElementById('sd-ttaf').value = d.ttaf;
+    if (d.smoh) document.getElementById('sd-smoh').value = d.smoh;
+    if (d.saleMonth) {
+      var dateEl = document.getElementById('sd-date');
+      if (dateEl) dateEl.value = d.saleMonth;
+    }
+    var region = matchSelectOption('sd-region', d.region || '');
+    if (region) document.getElementById('sd-region').value = region;
+    var tier = d.avionicsTier || inferAvionicsTier(d.avionics);
+    var tierMatch = matchSelectOption('sd-avionics', tier);
+    if (tierMatch) document.getElementById('sd-avionics').value = tierMatch;
+    var dom = matchSelectOption('sd-dom', d.daysOnMarket || '');
+    if (dom) document.getElementById('sd-dom').value = dom;
+    if (d.notes) document.getElementById('sd-notes').value = (d.notes || '').substring(0, 500);
+    document.getElementById('sd-result').innerHTML =
+      '<div class="note-box" style="margin-top:1rem"><i class="ti ti-circle-check" style="color:var(--success);font-size:14px"></i> Fields filled from post — review and submit when ready.</div>';
+  } catch (e) {
+    console.error('Sale parse failed:', e);
+    alert('Could not parse sale post. Try entering details manually.');
+  }
+  document.getElementById('sd-paste-spin').classList.remove('on');
+  document.getElementById('sd-paste-btn').disabled = false;
+}
+
 function getSoldData() {
   try { return JSON.parse(localStorage.getItem('spv_sold')||'[]'); } catch(e) { return []; }
 }

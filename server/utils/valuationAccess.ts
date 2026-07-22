@@ -1,5 +1,8 @@
 import { supabaseGet, supabaseInsert } from './supabase'
 
+/** Public beta: unlimited valuations. Set true before paid launch. */
+export const VALUATION_LIMITS_ENABLED = false
+
 export const FREE_VALUATIONS_PER_MONTH = 1
 
 function monthStartIso(): string {
@@ -16,12 +19,13 @@ export async function countValuationsThisMonth(clientId: string): Promise<number
 }
 
 export async function getValuationAccess(clientId: string, options?: { bypass?: boolean }) {
-  if (options?.bypass) {
+  if (!VALUATION_LIMITS_ENABLED || options?.bypass) {
     return {
       limit: FREE_VALUATIONS_PER_MONTH,
       used: 0,
-      remaining: FREE_VALUATIONS_PER_MONTH,
+      remaining: 999,
       bypass: true,
+      betaFreeAccess: !VALUATION_LIMITS_ENABLED,
       periodStart: monthStartIso(),
     }
   }
