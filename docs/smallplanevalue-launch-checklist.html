@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>SmallPlaneValue — Launch &amp; Email Checklist</title>
+  <style>
+    @page { size: letter; margin: 0.75in; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 11pt;
+      line-height: 1.45;
+      color: #1a2332;
+      max-width: 7in;
+      margin: 0 auto;
+      padding: 0.5in;
+    }
+    h1 {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 20pt;
+      color: #134074;
+      margin: 0 0 4px;
+      border-bottom: 2px solid #e8a020;
+      padding-bottom: 8px;
+    }
+    .subtitle {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 10pt;
+      color: #5a6a7a;
+      margin-bottom: 20px;
+    }
+    h2 {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 13pt;
+      color: #134074;
+      margin: 22px 0 8px;
+      page-break-after: avoid;
+    }
+    h3 {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 11pt;
+      margin: 14px 0 6px;
+      color: #2a5080;
+    }
+    p { margin: 0 0 8px; }
+    ul, ol { margin: 0 0 10px; padding-left: 22px; }
+    li { margin-bottom: 4px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10pt;
+      margin: 10px 0 14px;
+    }
+    th, td {
+      border: 1px solid #c8d4e0;
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f0f4f8;
+      font-family: Helvetica, Arial, sans-serif;
+      font-weight: 600;
+    }
+    .box {
+      border: 1px solid #c8d4e0;
+      background: #f8fafc;
+      padding: 12px 14px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+    .rec { font-weight: bold; color: #0d6b3a; }
+    .warn { font-size: 9.5pt; color: #6a4a10; }
+    .footer {
+      margin-top: 24px;
+      padding-top: 10px;
+      border-top: 1px solid #dde4ec;
+      font-size: 9pt;
+      color: #7a8a9a;
+      font-family: Helvetica, Arial, sans-serif;
+    }
+    .checklist li { list-style: none; margin-left: -18px; }
+    .checklist li::before { content: "☐ "; font-family: Helvetica, sans-serif; }
+    code {
+      font-family: "SF Mono", Consolas, monospace;
+      font-size: 9.5pt;
+      background: #eef2f6;
+      padding: 1px 4px;
+    }
+    @media print {
+      body { padding: 0; }
+      h2 { page-break-before: auto; }
+      .no-break { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<h1>SmallPlaneValue.com</h1>
+<p class="subtitle">Launch checklist — email, Facebook, and beta promotion &nbsp;|&nbsp; Print date: July 2026</p>
+
+<h2>1. Do you need a separate Gmail?</h2>
+<p><span class="rec">Recommendation:</span> You probably do <strong>not</strong> need another Gmail if you already ignore extra inboxes. Use <strong>one email address you actually check</strong>, with filters/labels for SmallPlaneValue.</p>
+
+<table>
+  <tr>
+    <th>Option</th>
+    <th>Best for</th>
+    <th>Downside</th>
+  </tr>
+  <tr>
+    <td><strong>Namecheap free forwarding</strong><br><code>hello@smallplanevalue.com</code> → your Gmail</td>
+    <td>Beta launch; professional contact on Facebook Page; no new inbox</td>
+    <td>Receive only (can’t easily send <em>as</em> @yourdomain without more setup)</td>
+  </tr>
+  <tr>
+    <td><strong>Namecheap Private Email</strong> (paid mailbox)</td>
+    <td>Send and receive as <code>you@smallplanevalue.com</code>; looks official</td>
+    <td>~$1–2/mo per mailbox; can’t use free forwarding on same domain at same time</td>
+  </tr>
+  <tr>
+    <td><strong>New Gmail account</strong></td>
+    <td>Complete separation from personal mail</td>
+    <td>Another inbox you may never check</td>
+  </tr>
+  <tr>
+    <td><strong>Existing inbox + Gmail filter</strong></td>
+    <td>Simplest; everything in one place</td>
+    <td>Mixes with personal mail unless filtered well</td>
+  </tr>
+</table>
+
+<h2>2. Namecheap email options (domain already there)</h2>
+
+<h3>Option A — Free Email Forwarding <span class="rec">(start here)</span></h3>
+<p>Included with domains on Namecheap DNS (BasicDNS / PremiumDNS / FreeDNS).</p>
+<ol>
+  <li>Log in at <strong>namecheap.com</strong> → <strong>Domain List</strong> → <strong>Manage</strong> (smallplanevalue.com)</li>
+  <li><strong>Redirect Email</strong> → Add alias (e.g. <code>hello</code>) → forward to your main Gmail</li>
+  <li><strong>Advanced DNS</strong> → <strong>Mail Settings</strong> → select <strong>Email Forwarding</strong> (MX records set automatically)</li>
+  <li>Test from a <em>different</em> email address (forwarding tests from the same destination often fail)</li>
+</ol>
+<p class="warn">Note: Free forwarding is virtual — you receive at your domain address; it is not a full send/receive mailbox.</p>
+<p>Docs: namecheap.com → Support → “How to set up Free Email Forwarding”</p>
+
+<h3>Option B — Private Email (upgrade later)</h3>
+<ul>
+  <li>Full mailbox at <code>hello@smallplanevalue.com</code></li>
+  <li>Send and receive; optional auto-forward to Gmail in webmail settings</li>
+  <li>Choose this when you reply to pilots regularly as the brand</li>
+</ul>
+
+<div class="box no-break">
+  <strong>Quick pick for beta:</strong> Set up only <code>hello@smallplanevalue.com</code> first. Add <code>feedback@</code> later if you want a separate public address on the site — both can forward to the same Gmail.
+</div>
+
+<h2>3. Suggested alias names — which to create?</h2>
+<p>All of these are <strong>free forwarders</strong> on Namecheap (alias → your Gmail). You can add up to 100 on BasicDNS.</p>
+
+<table>
+  <tr>
+    <th>Alias</th>
+    <th>Use on</th>
+    <th>Recommendation</th>
+  </tr>
+  <tr>
+    <td><code>hello@</code></td>
+    <td>Facebook Page contact, footer, general “reach us”</td>
+    <td><span class="rec">Create this one first.</span> Friendly, normal for a small product.</td>
+  </tr>
+  <tr>
+    <td><code>feedback@</code></td>
+    <td>Site footer, Feedback tab “email us too”, forum posts</td>
+    <td><strong>Optional.</strong> Signals “tell us what’s wrong.” Same Gmail is fine.</td>
+  </tr>
+  <tr>
+    <td><code>contact@</code></td>
+    <td>Formal listings, press, partners</td>
+    <td>Skip for now — redundant with <code>hello@</code>.</td>
+  </tr>
+  <tr>
+    <td><code>info@</code></td>
+    <td>Generic business contact</td>
+    <td>Skip — feels corporate for a beta side project.</td>
+  </tr>
+  <tr>
+    <td><code>support@</code></td>
+    <td>Paid product / ticket system later</td>
+    <td>Wait until you charge and need support workflow.</td>
+  </tr>
+</table>
+
+<p><strong>Minimum setup:</strong> one alias (<code>hello</code>). <strong>Nice-to-have:</strong> <code>hello</code> + <code>feedback</code>, both → same Gmail, two Gmail filters (or one filter for the whole domain).</p>
+
+<h2>4. Gmail filter setup (step-by-step)</h2>
+<p>Goal: mail forwarded from Namecheap lands in your main Gmail but is <strong>easy to find</strong> — labeled <em>SmallPlaneValue</em>, not buried in personal mail.</p>
+
+<h3>Filter A — catch everything from your domain <span class="rec">(recommended)</span></h3>
+<ol>
+  <li>Open Gmail in a browser → click the <strong>search box</strong> → click the <strong>filter icon</strong> (sliders) on the right.</li>
+  <li>In <strong>To</strong>, enter: <code>@smallplanevalue.com</code><br>
+    <span class="warn">This matches any forwarded alias (hello@, feedback@, etc.).</span></li>
+  <li>Click <strong>Create filter</strong> (bottom right).</li>
+  <li>Check: <strong>Apply the label</strong> → <strong>New label</strong> → name it <code>SmallPlaneValue</code>.</li>
+  <li>Optional but useful: check <strong>Star it</strong> during beta so you notice pilot mail quickly.</li>
+  <li>Do <strong>not</strong> check “Skip the Inbox” during beta — you want these visible.</li>
+  <li>Click <strong>Create filter</strong>.</li>
+</ol>
+
+<h3>Filter B — separate feedback@ (only if you created that alias)</h3>
+<ol>
+  <li>New filter → <strong>To</strong>: <code>feedback@smallplanevalue.com</code></li>
+  <li>Apply label: <code>SmallPlaneValue/Feedback</code> (nested label under SmallPlaneValue)</li>
+  <li>Star it (optional)</li>
+</ol>
+
+<h3>Filter C — catch replies when you post on BeechTalk / FB</h3>
+<p>People may reply to your personal email instead of hello@. Optional filter:</p>
+<ol>
+  <li><strong>Has the words</strong>: <code>smallplanevalue OR "small plane value"</code></li>
+  <li>Label: <code>SmallPlaneValue</code> (same label as above)</li>
+</ol>
+
+<h3>Gmail sidebar &amp; phone</h3>
+<ul>
+  <li>In Gmail left sidebar, click the label <strong>SmallPlaneValue</strong> to see only project mail.</li>
+  <li>On iPhone/Android Gmail app: the label appears under <strong>Labels</strong>; you can enable notifications for that label only (Settings → your account → Labels → SmallPlaneValue → Notify).</li>
+</ul>
+
+<div class="box no-break">
+  <strong>Replying as hello@smallplanevalue.com</strong><br>
+  Free Namecheap forwarding is <em>receive-only</em>. Replies will come from your personal Gmail address unless you upgrade to <strong>Namecheap Private Email</strong> or configure Gmail “Send mail as” with SMTP. For beta, replying from personal Gmail with a signature line (“SmallPlaneValue.com”) is fine.
+</div>
+
+<h2>5. Facebook Page — yes, create one</h2>
+<ul>
+  <li>Use a <strong>Page</strong>, not your personal profile, for the project link</li>
+  <li>Post in BeechTalk and FB groups as yourself: “I built this — feedback welcome”</li>
+  <li>Page needs: name, short description, link to <strong>smallplanevalue.com</strong>, contact email (<code>hello@…</code>)</li>
+  <li>Instagram can link to the same Meta Page later (Business Suite)</li>
+</ul>
+
+<h2>6. Where to promote (free beta)</h2>
+<table>
+  <tr><th>Channel</th><th>How</th></tr>
+  <tr><td><strong>BeechTalk</strong></td><td>Use “Copy for BeechTalk / FB” on the site Feedback tab; post in relevant forums</td></tr>
+  <tr><td><strong>Facebook groups</strong></td><td>Bonanza, Cirrus, type-club groups — same copied blurb + link</td></tr>
+  <tr><td><strong>X (Twitter)</strong></td><td>Share button on Feedback tab (pre-filled tweet)</td></tr>
+  <tr><td><strong>Facebook Page</strong></td><td>Share button; pin a “free beta — we want feedback” post</td></tr>
+  <tr><td><strong>Instagram</strong></td><td>No web share button — copy link/blurb into caption or bio</td></tr>
+</table>
+
+<h2>7. What the site does today (beta)</h2>
+<ul>
+  <li><strong>Unlimited free valuations</strong> — no monthly limit or access codes during feedback phase</li>
+  <li><strong>Feedback tab</strong> — in-app comments (also stored in Supabase)</li>
+  <li><strong>Report a sale</strong> — paste BeechTalk sold posts → auto-fill → submit (local browser for now)</li>
+  <li><strong>Valuation tab</strong> — paste listings → auto-fill fields</li>
+</ul>
+<p>When ready to charge: set <code>VALUATION_LIMITS_ENABLED = true</code> in server code and redeploy.</p>
+
+<h2>8. Print checklist — do these in order</h2>
+<ul class="checklist">
+  <li>Namecheap: <code>hello@smallplanevalue.com</code> → your main Gmail</li>
+  <li>Optional Namecheap: <code>feedback@</code> → same Gmail</li>
+  <li>Gmail: Filter A (To: @smallplanevalue.com) → label SmallPlaneValue</li>
+  <li>Gmail: enable label notifications on phone (optional)</li>
+  <li>Create Facebook Page; add website + contact email</li>
+  <li>Post on BeechTalk + 2–3 FB groups (use site copy button)</li>
+  <li>Optional: X account or post from personal account with project link</li>
+  <li>Ask for Feedback tab responses (“too high / too low / about right”)</li>
+  <li>Log real sales on Report a sale tab when you see sold threads</li>
+</ul>
+
+<h2>9. Sample post (BeechTalk / FB groups)</h2>
+<div class="box">
+  Free GA aircraft valuations at smallplanevalue.com — honest asking ranges and fair-market estimates, no fabricated sale prices. Paste a listing or enter your aircraft. Looking for feedback from pilots — especially BeechTalk and type-club folks. Try it and tell us what we got right or wrong.
+</div>
+
+<p class="footer">
+  SmallPlaneValue.com — research/education only; not a certified appraisal. &nbsp;|&nbsp; Generated for internal launch planning.
+</p>
+
+</body>
+</html>
