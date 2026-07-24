@@ -533,53 +533,7 @@ transition: background .1s;
   box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.18);
 }
 .out-of-annual-label input { width: 16px; height: 16px; accent-color: var(--danger); }
-.val-gate-overlay {
-  position: fixed; inset: 0; z-index: 200;
-  background: rgba(11,37,69,0.55);
-  display: none; align-items: center; justify-content: center;
-  padding: 20px;
-}
-.val-gate-overlay.on { display: flex; }
-.val-gate-card {
-  background: var(--card-bg); border-radius: var(--radius-lg);
-  padding: 24px; max-width: 420px; width: 100%;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.2);
-  border: 1px solid var(--card-border);
-}
-.val-gate-title { font-size: 18px; font-weight: 600; color: var(--sky); margin-bottom: 8px; }
-.val-gate-sub { font-size: 14px; color: var(--muted); line-height: 1.5; margin-bottom: 16px; }
-.val-gate-row { display: flex; gap: 8px; margin-bottom: 8px; }
-.val-gate-row input {
-  flex: 1; padding: 10px 12px; border: 1px solid rgba(11,37,69,0.15);
-  border-radius: var(--radius); font-size: 14px; font-family: var(--body);
-}
-.val-gate-msg { font-size: 13px; margin-top: 8px; min-height: 18px; }
-.upgrade-card {
-  background: linear-gradient(135deg, var(--sky) 0%, var(--sky-mid) 100%);
-  border-radius: var(--radius-lg); padding: 22px; color: #fff; margin-top: 1rem;
-}
-.upgrade-card h3 { font-size: 17px; margin-bottom: 8px; }
-.upgrade-card p { font-size: 14px; opacity: 0.9; line-height: 1.5; margin-bottom: 14px; }
-.upgrade-btn {
-  background: var(--accent); color: var(--sky); border: none;
-  border-radius: var(--radius); padding: 10px 18px; font-weight: 600;
-  font-size: 14px; cursor: pointer; font-family: var(--body);
-}
-.upgrade-btn:hover { background: var(--accent-light); }
 .val-free-note { font-size: 12px; color: var(--muted); margin-top: 8px; }
-.eval-code-wrap { margin-top: 10px; }
-.eval-code-wrap summary {
-  font-size: 12px; color: var(--muted); cursor: pointer; user-select: none; list-style: none;
-}
-.eval-code-wrap summary::-webkit-details-marker { display: none; }
-.eval-code-row { display: flex; gap: 8px; margin-top: 8px; align-items: center; flex-wrap: wrap; }
-.eval-code-row input {
-  flex: 1; min-width: 160px; padding: 8px 10px; border: 1px solid rgba(19,64,116,0.2);
-  border-radius: var(--radius); font-size: 13px; font-family: var(--mono, monospace);
-}
-.eval-code-msg { font-size: 12px; margin-top: 6px; min-height: 16px; }
-.eval-code-msg.ok { color: var(--success); }
-.eval-code-msg.err { color: var(--danger); }
 .share-pilot-box {
   background: rgba(19,64,116,0.05); border: 1px solid rgba(19,64,116,0.12);
   border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 1.25rem;
@@ -724,6 +678,12 @@ margin-top: 1.5rem;
 .fly-plane { position: absolute; top: 4px; font-size: 22px; color: var(--sky-light); animation: fly-rl 2.4s linear infinite; will-change: transform; }
 .fly-plane i.ti { display: inline-block; transform: rotate(-135deg) !important; }
 @keyframes fly-rl { from { transform: translateX(320px); } to { transform: translateX(-40px); } }
+.partner-tip {
+  font-size: 12px; color: var(--muted); line-height: 1.5;
+  max-width: 420px; margin: 12px auto 0; padding: 0 12px;
+}
+.partner-tip a { color: var(--sky-light); text-decoration: underline; text-underline-offset: 2px; }
+.partner-tip a:hover { color: var(--sky); }
 
 /* badge */
 .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 99px; }
@@ -1413,7 +1373,11 @@ ENGINE TIMES
 <button class="submit-btn accent-btn" id="v-btn" onclick="doValuation()">
 <i class="ti ti-calculator"></i> Get honest valuation
 </button>
-<div class="spin" id="v-spin"><div class="fly-track"><span class="fly-plane"><i class="ti ti-plane"></i></span></div><div>Searching live listings &amp; recent sales...</div></div>
+<div class="spin" id="v-spin">
+<div class="fly-track"><span class="fly-plane"><i class="ti ti-plane"></i></span></div>
+<div>Searching live listings &amp; recent sales...</div>
+<p class="partner-tip" id="v-partner-tip"></p>
+</div>
 <div id="v-result"></div>
 <p class="val-free-note" id="v-free-note">Free beta — unlimited valuations while we gather pilot feedback.</p>
 </div>
@@ -1729,9 +1693,56 @@ function fallbackCopy(text, msgEl) {
 
 initShareLinks();
 
+/** Trusted partners — add an object to show another tip during valuation search. */
+var TRUSTED_PARTNERS = [
+  {
+    name: 'AirLogbooks',
+    url: 'https://airlogbooks.com/?utm_source=smallplanevalue&utm_medium=partner&utm_campaign=valuation_loader',
+    tip: 'Did you know? Digitized logbooks often make aircraft easier to sell — and protect value.'
+  }
+];
+
+var _partnerTipTimer = null;
+var _partnerTipIndex = 0;
+
+function partnerTipHtml(p) {
+  if (!p) return '';
+  return p.tip + ' Trusted partner: <a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + p.name + '</a>.';
+}
+
+function renderPartnerTip() {
+  var el = document.getElementById('v-partner-tip');
+  if (!el || !TRUSTED_PARTNERS.length) return;
+  _partnerTipIndex = _partnerTipIndex % TRUSTED_PARTNERS.length;
+  el.innerHTML = partnerTipHtml(TRUSTED_PARTNERS[_partnerTipIndex]);
+}
+
+function startPartnerTipRotation() {
+  stopPartnerTipRotation();
+  if (!TRUSTED_PARTNERS.length) return;
+  _partnerTipIndex = 0;
+  renderPartnerTip();
+  if (TRUSTED_PARTNERS.length < 2) return;
+  _partnerTipTimer = setInterval(function() {
+    _partnerTipIndex = (_partnerTipIndex + 1) % TRUSTED_PARTNERS.length;
+    renderPartnerTip();
+  }, 4000);
+}
+
+function stopPartnerTipRotation() {
+  if (_partnerTipTimer) {
+    clearInterval(_partnerTipTimer);
+    _partnerTipTimer = null;
+  }
+}
+
 function setLoading(spinId, btnId, on) {
 document.getElementById(spinId).classList.toggle('on', on);
 document.getElementById(btnId).disabled = on;
+if (spinId === 'v-spin') {
+  if (on) startPartnerTipRotation();
+  else stopPartnerTipRotation();
+}
 }
 
 /* ── N-NUMBER ── */
