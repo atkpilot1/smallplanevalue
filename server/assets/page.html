@@ -678,6 +678,12 @@ margin-top: 1.5rem;
 .fly-plane { position: absolute; top: 4px; font-size: 22px; color: var(--sky-light); animation: fly-rl 2.4s linear infinite; will-change: transform; }
 .fly-plane i.ti { display: inline-block; transform: rotate(-135deg) !important; }
 @keyframes fly-rl { from { transform: translateX(320px); } to { transform: translateX(-40px); } }
+.partner-tip {
+  font-size: 12px; color: var(--muted); line-height: 1.5;
+  max-width: 420px; margin: 12px auto 0; padding: 0 12px;
+}
+.partner-tip a { color: var(--sky-light); text-decoration: underline; text-underline-offset: 2px; }
+.partner-tip a:hover { color: var(--sky); }
 
 /* badge */
 .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 99px; }
@@ -1367,7 +1373,11 @@ ENGINE TIMES
 <button class="submit-btn accent-btn" id="v-btn" onclick="doValuation()">
 <i class="ti ti-calculator"></i> Get honest valuation
 </button>
-<div class="spin" id="v-spin"><div class="fly-track"><span class="fly-plane"><i class="ti ti-plane"></i></span></div><div>Searching live listings &amp; recent sales...</div></div>
+<div class="spin" id="v-spin">
+<div class="fly-track"><span class="fly-plane"><i class="ti ti-plane"></i></span></div>
+<div>Searching live listings &amp; recent sales...</div>
+<p class="partner-tip" id="v-partner-tip"></p>
+</div>
 <div id="v-result"></div>
 <p class="val-free-note" id="v-free-note">Free beta — unlimited valuations while we gather pilot feedback.</p>
 </div>
@@ -1683,9 +1693,56 @@ function fallbackCopy(text, msgEl) {
 
 initShareLinks();
 
+/** Trusted partners — add an object to show another tip during valuation search. */
+var TRUSTED_PARTNERS = [
+  {
+    name: 'AirLogbooks',
+    url: 'https://airlogbooks.com/?utm_source=smallplanevalue&utm_medium=partner&utm_campaign=valuation_loader',
+    tip: 'Did you know? Digitized logbooks often make aircraft easier to sell — and protect value.'
+  }
+];
+
+var _partnerTipTimer = null;
+var _partnerTipIndex = 0;
+
+function partnerTipHtml(p) {
+  if (!p) return '';
+  return p.tip + ' Trusted partner: <a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + p.name + '</a>.';
+}
+
+function renderPartnerTip() {
+  var el = document.getElementById('v-partner-tip');
+  if (!el || !TRUSTED_PARTNERS.length) return;
+  _partnerTipIndex = _partnerTipIndex % TRUSTED_PARTNERS.length;
+  el.innerHTML = partnerTipHtml(TRUSTED_PARTNERS[_partnerTipIndex]);
+}
+
+function startPartnerTipRotation() {
+  stopPartnerTipRotation();
+  if (!TRUSTED_PARTNERS.length) return;
+  _partnerTipIndex = 0;
+  renderPartnerTip();
+  if (TRUSTED_PARTNERS.length < 2) return;
+  _partnerTipTimer = setInterval(function() {
+    _partnerTipIndex = (_partnerTipIndex + 1) % TRUSTED_PARTNERS.length;
+    renderPartnerTip();
+  }, 4000);
+}
+
+function stopPartnerTipRotation() {
+  if (_partnerTipTimer) {
+    clearInterval(_partnerTipTimer);
+    _partnerTipTimer = null;
+  }
+}
+
 function setLoading(spinId, btnId, on) {
 document.getElementById(spinId).classList.toggle('on', on);
 document.getElementById(btnId).disabled = on;
+if (spinId === 'v-spin') {
+  if (on) startPartnerTipRotation();
+  else stopPartnerTipRotation();
+}
 }
 
 /* ── N-NUMBER ── */
