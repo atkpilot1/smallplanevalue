@@ -136,7 +136,6 @@ async function mockApis(page: Page) {
           limit: 1,
           used: 0,
           remaining: 999,
-          bypass: true,
           betaFreeAccess: true,
           periodStart: '2026-07-01T00:00:00.000Z',
         },

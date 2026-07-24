@@ -533,53 +533,7 @@ transition: background .1s;
   box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.18);
 }
 .out-of-annual-label input { width: 16px; height: 16px; accent-color: var(--danger); }
-.val-gate-overlay {
-  position: fixed; inset: 0; z-index: 200;
-  background: rgba(11,37,69,0.55);
-  display: none; align-items: center; justify-content: center;
-  padding: 20px;
-}
-.val-gate-overlay.on { display: flex; }
-.val-gate-card {
-  background: var(--card-bg); border-radius: var(--radius-lg);
-  padding: 24px; max-width: 420px; width: 100%;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.2);
-  border: 1px solid var(--card-border);
-}
-.val-gate-title { font-size: 18px; font-weight: 600; color: var(--sky); margin-bottom: 8px; }
-.val-gate-sub { font-size: 14px; color: var(--muted); line-height: 1.5; margin-bottom: 16px; }
-.val-gate-row { display: flex; gap: 8px; margin-bottom: 8px; }
-.val-gate-row input {
-  flex: 1; padding: 10px 12px; border: 1px solid rgba(11,37,69,0.15);
-  border-radius: var(--radius); font-size: 14px; font-family: var(--body);
-}
-.val-gate-msg { font-size: 13px; margin-top: 8px; min-height: 18px; }
-.upgrade-card {
-  background: linear-gradient(135deg, var(--sky) 0%, var(--sky-mid) 100%);
-  border-radius: var(--radius-lg); padding: 22px; color: #fff; margin-top: 1rem;
-}
-.upgrade-card h3 { font-size: 17px; margin-bottom: 8px; }
-.upgrade-card p { font-size: 14px; opacity: 0.9; line-height: 1.5; margin-bottom: 14px; }
-.upgrade-btn {
-  background: var(--accent); color: var(--sky); border: none;
-  border-radius: var(--radius); padding: 10px 18px; font-weight: 600;
-  font-size: 14px; cursor: pointer; font-family: var(--body);
-}
-.upgrade-btn:hover { background: var(--accent-light); }
 .val-free-note { font-size: 12px; color: var(--muted); margin-top: 8px; }
-.eval-code-wrap { margin-top: 10px; }
-.eval-code-wrap summary {
-  font-size: 12px; color: var(--muted); cursor: pointer; user-select: none; list-style: none;
-}
-.eval-code-wrap summary::-webkit-details-marker { display: none; }
-.eval-code-row { display: flex; gap: 8px; margin-top: 8px; align-items: center; flex-wrap: wrap; }
-.eval-code-row input {
-  flex: 1; min-width: 160px; padding: 8px 10px; border: 1px solid rgba(19,64,116,0.2);
-  border-radius: var(--radius); font-size: 13px; font-family: var(--mono, monospace);
-}
-.eval-code-msg { font-size: 12px; margin-top: 6px; min-height: 16px; }
-.eval-code-msg.ok { color: var(--success); }
-.eval-code-msg.err { color: var(--danger); }
 .share-pilot-box {
   background: rgba(19,64,116,0.05); border: 1px solid rgba(19,64,116,0.12);
   border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 1.25rem;

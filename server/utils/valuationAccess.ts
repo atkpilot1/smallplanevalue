@@ -18,14 +18,13 @@ export async function countValuationsThisMonth(clientId: string): Promise<number
   return Array.isArray(rows) ? rows.length : 0
 }
 
-export async function getValuationAccess(clientId: string, options?: { bypass?: boolean }) {
-  if (!VALUATION_LIMITS_ENABLED || options?.bypass) {
+export async function getValuationAccess(clientId: string) {
+  if (!VALUATION_LIMITS_ENABLED) {
     return {
       limit: FREE_VALUATIONS_PER_MONTH,
       used: 0,
       remaining: 999,
-      bypass: true,
-      betaFreeAccess: !VALUATION_LIMITS_ENABLED,
+      betaFreeAccess: true,
       periodStart: monthStartIso(),
     }
   }
@@ -36,6 +35,7 @@ export async function getValuationAccess(clientId: string, options?: { bypass?: 
     limit,
     used,
     remaining: Math.max(0, limit - used),
+    betaFreeAccess: false,
     periodStart: monthStartIso(),
   }
 }
@@ -44,12 +44,11 @@ export async function recordValuationUsage(
   clientId: string,
   email: string | null | undefined,
   metadata: Record<string, unknown>,
-  options?: { evaluatorBypass?: boolean },
 ): Promise<void> {
   await supabaseInsert('usage_events', {
     client_id: clientId,
     email: email || null,
-    feature: options?.evaluatorBypass ? 'valuate_evaluator' : 'valuate',
+    feature: 'valuate',
     metadata,
   })
 }
