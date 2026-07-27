@@ -754,6 +754,97 @@ margin-top: 1.5rem;
 .action-btn { background: none; border: 1px solid rgba(11,37,69,0.12); border-radius: var(--radius); padding: 10px 8px; font-size: 13px; cursor: pointer; color: var(--sky); display: flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--body); transition: background .1s; }
 .action-btn:hover { background: rgba(11,37,69,0.05); }
 
+/* ── compare options ─────────────────────────────────── */
+.compare-wrap { margin-top: 2.5rem; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.compare-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--white);
+  border: 1px solid rgba(11,37,69,0.1);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.compare-table th,
+.compare-table td {
+  padding: 14px 16px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(11,37,69,0.08);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--sky);
+}
+.compare-table thead th {
+  background: var(--sky);
+  color: rgba(247,245,240,0.72);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: none;
+}
+.compare-table thead th.compare-ours {
+  color: var(--accent);
+}
+.compare-table tbody th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  width: 110px;
+  background: rgba(11,37,69,0.02);
+}
+.compare-table td.compare-ours {
+  background: rgba(232,160,32,0.07);
+  font-weight: 500;
+}
+.compare-table tbody tr:last-child th,
+.compare-table tbody tr:last-child td { border-bottom: none; }
+.compare-name {
+  display: block;
+  font-family: var(--display);
+  font-size: 18px;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  text-transform: none;
+  margin-bottom: 2px;
+}
+.compare-ours .compare-name { color: var(--accent); }
+.compare-role {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: rgba(247,245,240,0.55);
+  line-height: 1.4;
+}
+.compare-partner {
+  margin-top: 1.5rem;
+  padding: 18px 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(11,37,69,0.1);
+  background: linear-gradient(135deg, rgba(19,64,116,0.04), rgba(232,160,32,0.08));
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.compare-partner-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sky);
+  margin-bottom: 4px;
+}
+.compare-partner-text {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.compare-partner-text a { color: var(--sky-light); }
+
 /* ── animations ──────────────────────────────────────── */
 @keyframes fadeUp {
 from { opacity: 0; transform: translateY(20px); }
@@ -774,6 +865,7 @@ nav { padding: 0 1.5rem; }
 .nav-links { display: none; }
 .hero-content, .showcase { padding-left: 1.5rem; padding-right: 1.5rem; }
 .footer-links { display: none; }
+.compare-partner { flex-direction: column; gap: 8px; }
 }
 </style>
 <!-- Google tag (gtag.js) -->
@@ -809,6 +901,7 @@ SmallPlane<span class="accent">Value</span>
 </a>
 <div class="nav-links">
 <a href="#tools">Tools</a>
+<a href="#compare">Compare</a>
 <a href="#how-it-works">How it works</a>
 <a href="#aircraft-types">Aircraft types</a>
 <a href="#app">Get a valuation</a>
@@ -836,10 +929,10 @@ Real asking price ranges for piston singles, twins, LSA, and experimental aircra
 <p class="hero-compare">Unlike index tools or 20-page reports — built for the listing you're looking at right now.</p>
 <div class="hero-actions">
 <a href="#app" class="btn-primary">
-<i class="ti ti-calculator"></i> Get a free valuation
+<i class="ti ti-calculator"></i> Try a valuation
 </a>
-<a href="#how-it-works" class="btn-ghost">
-<i class="ti ti-info-circle"></i> How it works
+<a href="#compare" class="btn-ghost">
+<i class="ti ti-arrows-diff"></i> Compare options
 </a>
 </div>
 <div class="hero-stats">
@@ -852,8 +945,8 @@ Real asking price ranges for piston singles, twins, LSA, and experimental aircra
 <div class="hero-stat-lbl">Powered estimates</div>
 </div>
 <div>
-<div class="hero-stat-val">100%</div>
-<div class="hero-stat-lbl">Free to use</div>
+<div class="hero-stat-val">Try</div>
+<div class="hero-stat-lbl">Free, then pay-per-use</div>
 </div>
 <div>
 <div class="hero-stat-val">0</div>
@@ -876,7 +969,7 @@ Real asking price ranges for piston singles, twins, LSA, and experimental aircra
 <div class="reveal">
 <div class="section-kicker">Why SmallPlaneValue</div>
 <h2 class="section-h2">Built for GA, not<br>jet brokers.</h2>
-<p class="section-body">Vref and Aircraft Bluebook focus on larger turbine aircraft. We built the tool that actually works for piston singles, twins, LSA, and experimental aircraft — the planes most pilots actually fly.</p>
+<p class="section-body">Built for piston singles, twins, LSA, and experimental aircraft — the planes most pilots actually fly. A negotiation brief for the listing in front of you, not a jet-broker appraisal stack.</p>
 </div>
 <div class="why-grid reveal" style="transition-delay:.1s">
 <div class="why-card">
@@ -898,8 +991,73 @@ Real asking price ranges for piston singles, twins, LSA, and experimental aircra
 </div>
 </section>
 
+<!-- COMPARE OPTIONS -->
+<section id="compare" style="background:var(--offwhite); padding:80px 5vw;">
+<div style="max-width:1200px; margin:0 auto;">
+<div class="reveal">
+<div class="section-kicker">Compare your options</div>
+<h2 class="section-h2">Different tools.<br>Different jobs.</h2>
+<p class="section-body">No trash-talk — pick the right tool for the job. SmallPlaneValue is the negotiation brief for the listing you’re looking at right now.</p>
+</div>
+<div class="compare-wrap reveal" style="transition-delay:.1s">
+<table class="compare-table">
+<thead>
+<tr>
+<th scope="col"><span class="compare-name">FindAircraft</span><span class="compare-role">Find the plane</span></th>
+<th scope="col"><span class="compare-name">VREF</span><span class="compare-role">Formal appraisal values</span></th>
+<th scope="col"><span class="compare-name">Windsock</span><span class="compare-role">Paid valuation report</span></th>
+<th scope="col" class="compare-ours"><span class="compare-name">SmallPlaneValue</span><span class="compare-role">Negotiation brief</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Best for</th>
+<td>Brokers &amp; shoppers scanning the market</td>
+<td>Lenders, insurers, estates — defensible values</td>
+<td>Owners who want a polished AI report (AOPA partner)</td>
+<td class="compare-ours">Pilots deciding what to offer on <em>this</em> listing</td>
+</tr>
+<tr>
+<th scope="row">You get</th>
+<td>Listings, market intel, alerts, accident/FAA context</td>
+<td>Opinion-of-value / USPAP-style appraisal products</td>
+<td>Account-based Verified Value report + deep dives</td>
+<td class="compare-ours">Ask / fair-market / buyer target + pre-buy checklist</td>
+</tr>
+<tr>
+<th scope="row">Honest fit</th>
+<td>Strong on “what’s for sale / what sold”</td>
+<td>Transaction-grounded, bank-grade methodology</td>
+<td>Strong report product + institutional distribution</td>
+<td class="compare-ours">GA sold prices aren’t public — no fabricated sold comps</td>
+</tr>
+<tr>
+<th scope="row">Pricing</th>
+<td>Account / research product</td>
+<td>Paid reports &amp; memberships</td>
+<td>Paid reports (member credits via AOPA)</td>
+<td class="compare-ours">A few free to try, then ~$24 / report or a 5-pack</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="compare-partner reveal" style="transition-delay:.15s">
+<i class="ti ti-notebook" style="font-size:22px;color:var(--accent);flex-shrink:0;margin-top:1px"></i>
+<div>
+<div class="compare-partner-title">Trusted partner — AirLogbooks</div>
+<div class="compare-partner-text">Digitized aircraft logbooks make records easier to verify, help protect value, and often make a plane easier to sell. We handle the price brief; they handle the paper trail. <a href="https://airlogbooks.com/?utm_source=smallplanevalue&amp;utm_medium=partner&amp;utm_campaign=compare" target="_blank" rel="noopener noreferrer">airlogbooks.com</a></div>
+</div>
+</div>
+<div class="reveal" style="margin-top:1.75rem;transition-delay:.2s">
+<a href="#app" class="btn-primary" style="display:inline-flex">
+<i class="ti ti-calculator"></i> Try a valuation
+</a>
+</div>
+</div>
+</section>
+
 <!-- HOW IT WORKS -->
-<section id="how-it-works" style="background:var(--offwhite); padding:80px 5vw;">
+<section id="how-it-works" style="background:var(--white); padding:80px 5vw;">
 <div style="max-width:1200px; margin:0 auto;">
 <div class="reveal">
 <div class="section-kicker">How it works</div>
@@ -1562,6 +1720,7 @@ I confirm this is a real transaction I was involved in. I understand this data i
 </div>
 <div class="footer-links">
 <a href="#tools">Tools</a>
+<a href="#compare">Compare</a>
 <a href="#how-it-works">How it works</a>
 <a href="#aircraft-types">Aircraft types</a>
 <a href="#" id="footer-share-fb" target="_blank" rel="noopener noreferrer">Share on Facebook</a>

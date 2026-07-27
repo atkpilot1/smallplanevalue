@@ -32,13 +32,13 @@ https://smallplanevalue.com
 ### Post B — Differentiation + trusted partner (recommended)
 
 ```
-FindAircraft helps you find the plane. Windsock sells a paid valuation report. SmallPlaneValue is the negotiation brief for the listing in front of you — asking range, fair market, buyer target, and a pre-buy checklist — without pretending GA has MLS sold prices.
+FindAircraft helps you find the plane. VREF is for formal appraisal values. Windsock sells a paid valuation report. SmallPlaneValue is the negotiation brief for the listing in front of you — asking range, fair market, buyer target, and a pre-buy checklist — without pretending GA has MLS sold prices.
 
 Try a few valuations free, then pay per report when you need more (about $24, or a 5-pack if you’re comparing several birds).
 
 Trusted partner: AirLogbooks (https://airlogbooks.com) — digitized aircraft logbooks make records easier to verify, help protect value, and often make a plane easier to sell. We handle the price brief; they handle the paper trail.
 
-https://smallplanevalue.com
+Compare the options on the site: https://smallplanevalue.com/#compare
 ```
 
 ### Post C — Short partner / logbooks (optional)
