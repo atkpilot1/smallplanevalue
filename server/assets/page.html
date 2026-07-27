@@ -1035,13 +1035,13 @@ Real asking price ranges for piston singles, twins, LSA, and experimental aircra
 <button class="tab-btn active" id="tab-btn-lookup" onclick="switchTab('lookup')">
 <i class="ti ti-id"></i> N-number lookup
 </button>
-<button class="tab-btn highlight" id="tab-btn-val" onclick="if(window._lastLookup){prefillVal(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.aircraftType||'',window._lastLookup.numEngines||'',window._lastLookup.engineMake||'',window._lastLookup.engineModel||'');}switchTab('val');">
+<button class="tab-btn highlight" id="tab-btn-val" onclick="prefillFromLookup('val');">
 <i class="ti ti-calculator"></i> Get valuation
 </button>
 <button class="tab-btn" id="tab-btn-comps" onclick="if(window._lastLookup){var ci=document.getElementById('c-model');if(ci)ci.value=window._lastLookup.make+' '+window._lastLookup.model;}switchTab('comps')">
 <i class="ti ti-search"></i> Market listings
 </button>
-<button class="tab-btn" id="tab-btn-checklist" onclick="if(window._lastLookup){prefillCl(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.engineMake||'',window._lastLookup.engineModel||'',window._lastLookup.aircraftType||'',window._lastLookup.numEngines||'');}switchTab('checklist')">
+<button class="tab-btn" id="tab-btn-checklist" onclick="prefillFromLookup('checklist');">
 <i class="ti ti-clipboard-check"></i> Pre-buy checklist
 </button>
 <button class="tab-btn highlight" id="tab-btn-sold" onclick="switchTab('sold')">
@@ -1100,7 +1100,7 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 <div class="form-grid-3">
 <div class="form-group"><label>YEAR</label><input type="number" id="v-year" placeholder="e.g. 1969" min="1930" max="2026" oninput="toggleCirrusGen()" /></div>
 <div class="form-group"><label>LAST ANNUAL</label><div style="display:flex;gap:6px;width:100%"><select id="v-annual-month" style="flex:1"><option value="">Month</option><option value="01">January</option><option value="02">February</option><option value="03">March</option><option value="04">April</option><option value="05">May</option><option value="06">June</option><option value="07">July</option><option value="08">August</option><option value="09">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select><select id="v-annual-year" style="flex:1"><option value="">Year</option></select></div><label class="chk-label out-of-annual-label"><input type="checkbox" id="v-out-of-annual" /> <i class="ti ti-alert-triangle" style="font-size:15px"></i> Out of annual</label></div>
-<div class="form-group"><label>ENGINE</label><input type="text" id="v-engine-display" placeholder="From N-number lookup" readonly style="background:var(--offwhite);color:var(--muted)" /></div>
+<div class="form-group"><label>ENGINE</label><input type="text" id="v-engine-display" placeholder="From N-number lookup" readonly autocomplete="off" style="background:var(--offwhite);color:var(--muted)" /></div>
 <div class="form-group"><label>ASKING PRICE ($)</label><input type="number" id="v-asking" placeholder="e.g. 299000" /></div>
 <div class="form-group"><label>TOTAL TIME (TTAF HRS)</label><input type="number" id="v-ttaf" placeholder="e.g. 3200" /></div>
 <div class="form-group"><label>ENGINES</label>
@@ -1134,7 +1134,7 @@ ENGINE TIMES
 <div class="engine-section-body">
 <div class="form-grid-2" style="margin-bottom:10px">
 <div class="form-group"><label style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span>RECOMMENDED TBO (HRS)</span><button type="button" id="v-tbo-reset" class="tbo-reset-btn" onclick="resetTboAuto()" style="display:none">Use auto</button></label><select id="v-tbo" onchange="onTboOverride()"><option value="1500">1,500 hrs</option><option value="1600">1,600 hrs</option><option value="1700">1,700 hrs</option><option value="1800">1,800 hrs</option><option value="1900">1,900 hrs</option><option value="2000" selected>2,000 hrs</option><option value="2100">2,100 hrs</option><option value="2200">2,200 hrs</option></select></div>
-<div class="form-group"><label>ENGINE CONVERSION / STC</label><input type="text" id="v-eng-conv" placeholder="e.g. IO-550 conversion, RAM, tip tanks..." oninput="refreshEngineLife()" /></div>
+<div class="form-group"><label>ENGINE CONVERSION / STC</label><input type="text" id="v-eng-conv" placeholder="e.g. IO-550 conversion, RAM, tip tanks..." autocomplete="off" oninput="refreshEngineLife()" /></div>
 </div>
 
 <!-- Single engine fields -->
@@ -1432,8 +1432,9 @@ ENGINE TIMES
 <div class="form-group"><label>YEAR</label><input type="number" id="cl-year" placeholder="e.g. 2003" /></div>
 <div class="form-group"><label>ENGINE TYPE</label>
 <select id="cl-eng">
+<option value="">Select engine…</option>
 <option>Lycoming</option><option>Continental</option>
-<option>Rotax (LSA)</option><option>Turboprop</option><option>Other / unknown</option>
+<option>Rotax (LSA)</option><option>DeltaHawk / diesel</option><option>Turboprop</option><option>Other / unknown</option>
 </select>
 </div>
 <div class="form-group"><label>BUYER EXPERIENCE</label>
@@ -1753,6 +1754,9 @@ document.getElementById('cl-result').innerHTML='';
 window._engModel='';
 window._acType='';
 window._numEng='';
+window._valEngMake='';
+window._valEngModel='';
+window._lastLookup=null;
 var raw = document.getElementById('nn').value.trim().toUpperCase();
 if (!raw) { alert('Enter an N-number.'); return; }
 var nnumber = 'N' + raw;
@@ -1771,7 +1775,7 @@ if (d.status !== 'Valid') d.flags.push({ type: 'warn', title: 'Registration: ' +
 
 if (d.error) throw new Error(d.error);
 window._lastLookup = d;
-window._lastLookup = d;
+setEngineFromLookup(d);
 renderLookup(d);
 trackEvent('lookup_success', { source: 'spv' });
 if (d.aircraftType && d.aircraftType.toLowerCase().indexOf('multi') >= 0) {
@@ -1825,8 +1829,8 @@ ${owners}
 </div>
 ${d.adNotes ? `<div style="background:rgba(232,160,32,0.1);border-radius:var(--radius);padding:10px 14px;margin-bottom:1rem;display:flex;gap:10px;align-items:flex-start"><i class="ti ti-tool" style="font-size:16px;color:var(--warn);flex-shrink:0"></i><div style="font-size:13px;color:var(--sky)"><strong>ADs to verify:</strong> ${d.adNotes}</div></div>` : ''}
 <div class="action-row-3">
-<button class="action-btn" onclick="prefillVal('${d.make}','${d.model}','${d.year}','${d.aircraftType||""}',' ${d.numEngines||""}','${d.engineMake||""}','${d.engineModel||""}');switchTab('val')"><i class="ti ti-calculator" style="font-size:15px"></i> Get valuation</button>
-<button class="action-btn" onclick="prefillCl('${d.make}','${d.model}','${d.year}','${d.engineMake}','${d.engineModel}','${d.aircraftType||""}',' ${d.numEngines||""}');switchTab('checklist')"><i class="ti ti-clipboard-check" style="font-size:15px"></i> Pre-buy checklist</button>
+<button class="action-btn" onclick="prefillFromLookup('val')"><i class="ti ti-calculator" style="font-size:15px"></i> Get valuation</button>
+<button class="action-btn" onclick="prefillFromLookup('checklist')"><i class="ti ti-clipboard-check" style="font-size:15px"></i> Pre-buy checklist</button>
 <button class="action-btn" onclick="window.open('https://registry.faa.gov/aircraftinquiry/Search/NNumberInquiry?nNumberTxt=${d.nnumber.replace(/^N/,'')}','_blank')"><i class="ti ti-external-link" style="font-size:15px"></i> FAA website</button>
 </div>
 <div class="note-box" style="margin-top:.75rem">Data sourced from FAA aircraft registry (registry.faa.gov). Owner names are public FAA records.</div>`;
@@ -1857,8 +1861,8 @@ var L = window._lastLookup || {};
 if (L.make) document.getElementById('v-make').value = L.make;
 if (L.model) document.getElementById('v-model').value = L.model;
 if (L.year) document.getElementById('v-year').value = L.year;
-window._valEngMake = L.engineMake || window._valEngMake || '';
-window._valEngModel = L.engineModel || window._valEngModel || '';
+window._valEngMake = L.engineMake || '';
+window._valEngModel = L.engineModel || '';
 var edp = document.getElementById('v-engine-display');
 if (edp) edp.value = ((window._valEngMake||'') + ' ' + (window._valEngModel||'')).trim();
 if ((L.aircraftType && L.aircraftType.toLowerCase().indexOf('multi') >= 0) || L.numEngines == 2) {
@@ -1943,6 +1947,8 @@ var cond = document.getElementById('v-cond'); if (cond) cond.value = 'Good';
 var cosm = document.getElementById('v-cosm'); if (cosm) cosm.value = 'Average';
 var notes = document.getElementById('v-notes'); if (notes) notes.value = '';
 var engDisp = document.getElementById('v-engine-display'); if (engDisp) engDisp.value = '';
+window._valEngMake = '';
+window._valEngModel = '';
 var asking = document.getElementById('v-asking'); if (asking) asking.value = '';
 var annualM = document.getElementById('v-annual-month'); if (annualM) annualM.value = '';
 var annualY = document.getElementById('v-annual-year'); if (annualY) annualY.value = '';
@@ -1967,14 +1973,41 @@ var vp = document.getElementById('v-paste'); if(vp) vp.value = '';
 // nn-result preserved between lookups
 }
 
+function setEngineFromLookup(d) {
+  if (!d) return;
+  window._valEngMake = d.engineMake || '';
+  window._valEngModel = d.engineModel || '';
+  var ed = document.getElementById('v-engine-display');
+  if (ed) ed.value = ((window._valEngMake || '') + ' ' + (window._valEngModel || '')).trim();
+}
+
+function prefillFromLookup(which) {
+  var L = window._lastLookup;
+  if (!L) {
+    if (which === 'val') switchTab('val');
+    else if (which === 'checklist') switchTab('checklist');
+    return;
+  }
+  if (which === 'val') {
+    prefillVal(L.make, L.model, L.year, L.aircraftType || '', L.numEngines || '', L.engineMake || '', L.engineModel || '');
+    switchTab('val');
+    return;
+  }
+  if (which === 'checklist') {
+    prefillCl(L.make, L.model, L.year, L.engineMake || '', L.engineModel || '', L.aircraftType || '', L.numEngines || '');
+    switchTab('checklist');
+  }
+}
+
 function prefillVal(make, model, year, aircraftType, numEngines, engMake, engModel) {
-window._valEngMake = engMake || "";window._valEngModel = engModel || "";
 resetForm();
+window._valEngMake = engMake || "";
+window._valEngModel = engModel || "";
 var ed=document.getElementById("v-engine-display");if(ed)ed.value=((engMake||"")+" "+(engModel||"")).trim();
-document.getElementById('v-make').value = make;
-document.getElementById('v-model').value = model;
-document.getElementById('v-year').value = year;
-if ((aircraftType && aircraftType.toLowerCase().indexOf('multi') >= 0) || numEngines > 1) {
+document.getElementById('v-make').value = make || '';
+document.getElementById('v-model').value = model || '';
+document.getElementById('v-year').value = year || '';
+if ((aircraftType && aircraftType.toLowerCase().indexOf('multi') >= 0) || Number(numEngines) > 1) {
 var sel = document.getElementById('v-engines');
 if (sel) { sel.value = '2'; toggleEngineFields(); }
 }
@@ -1985,17 +2018,21 @@ function prefillCl(make, model, year, eng, engModel, acType, numEng) {
 window._engModel = engModel || '';
 window._acType = acType || '';
 window._numEng = numEng || '';
-document.getElementById('cl-make').value = make;
-document.getElementById('cl-model').value = model;
-document.getElementById('cl-year').value = year;
+document.getElementById('cl-make').value = make || '';
+document.getElementById('cl-model').value = model || '';
+document.getElementById('cl-year').value = year || '';
+var sel = document.getElementById('cl-eng');
+if (sel) sel.value = '';
 if (eng) {
-  var e = eng.toUpperCase();
-  var sel = document.getElementById('cl-eng');
-  if (e.indexOf('LYCOMING') >= 0) sel.value = 'Lycoming';
-  else if (e.indexOf('CONT') >= 0) sel.value = 'Continental';
-  else if (e.indexOf('ROTAX') >= 0) sel.value = 'Rotax (LSA)';
-  else if (e.indexOf('TURB') >= 0 || e.indexOf('PT6') >= 0 || e.indexOf('PRATT') >= 0 || e.indexOf('GARRETT') >= 0) sel.value = 'Turboprop';
-  else sel.value = 'Other / unknown';
+  var e = String(eng).toUpperCase();
+  if (sel) {
+    if (e.indexOf('LYCOMING') >= 0) sel.value = 'Lycoming';
+    else if (e.indexOf('CONT') >= 0) sel.value = 'Continental';
+    else if (e.indexOf('ROTAX') >= 0) sel.value = 'Rotax (LSA)';
+    else if (e.indexOf('DELTA') >= 0 || e.indexOf('DIESEL') >= 0 || e.indexOf('AUSTRO') >= 0 || e.indexOf('CD-') >= 0) sel.value = 'DeltaHawk / diesel';
+    else if (e.indexOf('TURB') >= 0 || e.indexOf('PT6') >= 0 || e.indexOf('PRATT') >= 0 || e.indexOf('GARRETT') >= 0) sel.value = 'Turboprop';
+    else sel.value = 'Other / unknown';
+  }
 }
 }
 
