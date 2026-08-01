@@ -173,9 +173,6 @@ function detectEngineConversion(d: {
   return null
 }
 
-/** @deprecated use detectEngineConversion — kept only for naming clarity in comments */
-type Io550ConversionKind = 'stc' | 'turbo_norm'
-
 /** Engine STC premium scales with HP step and remaining engine life. */
 function engineConversionPremium(
   kind: EngineConversionKind,

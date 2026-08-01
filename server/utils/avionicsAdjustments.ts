@@ -74,6 +74,8 @@ export const AVIONICS_ROWS: AvionicsRow[] = [
 
   // Transponder / ADS-B
   { item: 'Garmin GTX 345 (1090ES In/Out)', category: 'ADS-B', installedCost: 6500, retainedNew: 0.45, annualDecay: 0.07, floorPct: 0.2, yearsSinceInstall: 4, lpvWaas: false, adsbOut: true, adsbIn: true, coupledAp: false, glassPfd: false, aliases: ['GTX 345 ADS-B'] },
+  { item: 'Garmin GTX 335 (Out only)', category: 'ADS-B', installedCost: 5000, retainedNew: 0.42, annualDecay: 0.07, floorPct: 0.18, yearsSinceInstall: 4, lpvWaas: false, adsbOut: true, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['GTX 335 ADS-B', 'Garmin GTX 335', 'GTX 335'] },
+  { item: 'Garmin GTX 330 ES (Out / 1090ES)', category: 'ADS-B', installedCost: 4500, retainedNew: 0.4, annualDecay: 0.07, floorPct: 0.18, yearsSinceInstall: 6, lpvWaas: false, adsbOut: true, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['GTX 330 ES ADS-B', 'GTX 330 ES', 'Garmin GTX 330 ES', 'GTX330ES'] },
   { item: 'Garmin GDL 88 (978 In/Out)', category: 'ADS-B', installedCost: 4500, retainedNew: 0.35, annualDecay: 0.08, floorPct: 0.15, yearsSinceInstall: 8, lpvWaas: false, adsbOut: true, adsbIn: true, coupledAp: false, glassPfd: false, aliases: ['Garmin GDL 88'] },
   { item: 'ADS-B Out (generic)', category: 'ADS-B', installedCost: 5000, retainedNew: 0.42, annualDecay: 0.07, floorPct: 0.18, yearsSinceInstall: 4, lpvWaas: false, adsbOut: true, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['ADS-B Out'] },
 

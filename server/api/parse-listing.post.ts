@@ -15,6 +15,7 @@ const listingSchema = z.object({
   smohR: z.number().nullable(),
   propHrs: z.number().nullable(),
   propHrsR: z.number().nullable(),
+  askingPrice: z.number().nullable(),
   condition: z.string().nullable(),
   cosmetics: z.string().nullable(),
   avionics: z.array(z.string()).nullable(),
@@ -29,8 +30,15 @@ export default defineEventHandler(async (event) => {
 
   const txt = parsed.data.text.substring(0, 5000)
   const prompt =
-    'Parse this aircraft listing and extract structured data. Use null for any unknown field. ' +
-    'Example shape: {"make":"BEECH","model":"B58","year":1981,"ttaf":4673,"engines":2,"smoh":0,"smohR":0,"propHrs":689,"propHrsR":689,"condition":"Good","cosmetics":"Average","avionics":["GTX345","KFC200","GNS480","A/C","TAWS"],"notes":"RAM engines, Bose LEMO jacks, dual Insight G2 monitors"}\n\n' +
+    'Parse this aircraft listing and extract structured data. Use null for any unknown field.\n' +
+    'Field rules:\n' +
+    '- askingPrice: the advertised asking / list price in whole USD dollars (e.g. $279,000 → 279000). Ignore monthly financing quotes.\n' +
+    '- propHrs / propHrsR: propeller time since overhaul (also labeled SPOH, TSOH, TSPOH, prop SMOH, hours since prop OH). For singles use propHrs; for twins use left=propHrs and right=propHrsR.\n' +
+    '- smoh / smohR: engine time since major overhaul (SMOH / TSMOH). Twins: left=smoh, right=smohR.\n' +
+    '- ttaf: total airframe time.\n' +
+    '- engines: 1 or 2 when clear.\n' +
+    '- avionics[]: equipment tokens including transponders (GTX 330 ES, GTX 335, GTX 345), GPS/NAV/COM, autopilots, engine monitors.\n' +
+    'Example shape: {"make":"BEECH","model":"B58","year":1981,"ttaf":4673,"engines":2,"smoh":0,"smohR":0,"propHrs":689,"propHrsR":689,"askingPrice":279000,"condition":"Good","cosmetics":"Average","avionics":["GTX345","KFC200","GNS480","A/C","TAWS"],"notes":"RAM engines, Bose LEMO jacks, dual Insight G2 monitors"}\n\n' +
     'In avionics[], include comfort/safety tokens when mentioned: A/C or air conditioning; FIKI (certified known ice) vs inadvertent/known-ice TKS separately; AOA; TAWS; synthetic vision/SVT; Oshkosh or EAA award winner.\n\n' +
     'LISTING:\n' +
     txt
@@ -40,6 +48,7 @@ export default defineEventHandler(async (event) => {
     schema: listingSchema,
     prompt,
     maxOutputTokens: 1000,
+    temperature: 0,
   })
 
   return object
