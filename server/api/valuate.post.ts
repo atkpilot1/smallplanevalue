@@ -2,9 +2,8 @@ import { z } from 'zod'
 import { generateText, stepCountIs, tool } from 'ai'
 import { findComparables, formatComparables } from '../data/aircraftDb'
 import {
-  countValuationsThisMonth,
+  assertCanValuate,
   recordValuationUsage,
-  FREE_VALUATIONS_PER_MONTH,
   VALUATION_LIMITS_ENABLED,
 } from '../utils/valuationAccess'
 import { engineAdjustment } from '../utils/valuationEngine'
@@ -352,13 +351,22 @@ export default defineEventHandler(async (event) => {
   }
   const clientId = (d.clientId || '').trim()
 
-  if (VALUATION_LIMITS_ENABLED && clientId) {
-    const used = await countValuationsThisMonth(clientId)
-    if (used >= FREE_VALUATIONS_PER_MONTH) {
+  let accessVia: 'beta' | 'free' | 'credit' | 'blocked' = 'beta'
+  if (VALUATION_LIMITS_ENABLED) {
+    const access = await assertCanValuate(clientId)
+    accessVia = access.via
+    if (!access.ok) {
       throw createError({
         statusCode: 402,
         statusMessage: 'limit_reached',
-        data: { code: 'limit_reached', requiresEmail: !d.email },
+        data: {
+          code: 'limit_reached',
+          requiresPurchase: true,
+          packs: [
+            { id: 'single', price: 24, credits: 1 },
+            { id: 'fivepack', price: 79, credits: 5 },
+          ],
+        },
       })
     }
   }
@@ -609,6 +617,7 @@ export default defineEventHandler(async (event) => {
       make: d.make,
       model: d.model,
       year: d.year || null,
+      accessVia,
     })
   }
 

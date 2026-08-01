@@ -534,6 +534,9 @@ transition: background .1s;
 }
 .out-of-annual-label input { width: 16px; height: 16px; accent-color: var(--danger); }
 .val-free-note { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.pricing-packs { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(19,64,116,0.1); }
+.pricing-packs-lead { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
+.pricing-pack-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .share-pilot-box {
   background: rgba(19,64,116,0.05); border: 1px solid rgba(19,64,116,0.12);
   border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 1.25rem;
@@ -1552,7 +1555,15 @@ ENGINE TIMES
 <p class="partner-tip" id="v-partner-tip"></p>
 </div>
 <div id="v-result"></div>
-<p class="val-free-note" id="v-free-note">Free beta — unlimited valuations while we gather pilot feedback.</p>
+<p class="val-free-note" id="v-free-note">Free beta — unlimited valuations while we gather pilot feedback. Paid packs are ready when limits turn on.</p>
+<div class="pricing-packs" id="pricing-packs">
+  <p class="pricing-packs-lead">Need more depth later? Buy credits anytime:</p>
+  <div class="pricing-pack-row">
+    <button type="button" class="share-btn" onclick="startCheckout('single')"><strong>$24</strong> — 1 full valuation</button>
+    <button type="button" class="share-btn" onclick="startCheckout('fivepack')"><strong>$79</strong> — 5 valuations</button>
+  </div>
+  <p class="share-copy-msg" id="checkout-msg"></p>
+</div>
 </div>
 
 <!-- MARKET COMPS -->
@@ -1868,6 +1879,65 @@ function fallbackCopy(text, msgEl) {
 }
 
 initShareLinks();
+
+async function startCheckout(pack) {
+  var msg = document.getElementById('checkout-msg');
+  if (msg) { msg.style.color = 'var(--muted)'; msg.textContent = 'Opening secure Stripe checkout…'; }
+  try {
+    var data = await apiPost('/api/checkout', {
+      pack: pack,
+      clientId: getOrCreateClientId(),
+      email: getValuationEmail() || null
+    });
+    if (data && data.url) {
+      window.location.href = data.url;
+      return;
+    }
+    throw new Error('No checkout URL returned');
+  } catch (e) {
+    console.error('Checkout failed:', e);
+    if (msg) {
+      msg.style.color = 'var(--danger)';
+      msg.textContent = (e && e.message) ? e.message : 'Checkout failed — try again shortly.';
+    }
+  }
+}
+
+async function handleCheckoutReturn() {
+  try {
+    var params = new URLSearchParams(window.location.search || '');
+    var status = params.get('checkout');
+    var sessionId = params.get('session_id');
+    var msg = document.getElementById('checkout-msg');
+    var note = document.getElementById('v-free-note');
+    if (!status) return;
+    if (status === 'cancel') {
+      if (msg) { msg.style.color = 'var(--muted)'; msg.textContent = 'Checkout canceled — no charge.'; }
+    } else if (status === 'success' && sessionId) {
+      if (msg) { msg.style.color = 'var(--muted)'; msg.textContent = 'Confirming payment…'; }
+      var conf = await apiPost('/api/checkout-confirm', {
+        sessionId: sessionId,
+        clientId: getOrCreateClientId()
+      });
+      if (msg) {
+        msg.style.color = 'var(--success)';
+        msg.textContent = 'Payment received — ' + (conf.balance != null ? conf.balance + ' credit(s) ready.' : 'credits added.');
+      }
+      if (note) note.textContent = 'Credits available: ' + (conf.balance != null ? conf.balance : 'ready') + '. Limits stay off during free beta; credits carry when paid mode turns on.';
+    }
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState({}, '', window.location.pathname || '/');
+    }
+  } catch (e) {
+    console.error('Checkout confirm failed:', e);
+    var m = document.getElementById('checkout-msg');
+    if (m) {
+      m.style.color = 'var(--danger)';
+      m.textContent = 'Payment may have succeeded — refresh in a moment if credits do not show.';
+    }
+  }
+}
+handleCheckoutReturn();
 
 /** Trusted partners — add an object to show another tip during valuation search. */
 var TRUSTED_PARTNERS = [
@@ -2586,7 +2656,17 @@ renderVal(v,make,model,year);
 trackEvent('valuation_completed', { make: make, model: model });
 } catch(e) {
     console.error('Valuation error:', e);
-    document.getElementById('v-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed: ' + (e.message || e) + '</p>';
+    if (e && (e.status === 402 || e.code === 'limit_reached')) {
+      document.getElementById('v-result').innerHTML =
+        '<div style="margin-top:1rem;padding:14px 16px;border:1px solid rgba(19,64,116,0.18);border-radius:8px;background:rgba(19,64,116,0.04)">' +
+        '<p style="margin:0 0 10px;font-size:14px;color:var(--navy)"><strong>Free valuation used for this month.</strong> Buy a report to continue — $24 for one, or $79 for five.</p>' +
+        '<div class="pricing-pack-row">' +
+        '<button type="button" class="share-btn" onclick="startCheckout(\'single\')"><strong>$24</strong> — 1 valuation</button>' +
+        '<button type="button" class="share-btn" onclick="startCheckout(\'fivepack\')"><strong>$79</strong> — 5 valuations</button>' +
+        '</div></div>';
+    } else {
+      document.getElementById('v-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed: ' + (e.message || e) + '</p>';
+    }
 }
 setLoading('v-spin','v-btn',false);
 }
