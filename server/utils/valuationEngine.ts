@@ -142,6 +142,7 @@ export const AVIONICS: AvionicsRow[] = [
 
   { id: 'xpdr_gtx345', category: 'Transponder/ADS-B', item: 'Garmin GTX 345 (In/Out)', cost: 6500, retained: 0.45, decay: 0.07, floor: 0.20, years: 4, lpv: 0, adsbOut: 1, adsbIn: 1, coupledAP: 0, glass: 0 },
   { id: 'xpdr_gtx335', category: 'Transponder/ADS-B', item: 'Garmin GTX 335 (Out only)', cost: 5000, retained: 0.42, decay: 0.07, floor: 0.18, years: 4, lpv: 0, adsbOut: 1, adsbIn: 0, coupledAP: 0, glass: 0 },
+  { id: 'xpdr_gtx330es', category: 'Transponder/ADS-B', item: 'Garmin GTX 330 ES (Out / 1090ES)', cost: 4500, retained: 0.40, decay: 0.07, floor: 0.18, years: 6, lpv: 0, adsbOut: 1, adsbIn: 0, coupledAP: 0, glass: 0 },
   { id: 'adsb_gdl82', category: 'Transponder/ADS-B', item: 'Garmin GDL 82 (978 Out)', cost: 3500, retained: 0.38, decay: 0.08, floor: 0.15, years: 4, lpv: 0, adsbOut: 1, adsbIn: 0, coupledAP: 0, glass: 0 },
   { id: 'adsb_gdl88', category: 'Transponder/ADS-B', item: 'Garmin GDL 88 (978 In/Out)', cost: 4500, retained: 0.35, decay: 0.08, floor: 0.15, years: 8, lpv: 0, adsbOut: 1, adsbIn: 1, coupledAP: 0, glass: 0 },
 

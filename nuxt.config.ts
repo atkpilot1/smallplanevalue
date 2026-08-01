@@ -14,9 +14,17 @@ export default defineNuxtConfig({
     anthropicApiKey: process.env.ANTHROPIC_API_KEY,
     supabaseUrl: process.env.SUPABASE_URL,
     supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+    stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+    stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+    stripePriceSingle: process.env.STRIPE_PRICE_SINGLE,
+    stripePriceFivepack: process.env.STRIPE_PRICE_FIVEPACK,
+    siteUrl: process.env.SITE_URL || 'https://www.smallplanevalue.com',
     // Model selection (overridable via env)
     modelMain: process.env.SPV_MODEL_MAIN || 'claude-sonnet-4-6',
     modelFast: process.env.SPV_MODEL_FAST || 'claude-haiku-4-5-20251001',
+    public: {
+      stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY || '',
+    },
   },
 
   app: {

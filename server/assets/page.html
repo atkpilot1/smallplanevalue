@@ -534,6 +534,9 @@ transition: background .1s;
 }
 .out-of-annual-label input { width: 16px; height: 16px; accent-color: var(--danger); }
 .val-free-note { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.pricing-packs { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(19,64,116,0.1); }
+.pricing-packs-lead { font-size: 13px; color: var(--muted); margin: 0 0 8px; }
+.pricing-pack-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .share-pilot-box {
   background: rgba(19,64,116,0.05); border: 1px solid rgba(19,64,116,0.12);
   border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 1.25rem;
@@ -754,6 +757,97 @@ margin-top: 1.5rem;
 .action-btn { background: none; border: 1px solid rgba(11,37,69,0.12); border-radius: var(--radius); padding: 10px 8px; font-size: 13px; cursor: pointer; color: var(--sky); display: flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--body); transition: background .1s; }
 .action-btn:hover { background: rgba(11,37,69,0.05); }
 
+/* ── compare options ─────────────────────────────────── */
+.compare-wrap { margin-top: 2.5rem; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.compare-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--white);
+  border: 1px solid rgba(11,37,69,0.1);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.compare-table th,
+.compare-table td {
+  padding: 14px 16px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(11,37,69,0.08);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--sky);
+}
+.compare-table thead th {
+  background: var(--sky);
+  color: rgba(247,245,240,0.72);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: none;
+}
+.compare-table thead th.compare-ours {
+  color: var(--accent);
+}
+.compare-table tbody th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  width: 110px;
+  background: rgba(11,37,69,0.02);
+}
+.compare-table td.compare-ours {
+  background: rgba(232,160,32,0.07);
+  font-weight: 500;
+}
+.compare-table tbody tr:last-child th,
+.compare-table tbody tr:last-child td { border-bottom: none; }
+.compare-name {
+  display: block;
+  font-family: var(--display);
+  font-size: 18px;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  text-transform: none;
+  margin-bottom: 2px;
+}
+.compare-ours .compare-name { color: var(--accent); }
+.compare-role {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: rgba(247,245,240,0.55);
+  line-height: 1.4;
+}
+.compare-partner {
+  margin-top: 1.5rem;
+  padding: 18px 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(11,37,69,0.1);
+  background: linear-gradient(135deg, rgba(19,64,116,0.04), rgba(232,160,32,0.08));
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.compare-partner-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sky);
+  margin-bottom: 4px;
+}
+.compare-partner-text {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.compare-partner-text a { color: var(--sky-light); }
+
 /* ── animations ──────────────────────────────────────── */
 @keyframes fadeUp {
 from { opacity: 0; transform: translateY(20px); }
@@ -774,6 +868,7 @@ nav { padding: 0 1.5rem; }
 .nav-links { display: none; }
 .hero-content, .showcase { padding-left: 1.5rem; padding-right: 1.5rem; }
 .footer-links { display: none; }
+.compare-partner { flex-direction: column; gap: 8px; }
 }
 </style>
 <!-- Google tag (gtag.js) -->
@@ -809,6 +904,7 @@ SmallPlane<span class="accent">Value</span>
 </a>
 <div class="nav-links">
 <a href="#tools">Tools</a>
+<a href="#compare">Compare</a>
 <a href="#how-it-works">How it works</a>
 <a href="#aircraft-types">Aircraft types</a>
 <a href="#app">Get a valuation</a>
@@ -836,10 +932,10 @@ Real asking price ranges for piston singles, twins, LSA, and experimental aircra
 <p class="hero-compare">Unlike index tools or 20-page reports — built for the listing you're looking at right now.</p>
 <div class="hero-actions">
 <a href="#app" class="btn-primary">
-<i class="ti ti-calculator"></i> Get a free valuation
+<i class="ti ti-calculator"></i> Try a valuation
 </a>
-<a href="#how-it-works" class="btn-ghost">
-<i class="ti ti-info-circle"></i> How it works
+<a href="#compare" class="btn-ghost">
+<i class="ti ti-arrows-diff"></i> Compare options
 </a>
 </div>
 <div class="hero-stats">
@@ -852,8 +948,8 @@ Real asking price ranges for piston singles, twins, LSA, and experimental aircra
 <div class="hero-stat-lbl">Powered estimates</div>
 </div>
 <div>
-<div class="hero-stat-val">100%</div>
-<div class="hero-stat-lbl">Free to use</div>
+<div class="hero-stat-val">Try</div>
+<div class="hero-stat-lbl">Free, then pay-per-use</div>
 </div>
 <div>
 <div class="hero-stat-val">0</div>
@@ -876,7 +972,7 @@ Real asking price ranges for piston singles, twins, LSA, and experimental aircra
 <div class="reveal">
 <div class="section-kicker">Why SmallPlaneValue</div>
 <h2 class="section-h2">Built for GA, not<br>jet brokers.</h2>
-<p class="section-body">Vref and Aircraft Bluebook focus on larger turbine aircraft. We built the tool that actually works for piston singles, twins, LSA, and experimental aircraft — the planes most pilots actually fly.</p>
+<p class="section-body">Built for piston singles, twins, LSA, and experimental aircraft — the planes most pilots actually fly. A negotiation brief for the listing in front of you, not a jet-broker appraisal stack.</p>
 </div>
 <div class="why-grid reveal" style="transition-delay:.1s">
 <div class="why-card">
@@ -898,8 +994,73 @@ Real asking price ranges for piston singles, twins, LSA, and experimental aircra
 </div>
 </section>
 
+<!-- COMPARE OPTIONS -->
+<section id="compare" style="background:var(--offwhite); padding:80px 5vw;">
+<div style="max-width:1200px; margin:0 auto;">
+<div class="reveal">
+<div class="section-kicker">Compare your options</div>
+<h2 class="section-h2">Different tools.<br>Different jobs.</h2>
+<p class="section-body">No trash-talk — pick the right tool for the job. SmallPlaneValue is the negotiation brief for the listing you’re looking at right now.</p>
+</div>
+<div class="compare-wrap reveal" style="transition-delay:.1s">
+<table class="compare-table">
+<thead>
+<tr>
+<th scope="col"><span class="compare-name">FindAircraft</span><span class="compare-role">Find the plane</span></th>
+<th scope="col"><span class="compare-name">VREF</span><span class="compare-role">Formal appraisal values</span></th>
+<th scope="col"><span class="compare-name">Windsock</span><span class="compare-role">Paid valuation report</span></th>
+<th scope="col" class="compare-ours"><span class="compare-name">SmallPlaneValue</span><span class="compare-role">Negotiation brief</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Best for</th>
+<td>Brokers &amp; shoppers scanning the market</td>
+<td>Lenders, insurers, estates — defensible values</td>
+<td>Owners who want a polished AI report (AOPA partner)</td>
+<td class="compare-ours">Pilots deciding what to offer on <em>this</em> listing</td>
+</tr>
+<tr>
+<th scope="row">You get</th>
+<td>Listings, market intel, alerts, accident/FAA context</td>
+<td>Opinion-of-value / USPAP-style appraisal products</td>
+<td>Account-based Verified Value report + deep dives</td>
+<td class="compare-ours">Ask / fair-market / buyer target + pre-buy checklist</td>
+</tr>
+<tr>
+<th scope="row">Honest fit</th>
+<td>Strong on “what’s for sale / what sold”</td>
+<td>Transaction-grounded, bank-grade methodology</td>
+<td>Strong report product + institutional distribution</td>
+<td class="compare-ours">GA sold prices aren’t public — no fabricated sold comps</td>
+</tr>
+<tr>
+<th scope="row">Pricing</th>
+<td>Account / research product</td>
+<td>Paid reports &amp; memberships</td>
+<td>Paid reports (member credits via AOPA)</td>
+<td class="compare-ours">A few free to try, then ~$24 / report or a 5-pack</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="compare-partner reveal" style="transition-delay:.15s">
+<i class="ti ti-notebook" style="font-size:22px;color:var(--accent);flex-shrink:0;margin-top:1px"></i>
+<div>
+<div class="compare-partner-title">Trusted partner — AirLogbooks</div>
+<div class="compare-partner-text">Digitized aircraft logbooks make records easier to verify, help protect value, and often make a plane easier to sell. We handle the price brief; they handle the paper trail. <a href="https://airlogbooks.com/?utm_source=smallplanevalue&amp;utm_medium=partner&amp;utm_campaign=compare" target="_blank" rel="noopener noreferrer">airlogbooks.com</a></div>
+</div>
+</div>
+<div class="reveal" style="margin-top:1.75rem;transition-delay:.2s">
+<a href="#app" class="btn-primary" style="display:inline-flex">
+<i class="ti ti-calculator"></i> Try a valuation
+</a>
+</div>
+</div>
+</section>
+
 <!-- HOW IT WORKS -->
-<section id="how-it-works" style="background:var(--offwhite); padding:80px 5vw;">
+<section id="how-it-works" style="background:var(--white); padding:80px 5vw;">
 <div style="max-width:1200px; margin:0 auto;">
 <div class="reveal">
 <div class="section-kicker">How it works</div>
@@ -1035,13 +1196,13 @@ Real asking price ranges for piston singles, twins, LSA, and experimental aircra
 <button class="tab-btn active" id="tab-btn-lookup" onclick="switchTab('lookup')">
 <i class="ti ti-id"></i> N-number lookup
 </button>
-<button class="tab-btn highlight" id="tab-btn-val" onclick="if(window._lastLookup){prefillVal(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.aircraftType||'',window._lastLookup.numEngines||'',window._lastLookup.engineMake||'',window._lastLookup.engineModel||'');}switchTab('val');">
+<button class="tab-btn highlight" id="tab-btn-val" onclick="prefillFromLookup('val');">
 <i class="ti ti-calculator"></i> Get valuation
 </button>
 <button class="tab-btn" id="tab-btn-comps" onclick="if(window._lastLookup){var ci=document.getElementById('c-model');if(ci)ci.value=window._lastLookup.make+' '+window._lastLookup.model;}switchTab('comps')">
 <i class="ti ti-search"></i> Market listings
 </button>
-<button class="tab-btn" id="tab-btn-checklist" onclick="if(window._lastLookup){prefillCl(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.engineMake||'',window._lastLookup.engineModel||'',window._lastLookup.aircraftType||'',window._lastLookup.numEngines||'');}switchTab('checklist')">
+<button class="tab-btn" id="tab-btn-checklist" onclick="prefillFromLookup('checklist');">
 <i class="ti ti-clipboard-check"></i> Pre-buy checklist
 </button>
 <button class="tab-btn highlight" id="tab-btn-sold" onclick="switchTab('sold')">
@@ -1100,7 +1261,7 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 <div class="form-grid-3">
 <div class="form-group"><label>YEAR</label><input type="number" id="v-year" placeholder="e.g. 1969" min="1930" max="2026" oninput="toggleCirrusGen()" /></div>
 <div class="form-group"><label>LAST ANNUAL</label><div style="display:flex;gap:6px;width:100%"><select id="v-annual-month" style="flex:1"><option value="">Month</option><option value="01">January</option><option value="02">February</option><option value="03">March</option><option value="04">April</option><option value="05">May</option><option value="06">June</option><option value="07">July</option><option value="08">August</option><option value="09">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select><select id="v-annual-year" style="flex:1"><option value="">Year</option></select></div><label class="chk-label out-of-annual-label"><input type="checkbox" id="v-out-of-annual" /> <i class="ti ti-alert-triangle" style="font-size:15px"></i> Out of annual</label></div>
-<div class="form-group"><label>ENGINE</label><input type="text" id="v-engine-display" placeholder="From N-number lookup" readonly style="background:var(--offwhite);color:var(--muted)" /></div>
+<div class="form-group"><label>ENGINE</label><input type="text" id="v-engine-display" placeholder="From N-number lookup" readonly autocomplete="off" style="background:var(--offwhite);color:var(--muted)" /></div>
 <div class="form-group"><label>ASKING PRICE ($)</label><input type="number" id="v-asking" placeholder="e.g. 299000" /></div>
 <div class="form-group"><label>TOTAL TIME (TTAF HRS)</label><input type="number" id="v-ttaf" placeholder="e.g. 3200" /></div>
 <div class="form-group"><label>ENGINES</label>
@@ -1134,7 +1295,16 @@ ENGINE TIMES
 <div class="engine-section-body">
 <div class="form-grid-2" style="margin-bottom:10px">
 <div class="form-group"><label style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span>RECOMMENDED TBO (HRS)</span><button type="button" id="v-tbo-reset" class="tbo-reset-btn" onclick="resetTboAuto()" style="display:none">Use auto</button></label><select id="v-tbo" onchange="onTboOverride()"><option value="1500">1,500 hrs</option><option value="1600">1,600 hrs</option><option value="1700">1,700 hrs</option><option value="1800">1,800 hrs</option><option value="1900">1,900 hrs</option><option value="2000" selected>2,000 hrs</option><option value="2100">2,100 hrs</option><option value="2200">2,200 hrs</option></select></div>
-<div class="form-group"><label>ENGINE CONVERSION / STC</label><input type="text" id="v-eng-conv" placeholder="e.g. IO-550 conversion, RAM, tip tanks..." oninput="refreshEngineLife()" /></div>
+<div class="form-group"><label>ENGINE CONVERSION / STC</label>
+<select id="v-eng-stc-preset" onchange="applyEngStcPreset()" style="margin-bottom:6px">
+<option value="">Common engine STCs (optional)…</option>
+<option value="IO-520 conversion (285 HP)">IO-520 STC — 285 HP (e.g. B55 from IO-470)</option>
+<option value="IO-550 conversion (300 HP)">IO-550 STC — 300 HP (Bonanza / early B58)</option>
+<option value="IO-550 conversion (300 HP) twin">IO-550 STC — 300 HP twin (Baron)</option>
+<option value="Turbonormalized IO-550 (Tornado Alley)">Turbonormalized IO-550 (Tornado Alley / similar)</option>
+<option value="Other / see notes">Other — type details below</option>
+</select>
+<input type="text" id="v-eng-conv" placeholder="e.g. IO-550 300 HP STC, RAM, tip tanks..." autocomplete="off" oninput="refreshEngineLife()" /></div>
 </div>
 
 <!-- Single engine fields -->
@@ -1235,8 +1405,8 @@ ENGINE TIMES
 <div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> BASIC / LEGACY</div>
 <div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
 <label class="chk-label"><input type="checkbox" id="av-sixpack" /> Standard six pack (steam gauges)</label>
-<label class="chk-label"><input type="checkbox" id="av-nav1" /> Single NAV/COM</label>
-<label class="chk-label"><input type="checkbox" id="av-nav2" /> Dual NAV/COM</label>
+<label class="chk-label"><input type="checkbox" id="av-nav1" /> Single NAV/COM <span style="font-weight:400;color:var(--muted);font-size:11px">(legacy only — skip if GTN/GNS listed)</span></label>
+<label class="chk-label"><input type="checkbox" id="av-nav2" /> Dual NAV/COM <span style="font-weight:400;color:var(--muted);font-size:11px">(legacy only — skip if GTN/GNS listed)</span></label>
 <label class="chk-label"><input type="checkbox" id="av-adf" /> ADF</label>
 <label class="chk-label"><input type="checkbox" id="av-dme" /> DME</label>
 <label class="chk-label"><input type="checkbox" id="av-kx155" /> King KX-155/165</label>
@@ -1262,6 +1432,7 @@ ENGINE TIMES
 <label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gtn750xi" /> GTN 750Xi <select id="av-gtn750xi-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
 <label class="chk-label"><input type="checkbox" id="av-gps175" /> GPS 175</label>
 <label class="chk-label"><input type="checkbox" id="av-gnx375" /> GNX 375</label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gnc355" /> GNC 355 (GPS/COM, no VOR/LOC/GS) <select id="av-gnc355-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
 <label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gnc255" /> GNC 255 (NAV/COM) <select id="av-gnc255-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
 <label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gtr205" /> GTR 205 (COM radio) <select id="av-gtr205-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
 <label class="chk-label"><input type="checkbox" id="av-gfc500" /> GFC 500 autopilot</label>
@@ -1276,6 +1447,8 @@ ENGINE TIMES
 <label class="chk-label"><input type="checkbox" id="av-gma350" /> GMA 350/35c audio panel</label>
 <label class="chk-label"><input type="checkbox" id="av-gi275-standby" /> GI 275 standby instrument</label>
 <label class="chk-label"><input type="checkbox" id="av-gtx345" /> GTX 345 (ADS-B In/Out transponder)</label>
+<label class="chk-label"><input type="checkbox" id="av-gtx335" /> GTX 335 (ADS-B Out only)</label>
+<label class="chk-label"><input type="checkbox" id="av-gtx330es" /> GTX 330 ES (ADS-B Out / 1090ES)</label>
 <label class="chk-label"><input type="checkbox" id="av-radar-garmin" /> GWX 68/70/75/80 weather radar</label>
 <label class="chk-label"><input type="checkbox" id="av-garmin-eis" /> GI 275 EIS / TXi EIS engine monitor</label>
 </div>
@@ -1347,6 +1520,9 @@ ENGINE TIMES
 <label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-ei-cgr" /> EI CGR-30P <select id="av-ei-cgr-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option><option value="3">x3</option></select></label>
 <label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-ei-other" /> EI (other) <select id="av-ei-other-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option><option value="3">x3</option></select></label>
 <label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-jpi" /> JPI EDM 700/800/900 <select id="av-jpi-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option><option value="3">x3</option></select></label>
+<label class="chk-label"><input type="checkbox" id="av-xerion-2100" /> Xerion Auracle CRM-2100 (single)</label>
+<label class="chk-label"><input type="checkbox" id="av-xerion-2101" /> Xerion Auracle CRM-2101 (single)</label>
+<label class="chk-label"><input type="checkbox" id="av-xerion-2120" /> Xerion Auracle CRM-2120 (twin)</label>
 </div>
 <div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> OTHER</div>
 <div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
@@ -1379,7 +1555,15 @@ ENGINE TIMES
 <p class="partner-tip" id="v-partner-tip"></p>
 </div>
 <div id="v-result"></div>
-<p class="val-free-note" id="v-free-note">Free beta — unlimited valuations while we gather pilot feedback.</p>
+<p class="val-free-note" id="v-free-note">Free beta — unlimited valuations while we gather pilot feedback. Paid packs are ready when limits turn on.</p>
+<div class="pricing-packs" id="pricing-packs">
+  <p class="pricing-packs-lead">Need more depth later? Buy credits anytime:</p>
+  <div class="pricing-pack-row">
+    <button type="button" class="share-btn" onclick="startCheckout('single')"><strong>$24</strong> — 1 full valuation</button>
+    <button type="button" class="share-btn" onclick="startCheckout('fivepack')"><strong>$79</strong> — 5 valuations</button>
+  </div>
+  <p class="share-copy-msg" id="checkout-msg"></p>
+</div>
 </div>
 
 <!-- MARKET COMPS -->
@@ -1432,8 +1616,9 @@ ENGINE TIMES
 <div class="form-group"><label>YEAR</label><input type="number" id="cl-year" placeholder="e.g. 2003" /></div>
 <div class="form-group"><label>ENGINE TYPE</label>
 <select id="cl-eng">
+<option value="">Select engine…</option>
 <option>Lycoming</option><option>Continental</option>
-<option>Rotax (LSA)</option><option>Turboprop</option><option>Other / unknown</option>
+<option>Rotax (LSA)</option><option>DeltaHawk / diesel</option><option>Turboprop</option><option>Other / unknown</option>
 </select>
 </div>
 <div class="form-group"><label>BUYER EXPERIENCE</label>
@@ -1558,9 +1743,11 @@ I confirm this is a real transaction I was involved in. I understand this data i
 <div>
 <div class="footer-logo">SmallPlane<span>Value</span>.com</div>
 <div class="footer-tagline">Honest GA aircraft valuations · Built for pilots, by pilots.</div>
+<div class="footer-tagline" style="margin-top:8px">Help: <a href="mailto:help@smallplanevalue.com" style="color:rgba(255,255,255,0.7);text-decoration:underline;text-underline-offset:2px">help@smallplanevalue.com</a></div>
 </div>
 <div class="footer-links">
 <a href="#tools">Tools</a>
+<a href="#compare">Compare</a>
 <a href="#how-it-works">How it works</a>
 <a href="#aircraft-types">Aircraft types</a>
 <a href="#" id="footer-share-fb" target="_blank" rel="noopener noreferrer">Share on Facebook</a>
@@ -1568,8 +1755,8 @@ I confirm this is a real transaction I was involved in. I understand this data i
 </div>
 </div>
 <div class="footer-bottom">
-<div>© 2025 SmallPlaneValue.com · All rights reserved</div>
-<div>Not affiliated with FAA, Vref, or Aircraft Bluebook</div>
+<div>© 2026 SmallPlaneValue.com · All rights reserved</div>
+<div>Developed by veterans · Not affiliated with FAA, Vref, or Aircraft Bluebook · <a href="mailto:help@smallplanevalue.com" style="color:inherit;text-decoration:underline;text-underline-offset:2px">help@smallplanevalue.com</a></div>
 </div>
 </footer>
 
@@ -1693,6 +1880,65 @@ function fallbackCopy(text, msgEl) {
 
 initShareLinks();
 
+async function startCheckout(pack) {
+  var msg = document.getElementById('checkout-msg');
+  if (msg) { msg.style.color = 'var(--muted)'; msg.textContent = 'Opening secure Stripe checkout…'; }
+  try {
+    var data = await apiPost('/api/checkout', {
+      pack: pack,
+      clientId: getOrCreateClientId(),
+      email: getValuationEmail() || null
+    });
+    if (data && data.url) {
+      window.location.href = data.url;
+      return;
+    }
+    throw new Error('No checkout URL returned');
+  } catch (e) {
+    console.error('Checkout failed:', e);
+    if (msg) {
+      msg.style.color = 'var(--danger)';
+      msg.textContent = (e && e.message) ? e.message : 'Checkout failed — try again shortly.';
+    }
+  }
+}
+
+async function handleCheckoutReturn() {
+  try {
+    var params = new URLSearchParams(window.location.search || '');
+    var status = params.get('checkout');
+    var sessionId = params.get('session_id');
+    var msg = document.getElementById('checkout-msg');
+    var note = document.getElementById('v-free-note');
+    if (!status) return;
+    if (status === 'cancel') {
+      if (msg) { msg.style.color = 'var(--muted)'; msg.textContent = 'Checkout canceled — no charge.'; }
+    } else if (status === 'success' && sessionId) {
+      if (msg) { msg.style.color = 'var(--muted)'; msg.textContent = 'Confirming payment…'; }
+      var conf = await apiPost('/api/checkout-confirm', {
+        sessionId: sessionId,
+        clientId: getOrCreateClientId()
+      });
+      if (msg) {
+        msg.style.color = 'var(--success)';
+        msg.textContent = 'Payment received — ' + (conf.balance != null ? conf.balance + ' credit(s) ready.' : 'credits added.');
+      }
+      if (note) note.textContent = 'Credits available: ' + (conf.balance != null ? conf.balance : 'ready') + '. Limits stay off during free beta; credits carry when paid mode turns on.';
+    }
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState({}, '', window.location.pathname || '/');
+    }
+  } catch (e) {
+    console.error('Checkout confirm failed:', e);
+    var m = document.getElementById('checkout-msg');
+    if (m) {
+      m.style.color = 'var(--danger)';
+      m.textContent = 'Payment may have succeeded — refresh in a moment if credits do not show.';
+    }
+  }
+}
+handleCheckoutReturn();
+
 /** Trusted partners — add an object to show another tip during valuation search. */
 var TRUSTED_PARTNERS = [
   {
@@ -1753,6 +1999,9 @@ document.getElementById('cl-result').innerHTML='';
 window._engModel='';
 window._acType='';
 window._numEng='';
+window._valEngMake='';
+window._valEngModel='';
+window._lastLookup=null;
 var raw = document.getElementById('nn').value.trim().toUpperCase();
 if (!raw) { alert('Enter an N-number.'); return; }
 var nnumber = 'N' + raw;
@@ -1771,7 +2020,7 @@ if (d.status !== 'Valid') d.flags.push({ type: 'warn', title: 'Registration: ' +
 
 if (d.error) throw new Error(d.error);
 window._lastLookup = d;
-window._lastLookup = d;
+setEngineFromLookup(d);
 renderLookup(d);
 trackEvent('lookup_success', { source: 'spv' });
 if (d.aircraftType && d.aircraftType.toLowerCase().indexOf('multi') >= 0) {
@@ -1825,8 +2074,8 @@ ${owners}
 </div>
 ${d.adNotes ? `<div style="background:rgba(232,160,32,0.1);border-radius:var(--radius);padding:10px 14px;margin-bottom:1rem;display:flex;gap:10px;align-items:flex-start"><i class="ti ti-tool" style="font-size:16px;color:var(--warn);flex-shrink:0"></i><div style="font-size:13px;color:var(--sky)"><strong>ADs to verify:</strong> ${d.adNotes}</div></div>` : ''}
 <div class="action-row-3">
-<button class="action-btn" onclick="prefillVal('${d.make}','${d.model}','${d.year}','${d.aircraftType||""}',' ${d.numEngines||""}','${d.engineMake||""}','${d.engineModel||""}');switchTab('val')"><i class="ti ti-calculator" style="font-size:15px"></i> Get valuation</button>
-<button class="action-btn" onclick="prefillCl('${d.make}','${d.model}','${d.year}','${d.engineMake}','${d.engineModel}','${d.aircraftType||""}',' ${d.numEngines||""}');switchTab('checklist')"><i class="ti ti-clipboard-check" style="font-size:15px"></i> Pre-buy checklist</button>
+<button class="action-btn" onclick="prefillFromLookup('val')"><i class="ti ti-calculator" style="font-size:15px"></i> Get valuation</button>
+<button class="action-btn" onclick="prefillFromLookup('checklist')"><i class="ti ti-clipboard-check" style="font-size:15px"></i> Pre-buy checklist</button>
 <button class="action-btn" onclick="window.open('https://registry.faa.gov/aircraftinquiry/Search/NNumberInquiry?nNumberTxt=${d.nnumber.replace(/^N/,'')}','_blank')"><i class="ti ti-external-link" style="font-size:15px"></i> FAA website</button>
 </div>
 <div class="note-box" style="margin-top:.75rem">Data sourced from FAA aircraft registry (registry.faa.gov). Owner names are public FAA records.</div>`;
@@ -1844,6 +2093,56 @@ function cleanPastedText(raw) {
     .replace(/  +/g, ' ');
 }
 
+function extractAskingPrice(text) {
+  if (!text) return null;
+  // Prefer explicit ask/list labels; skip Bluebook/VREF/book-value figures.
+  var labeled = text.match(/(?:asking(?:\s*price)?|list(?:ed)?\s*price|sale\s*price|price)\s*[:=]?\s*\$?\s*([\d,]{5,9})/ig);
+  if (labeled) {
+    for (var li = 0; li < labeled.length; li++) {
+      var chunk = labeled[li];
+      if (/bluebook|vref|book\s*value|apprais/i.test(chunk)) continue;
+      var lm = chunk.match(/([\d,]{5,9})/);
+      if (!lm) continue;
+      var ln = parseInt(String(lm[1]).replace(/,/g, ''), 10);
+      if (ln >= 15000 && ln <= 20000000) return ln;
+    }
+  }
+  var dollar = text.match(/\$\s*([\d,]{5,9})\s*(?:USD|U\.S\.D\.|asking|obo|firm)?/i);
+  if (dollar) {
+    var before = text.slice(Math.max(0, dollar.index - 40), dollar.index);
+    if (!/bluebook|vref|book\s*value|apprais|says/i.test(before)) {
+      var dn = parseInt(String(dollar[1]).replace(/,/g, ''), 10);
+      if (dn >= 15000 && dn <= 20000000) return dn;
+    }
+  }
+  var bare = text.match(/\b([\d,]{3},[\d]{3})\b/g);
+  if (bare) {
+    for (var bi = 0; bi < bare.length; bi++) {
+      var idx = text.indexOf(bare[bi]);
+      var ctx = text.slice(Math.max(0, idx - 40), idx + bare[bi].length);
+      if (/bluebook|vref|book\s*value|apprais|says|built|for sale/i.test(ctx)) continue;
+      var bn = parseInt(String(bare[bi]).replace(/,/g, ''), 10);
+      if (bn >= 15000 && bn <= 20000000) return bn;
+    }
+  }
+  return null;
+}
+
+function extractPropHrs(text) {
+  if (!text) return null;
+  var patterns = [
+    /(?:prop(?:eller)?(?:\s*time)?|SPOH|TSOH|TSPOH|PTS[ONH]?|prop\s*SMOH|hours?\s*since\s*prop(?:eller)?\s*(?:OH|overhaul))\s*[:=]?\s*([\d,]{1,5})(?:\s*(?:hrs?|hours))?/i,
+    /([\d,]{1,5})\s*(?:hrs?|hours)?\s*(?:SPOH|TSOH|TSPOH|prop(?:eller)?\s*(?:SMOH|TSOH|OH))/i
+  ];
+  for (var i = 0; i < patterns.length; i++) {
+    var m = text.match(patterns[i]);
+    if (!m) continue;
+    var n = parseInt(String(m[1]).replace(/,/g, ''), 10);
+    if (n >= 0 && n <= 10000) return n;
+  }
+  return null;
+}
+
 async function parseListing() {
 var txt = cleanPastedText(document.getElementById('v-paste').value);
 if (!txt) { alert('Paste a listing first.'); return; }
@@ -1857,8 +2156,8 @@ var L = window._lastLookup || {};
 if (L.make) document.getElementById('v-make').value = L.make;
 if (L.model) document.getElementById('v-model').value = L.model;
 if (L.year) document.getElementById('v-year').value = L.year;
-window._valEngMake = L.engineMake || window._valEngMake || '';
-window._valEngModel = L.engineModel || window._valEngModel || '';
+window._valEngMake = L.engineMake || '';
+window._valEngModel = L.engineModel || '';
 var edp = document.getElementById('v-engine-display');
 if (edp) edp.value = ((window._valEngMake||'') + ' ' + (window._valEngModel||'')).trim();
 if ((L.aircraftType && L.aircraftType.toLowerCase().indexOf('multi') >= 0) || L.numEngines == 2) {
@@ -1883,17 +2182,37 @@ if (isTwinFill) {
   if (d.smoh != null) { var el = document.getElementById('v-smoh'); if(el) el.value = d.smoh; }
   if (d.propHrs != null) { var el = document.getElementById('v-prop1'); if(el) el.value = d.propHrs; }
 }
+// Asking price: LLM first, then regex from pasted TAP/Controller text
+var askVal = (d.askingPrice != null && d.askingPrice > 0) ? d.askingPrice : extractAskingPrice(txt);
+if (askVal) { var askEl = document.getElementById('v-asking'); if (askEl) askEl.value = askVal; }
+// Prop time fallback when parser missed SPOH/TSOH/TSPOH wording common on TAP
+if (!isTwinFill) {
+  var propEl = document.getElementById('v-prop1');
+  if (propEl && !propEl.value) {
+    var propFb = extractPropHrs(txt);
+    if (propFb != null) propEl.value = propFb;
+  }
+} else {
+  var propL = document.getElementById('v-prop-l');
+  if (propL && !propL.value) {
+    var propFbT = extractPropHrs(txt);
+    if (propFbT != null) propL.value = propFbT;
+  }
+}
 if (d.condition) { var el = document.getElementById('v-cond'); if(el) el.value = d.condition; }
 if (d.cosmetics) { var el = document.getElementById('v-cosm'); if(el) el.value = d.cosmetics; }
 if (d.notes) { var el = document.getElementById('v-notes'); if(el) el.value = (d.notes||'').substring(0, 200); }
 // Auto-check avionics based on parsed list
 var avMap = {
-  'GTX345':'av-gtx345','GTX 345':'av-gtx345','ADS-B':'av-adsb',
+  'GTX345':'av-gtx345','GTX 345':'av-gtx345','GTX335':'av-gtx335','GTX 335':'av-gtx335',
+  'GTX330ES':'av-gtx330es','GTX 330 ES':'av-gtx330es','GTX330 ES':'av-gtx330es','GTX 330ES':'av-gtx330es','GTX 330':'av-gtx330es',
+  'ADS-B':'av-adsb',
   'GFC500':'av-gfc500','GFC 500':'av-gfc500','GFC600':'av-gfc600','GFC 600':'av-gfc600','GFC700':'av-gfc700','GFC 700':'av-gfc700',
   'G1000':'av-g1000','G1000 NXi':'av-g1000nxi','G500':'av-g500','G500 TXi':'av-g500txi','G600 TXi':'av-g600txi',
   'G3X':'av-g3x','G5':'av-g5','GI 275':'av-gi275','GI275':'av-gi275',
   'GTN650':'av-gtn650','GTN 650':'av-gtn650','GTN750':'av-gtn750','GTN 750':'av-gtn750',
   'GTN650Xi':'av-gtn650xi','GTN 650Xi':'av-gtn650xi','GTN750Xi':'av-gtn750xi','GTN 750Xi':'av-gtn750xi',
+  'GNC355':'av-gnc355','GNC 355':'av-gnc355',
   'GNS430':'av-gns430','GNS 430':'av-gns430','GNS430W':'av-gns430w','GNS 430W':'av-gns430w',
   'GNS530':'av-gns530','GNS 530':'av-gns530','GNS530W':'av-gns530w','GNS 530W':'av-gns530w',
   'GNS480':'av-gns480','GNS 480':'av-gns480','GPS175':'av-gps175','GNX375':'av-gnx375',
@@ -1906,6 +2225,7 @@ var avMap = {
   'Autoland':'av-autoland','HALO':'av-autoland','Safe Return':'av-autoland',
   'Radar':'av-radar-legacy','GWX':'av-radar-garmin','RDR':'av-radar-bk',
   'JPI':'av-jpi','EDM':'av-jpi','CGR':'av-ei-cgr','Insight':'av-ei-other',
+  'Xerion':'av-xerion-2100','Auracle':'av-xerion-2100','CRM-2100':'av-xerion-2100','CRM2100':'av-xerion-2100','CRM-2101':'av-xerion-2101','CRM2101':'av-xerion-2101','CRM-2120':'av-xerion-2120','CRM2120':'av-xerion-2120',
   'SkyView HDX':'av-dynon-hdx','SkyView SE':'av-dynon-se','Dynon':'av-dynon-hdx','STEC 65':'av-stec65','STEC65':'av-stec65','S-TEC 65':'av-stec65','STEC 60':'av-stec65','S-TEC 60':'av-stec65','STEC 50':'av-stec65','S-TEC 50':'av-stec65','STEC 40':'av-stec65','S-TEC 40':'av-stec65','STEC 30':'av-stec65','S-TEC 30':'av-stec65','Skywatch':'av-tcas','TCAS':'av-tcas','TAS':'av-tcas','TAWS':'av-taws','terrain awareness':'av-taws','terrain avoidance':'av-taws','AOA':'av-aoa','angle of attack':'av-aoa','Alpha Systems':'av-aoa','FIKI':'av-fiki','flight into known ice':'av-fiki','TKS FIKI':'av-fiki','inadvertent':'av-known-ice','inadvertent ice':'av-known-ice','known ice':'av-known-ice','TKS inadvertent':'av-known-ice','deice':'av-known-ice','anti-ice':'av-known-ice','ice protection':'av-known-ice','Oshkosh':'av-oshkosh','AirVenture':'av-oshkosh','EAA award':'av-oshkosh','Grand Champion':'av-oshkosh','Gold Lindy':'av-oshkosh','synthetic vision':'av-svt','SVT':'av-svt','air conditioning':'av-ac','A/C':'av-ac','air cond':'av-ac','PiperAire':'av-ac','EDM 830':'av-jpi','EDM 760':'av-jpi','EDM 900':'av-jpi','EDM830':'av-jpi','WX 500':'av-wx500','BFG':'av-wx500','Flight Stream':'av-adsb','CNX 80':'av-gns430w','CNX80':'av-gns430w','GNS 480':'av-gns480','speed brakes':'av-stc','IO-550':'av-stc','3-blade':'av-3blade','3 blade':'av-3blade','LED':'av-led','CiES':'av-cies','tip tank':'av-stc'
 };
 if (d.avionics && Array.isArray(d.avionics)) {
@@ -1943,11 +2263,14 @@ var cond = document.getElementById('v-cond'); if (cond) cond.value = 'Good';
 var cosm = document.getElementById('v-cosm'); if (cosm) cosm.value = 'Average';
 var notes = document.getElementById('v-notes'); if (notes) notes.value = '';
 var engDisp = document.getElementById('v-engine-display'); if (engDisp) engDisp.value = '';
+window._valEngMake = '';
+window._valEngModel = '';
 var asking = document.getElementById('v-asking'); if (asking) asking.value = '';
 var annualM = document.getElementById('v-annual-month'); if (annualM) annualM.value = '';
 var annualY = document.getElementById('v-annual-year'); if (annualY) annualY.value = '';
 var outAnnual = document.getElementById('v-out-of-annual'); if (outAnnual) outAnnual.checked = false;
 var engConv = document.getElementById('v-eng-conv'); if (engConv) engConv.value = '';
+var engStcPreset = document.getElementById('v-eng-stc-preset'); if (engStcPreset) engStcPreset.value = '';
 var tboIn = document.getElementById('v-tbo'); if (tboIn) { removeAutoExtraTboOptions(); tboIn.value = '2000'; }
 window._tboUserOverride = false;
 var tboReset = document.getElementById('v-tbo-reset'); if (tboReset) tboReset.style.display = 'none';
@@ -1967,14 +2290,57 @@ var vp = document.getElementById('v-paste'); if(vp) vp.value = '';
 // nn-result preserved between lookups
 }
 
+function applyEngStcPreset() {
+  var sel = document.getElementById('v-eng-stc-preset');
+  var inp = document.getElementById('v-eng-conv');
+  if (!sel || !inp) return;
+  var v = sel.value || '';
+  if (!v || v === 'Other / see notes') {
+    if (v === 'Other / see notes' && !inp.value.trim()) inp.placeholder = 'Describe HP + STC (e.g. B55 IO-520 285 HP, B58 IO-550 300 HP)…';
+    refreshEngineLife();
+    return;
+  }
+  inp.value = v;
+  var stcCb = document.getElementById('av-stc');
+  if (stcCb) stcCb.checked = true;
+  refreshEngineLife();
+}
+
+function setEngineFromLookup(d) {
+  if (!d) return;
+  window._valEngMake = d.engineMake || '';
+  window._valEngModel = d.engineModel || '';
+  var ed = document.getElementById('v-engine-display');
+  if (ed) ed.value = ((window._valEngMake || '') + ' ' + (window._valEngModel || '')).trim();
+}
+
+function prefillFromLookup(which) {
+  var L = window._lastLookup;
+  if (!L) {
+    if (which === 'val') switchTab('val');
+    else if (which === 'checklist') switchTab('checklist');
+    return;
+  }
+  if (which === 'val') {
+    prefillVal(L.make, L.model, L.year, L.aircraftType || '', L.numEngines || '', L.engineMake || '', L.engineModel || '');
+    switchTab('val');
+    return;
+  }
+  if (which === 'checklist') {
+    prefillCl(L.make, L.model, L.year, L.engineMake || '', L.engineModel || '', L.aircraftType || '', L.numEngines || '');
+    switchTab('checklist');
+  }
+}
+
 function prefillVal(make, model, year, aircraftType, numEngines, engMake, engModel) {
-window._valEngMake = engMake || "";window._valEngModel = engModel || "";
 resetForm();
+window._valEngMake = engMake || "";
+window._valEngModel = engModel || "";
 var ed=document.getElementById("v-engine-display");if(ed)ed.value=((engMake||"")+" "+(engModel||"")).trim();
-document.getElementById('v-make').value = make;
-document.getElementById('v-model').value = model;
-document.getElementById('v-year').value = year;
-if ((aircraftType && aircraftType.toLowerCase().indexOf('multi') >= 0) || numEngines > 1) {
+document.getElementById('v-make').value = make || '';
+document.getElementById('v-model').value = model || '';
+document.getElementById('v-year').value = year || '';
+if ((aircraftType && aircraftType.toLowerCase().indexOf('multi') >= 0) || Number(numEngines) > 1) {
 var sel = document.getElementById('v-engines');
 if (sel) { sel.value = '2'; toggleEngineFields(); }
 }
@@ -1985,17 +2351,21 @@ function prefillCl(make, model, year, eng, engModel, acType, numEng) {
 window._engModel = engModel || '';
 window._acType = acType || '';
 window._numEng = numEng || '';
-document.getElementById('cl-make').value = make;
-document.getElementById('cl-model').value = model;
-document.getElementById('cl-year').value = year;
+document.getElementById('cl-make').value = make || '';
+document.getElementById('cl-model').value = model || '';
+document.getElementById('cl-year').value = year || '';
+var sel = document.getElementById('cl-eng');
+if (sel) sel.value = '';
 if (eng) {
-  var e = eng.toUpperCase();
-  var sel = document.getElementById('cl-eng');
-  if (e.indexOf('LYCOMING') >= 0) sel.value = 'Lycoming';
-  else if (e.indexOf('CONT') >= 0) sel.value = 'Continental';
-  else if (e.indexOf('ROTAX') >= 0) sel.value = 'Rotax (LSA)';
-  else if (e.indexOf('TURB') >= 0 || e.indexOf('PT6') >= 0 || e.indexOf('PRATT') >= 0 || e.indexOf('GARRETT') >= 0) sel.value = 'Turboprop';
-  else sel.value = 'Other / unknown';
+  var e = String(eng).toUpperCase();
+  if (sel) {
+    if (e.indexOf('LYCOMING') >= 0) sel.value = 'Lycoming';
+    else if (e.indexOf('CONT') >= 0) sel.value = 'Continental';
+    else if (e.indexOf('ROTAX') >= 0) sel.value = 'Rotax (LSA)';
+    else if (e.indexOf('DELTA') >= 0 || e.indexOf('DIESEL') >= 0 || e.indexOf('AUSTRO') >= 0 || e.indexOf('CD-') >= 0) sel.value = 'DeltaHawk / diesel';
+    else if (e.indexOf('TURB') >= 0 || e.indexOf('PT6') >= 0 || e.indexOf('PRATT') >= 0 || e.indexOf('GARRETT') >= 0) sel.value = 'Turboprop';
+    else sel.value = 'Other / unknown';
+  }
 }
 }
 
@@ -2235,12 +2605,20 @@ if (window._lastEngineLife && window._lastEngineLife.engines && window._lastEngi
 } else if (tbo) {
   engineInfo += '. Recommended TBO: ' + tbo + ' hrs (enter SMOH for life-remaining analysis).';
 }
-var avIds={'av-sixpack':'Standard six pack','av-nav1':'Single NAV/COM','av-nav2':'Dual NAV/COM','av-adf':'ADF','av-dme':'DME','av-kx155':'King KX-155/165','av-g5':'Garmin G5','av-gi275':'Garmin GI 275','av-g500':'Garmin G500','av-g500txi':'Garmin G500 TXi','av-g600txi':'Garmin G600 TXi','av-g1000':'Garmin G1000','av-g1000nxi':'Garmin G1000 NXi','av-g3x':'Garmin G3X Touch','av-gns430':'GNS 430(non WAAS)','av-gns430w':'GNS 430W WAAS','av-gns530':'GNS 530 non-WAAS','av-gns530w':'GNS 530W WAAS','av-gns480':'GNS 480 WAAS','av-gtn650':'GTN 650','av-gtn750':'GTN 750','av-gtn650xi':'GTN 650Xi','av-gtn750xi':'GTN 750Xi','av-gps175':'Garmin GPS 175','av-gnx375':'Garmin GNX 375','av-gnc255':'Garmin GNC 255','av-gtr205':'Garmin GTR 205','av-gfc500':'Garmin GFC 500','av-gfc600':'Garmin GFC 600','av-gfc700':'Garmin GFC 700','av-autoland':'Garmin Autoland (emergency autoland)','av-gad43':'Garmin GAD 43e','av-gma345':'GMA 345 audio','av-gma350':'Garmin GMA 350','av-pma8000':'PS Engineering PMA 8000','av-pma450':'PS Engineering PMA 450B','av-pma6000':'PS Engineering PMA 6000/7000','av-esi500':'L3 ESI-500','av-gi275-standby':'Garmin GI 275 standby','av-uav-skybeacon':'uAvionix skyBeacon','av-uav-tailbeacon':'uAvionix tailBeacon','av-uav-echouat':'uAvionix echoUAT','av-uav-tailbeaconx':'uAvionix tailBeaconX','av-uav-avipro':'uAvionix AV-30','av-uav-avlink':'uAvionix AvLink','av-uav-beaconx':'uAvionix BeaconX','av-mx20':'Garmin MX20 MFD','av-gmx200':'Garmin GMX 200 MFD','av-aspen-e5':'Aspen E5','av-aspen-pro':'Aspen Pro 1000 MAX','av-aspen-mfd':'Aspen MFD 500/1000','av-aspen-2500':'Aspen 2500 MAX','av-avr9':'Avidyne Entegra R9','av-ex500':'Avidyne EX500/600','av-ifd440':'Avidyne IFD 440','av-ifd550':'Avidyne IFD 540/550','av-dfc90':'Avidyne DFC 90','av-dfc100':'Avidyne DFC 100','av-stec55':'S-TEC 55X','av-stec65':'S-TEC (other)','av-stec3100':'S-TEC 3100','av-kfc200':'King KFC 150/200/225','av-trutrak':'TruTrak/BendixKing','av-dynon-hdx':'Dynon SkyView HDX','av-dynon-se':'Dynon SkyView SE','av-dynon-d10':'Dynon D10A/D100','av-dynon-ap':'Dynon SV-AP autopilot','av-dynon-gps':'Dynon SkyView GPS','av-gtx345':'GTX 345 ADS-B','av-adsb':'ADS-B Out','av-tcas':'Traffic TAS','av-wx500':'Stormscope','av-gdl88':'Garmin GDL 88','av-radar-garmin':'Garmin GWX radar','av-radar-bk':'BendixKing RDR 2000/2100 radar','av-radar-legacy':'Legacy radar','av-ei-cgr':'EI CGR-30P','av-ei-other':'EI monitor','av-jpi':'JPI EDM','av-garmin-eis':'Garmin EIS','av-wx':'XM weather','av-ac':'Air conditioning','av-aoa':'Angle of attack (AOA)','av-fiki':'FIKI certified (known ice)','av-known-ice':'Known ice / inadvertent TKS','av-oshkosh':'Oshkosh / EAA award winner','av-taws':'TAWS (terrain awareness)','av-svt':'Synthetic vision','av-stc':'Engine STC','av-3blade':'3-blade prop','av-cies':'CiES senders','av-led':'LED lighting','av-annual':'Fresh annual','av-oxy':'Oxygen system'};
+var avIds={'av-sixpack':'Standard six pack','av-nav1':'Single NAV/COM','av-nav2':'Dual NAV/COM','av-adf':'ADF','av-dme':'DME','av-kx155':'King KX-155/165','av-g5':'Garmin G5','av-gi275':'Garmin GI 275','av-g500':'Garmin G500','av-g500txi':'Garmin G500 TXi','av-g600txi':'Garmin G600 TXi','av-g1000':'Garmin G1000','av-g1000nxi':'Garmin G1000 NXi','av-g3x':'Garmin G3X Touch','av-gns430':'GNS 430(non WAAS)','av-gns430w':'GNS 430W WAAS','av-gns530':'GNS 530 non-WAAS','av-gns530w':'GNS 530W WAAS','av-gns480':'GNS 480 WAAS','av-gtn650':'GTN 650','av-gtn750':'GTN 750','av-gtn650xi':'GTN 650Xi','av-gtn750xi':'GTN 750Xi','av-gps175':'Garmin GPS 175','av-gnx375':'Garmin GNX 375','av-gnc355':'Garmin GNC 355','av-gnc255':'Garmin GNC 255','av-gtr205':'Garmin GTR 205','av-gfc500':'Garmin GFC 500','av-gfc600':'Garmin GFC 600','av-gfc700':'Garmin GFC 700','av-autoland':'Garmin Autoland (emergency autoland)','av-gad43':'Garmin GAD 43e','av-gma345':'GMA 345 audio','av-gma350':'Garmin GMA 350','av-pma8000':'PS Engineering PMA 8000','av-pma450':'PS Engineering PMA 450B','av-pma6000':'PS Engineering PMA 6000/7000','av-esi500':'L3 ESI-500','av-gi275-standby':'Garmin GI 275 standby','av-uav-skybeacon':'uAvionix skyBeacon','av-uav-tailbeacon':'uAvionix tailBeacon','av-uav-echouat':'uAvionix echoUAT','av-uav-tailbeaconx':'uAvionix tailBeaconX','av-uav-avipro':'uAvionix AV-30','av-uav-avlink':'uAvionix AvLink','av-uav-beaconx':'uAvionix BeaconX','av-mx20':'Garmin MX20 MFD','av-gmx200':'Garmin GMX 200 MFD','av-aspen-e5':'Aspen E5','av-aspen-pro':'Aspen Pro 1000 MAX','av-aspen-mfd':'Aspen MFD 500/1000','av-aspen-2500':'Aspen 2500 MAX','av-avr9':'Avidyne Entegra R9','av-ex500':'Avidyne EX500/600','av-ifd440':'Avidyne IFD 440','av-ifd550':'Avidyne IFD 540/550','av-dfc90':'Avidyne DFC 90','av-dfc100':'Avidyne DFC 100','av-stec55':'S-TEC 55X','av-stec65':'S-TEC (other)','av-stec3100':'S-TEC 3100','av-kfc200':'King KFC 150/200/225','av-trutrak':'TruTrak/BendixKing','av-dynon-hdx':'Dynon SkyView HDX','av-dynon-se':'Dynon SkyView SE','av-dynon-d10':'Dynon D10A/D100','av-dynon-ap':'Dynon SV-AP autopilot','av-dynon-gps':'Dynon SkyView GPS','av-gtx345':'GTX 345 ADS-B','av-gtx335':'GTX 335 ADS-B','av-gtx330es':'GTX 330 ES ADS-B','av-adsb':'ADS-B Out','av-tcas':'Traffic TAS','av-wx500':'Stormscope','av-gdl88':'Garmin GDL 88','av-radar-garmin':'Garmin GWX radar','av-radar-bk':'BendixKing RDR 2000/2100 radar','av-radar-legacy':'Legacy radar','av-ei-cgr':'EI CGR-30P','av-ei-other':'EI monitor','av-jpi':'JPI EDM','av-xerion-2100':'Xerion Auracle CRM-2100','av-xerion-2101':'Xerion Auracle CRM-2101','av-xerion-2120':'Xerion Auracle CRM-2120','av-garmin-eis':'Garmin EIS','av-wx':'XM weather','av-ac':'Air conditioning','av-aoa':'Angle of attack (AOA)','av-fiki':'FIKI certified (known ice)','av-known-ice':'Known ice / inadvertent TKS','av-oshkosh':'Oshkosh / EAA award winner','av-taws':'TAWS (terrain awareness)','av-svt':'Synthetic vision','av-stc':'Engine STC','av-3blade':'3-blade prop','av-cies':'CiES senders','av-led':'LED lighting','av-annual':'Fresh annual','av-oxy':'Oxygen system'};
 var avs=[];for(var id in avIds){var el=document.getElementById(id);if(!el||!el.checked)continue;var nm=avIds[id];
   var sizeEl=document.getElementById(id+'-size');
   if(sizeEl&&sizeEl.value){var sv=sizeEl.value;if(sv.indexOf('dual')===0){var oneSize=sv.replace('dual ','');avs.push(nm+' '+oneSize);avs.push(nm+' '+oneSize);}else if(sv.indexOf('+')>=0){var parts=sv.split('+');avs.push(nm+' '+parts[0].trim());avs.push(nm+' '+parts[1].trim());}else{avs.push(nm+' '+sv);}continue;}
   var qtyEl=document.getElementById(id+'-qty');var qty=(qtyEl&&qtyEl.value)?parseInt(qtyEl.value,10):1;if(!(qty>=1))qty=1;
   for(var q=0;q<qty;q++)avs.push(nm);
+}
+// Modern GPS/NAV/COM stacks already include nav/comm capability — don't also send legacy Dual/Single NAV/COM
+// (that confused the model and could swing value the wrong way).
+var hasModernNav = avs.some(function(a) {
+  return /GTN|GNS 4|GNS 5|GNS 480|GNC 355|GPS 175|GNX 375|IFD|G1000|G3X/i.test(a);
+});
+if (hasModernNav) {
+  avs = avs.filter(function(a) { return a !== 'Dual NAV/COM' && a !== 'Single NAV/COM'; });
 }
 var band=BANDS['Piston single'];
 setLoading('v-spin','v-btn',true);
@@ -2278,7 +2656,17 @@ renderVal(v,make,model,year);
 trackEvent('valuation_completed', { make: make, model: model });
 } catch(e) {
     console.error('Valuation error:', e);
-    document.getElementById('v-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed: ' + (e.message || e) + '</p>';
+    if (e && (e.status === 402 || e.code === 'limit_reached')) {
+      document.getElementById('v-result').innerHTML =
+        '<div style="margin-top:1rem;padding:14px 16px;border:1px solid rgba(19,64,116,0.18);border-radius:8px;background:rgba(19,64,116,0.04)">' +
+        '<p style="margin:0 0 10px;font-size:14px;color:var(--navy)"><strong>Free valuation used for this month.</strong> Buy a report to continue — $24 for one, or $79 for five.</p>' +
+        '<div class="pricing-pack-row">' +
+        '<button type="button" class="share-btn" onclick="startCheckout(\'single\')"><strong>$24</strong> — 1 valuation</button>' +
+        '<button type="button" class="share-btn" onclick="startCheckout(\'fivepack\')"><strong>$79</strong> — 5 valuations</button>' +
+        '</div></div>';
+    } else {
+      document.getElementById('v-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed: ' + (e.message || e) + '</p>';
+    }
 }
 setLoading('v-spin','v-btn',false);
 }

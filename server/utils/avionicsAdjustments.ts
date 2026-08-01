@@ -41,6 +41,7 @@ export const AVIONICS_ROWS: AvionicsRow[] = [
   { item: 'Garmin GNS 430W', category: 'Navigator', installedCost: 8000, retainedNew: 0.4, annualDecay: 0.06, floorPct: 0.2, yearsSinceInstall: 15, lpvWaas: true, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['GNS 430W WAAS'] },
   { item: 'Garmin GNX 375', category: 'Navigator', installedCost: 13000, retainedNew: 0.5, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 3, lpvWaas: true, adsbOut: true, adsbIn: true, coupledAp: false, glassPfd: false, aliases: ['Garmin GNX 375'] },
   { item: 'Garmin GPS 175', category: 'Navigator', installedCost: 9000, retainedNew: 0.48, annualDecay: 0.06, floorPct: 0.28, yearsSinceInstall: 3, lpvWaas: true, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Garmin GPS 175'] },
+  { item: 'Garmin GNC 355', category: 'Navigator', installedCost: 12000, retainedNew: 0.5, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 3, lpvWaas: true, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Garmin GNC 355'] },
   { item: 'Avidyne IFD540', category: 'Navigator', installedCost: 16000, retainedNew: 0.45, annualDecay: 0.06, floorPct: 0.25, yearsSinceInstall: 6, lpvWaas: true, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Avidyne IFD 540/550'] },
   { item: 'Avidyne IFD440', category: 'Navigator', installedCost: 12000, retainedNew: 0.45, annualDecay: 0.06, floorPct: 0.25, yearsSinceInstall: 6, lpvWaas: true, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Avidyne IFD 440'] },
 
@@ -73,6 +74,8 @@ export const AVIONICS_ROWS: AvionicsRow[] = [
 
   // Transponder / ADS-B
   { item: 'Garmin GTX 345 (1090ES In/Out)', category: 'ADS-B', installedCost: 6500, retainedNew: 0.45, annualDecay: 0.07, floorPct: 0.2, yearsSinceInstall: 4, lpvWaas: false, adsbOut: true, adsbIn: true, coupledAp: false, glassPfd: false, aliases: ['GTX 345 ADS-B'] },
+  { item: 'Garmin GTX 335 (Out only)', category: 'ADS-B', installedCost: 5000, retainedNew: 0.42, annualDecay: 0.07, floorPct: 0.18, yearsSinceInstall: 4, lpvWaas: false, adsbOut: true, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['GTX 335 ADS-B', 'Garmin GTX 335', 'GTX 335'] },
+  { item: 'Garmin GTX 330 ES (Out / 1090ES)', category: 'ADS-B', installedCost: 4500, retainedNew: 0.4, annualDecay: 0.07, floorPct: 0.18, yearsSinceInstall: 6, lpvWaas: false, adsbOut: true, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['GTX 330 ES ADS-B', 'GTX 330 ES', 'Garmin GTX 330 ES', 'GTX330ES'] },
   { item: 'Garmin GDL 88 (978 In/Out)', category: 'ADS-B', installedCost: 4500, retainedNew: 0.35, annualDecay: 0.08, floorPct: 0.15, yearsSinceInstall: 8, lpvWaas: false, adsbOut: true, adsbIn: true, coupledAp: false, glassPfd: false, aliases: ['Garmin GDL 88'] },
   { item: 'ADS-B Out (generic)', category: 'ADS-B', installedCost: 5000, retainedNew: 0.42, annualDecay: 0.07, floorPct: 0.18, yearsSinceInstall: 4, lpvWaas: false, adsbOut: true, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['ADS-B Out'] },
 
@@ -80,6 +83,9 @@ export const AVIONICS_ROWS: AvionicsRow[] = [
   { item: 'JPI EDM', category: 'Engine Monitor', installedCost: 5500, retainedNew: 0.5, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 4, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['JPI EDM'] },
   { item: 'EI CGR-30P', category: 'Engine Monitor', installedCost: 5000, retainedNew: 0.5, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 4, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['EI CGR-30P'] },
   { item: 'EI monitor', category: 'Engine Monitor', installedCost: 3500, retainedNew: 0.45, annualDecay: 0.07, floorPct: 0.25, yearsSinceInstall: 5, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['EI monitor'] },
+  { item: 'Xerion Auracle CRM-2100', category: 'Engine Monitor', installedCost: 5500, retainedNew: 0.5, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 4, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Xerion Auracle CRM-2100'] },
+  { item: 'Xerion Auracle CRM-2101', category: 'Engine Monitor', installedCost: 5500, retainedNew: 0.5, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 4, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Xerion Auracle CRM-2101'] },
+  { item: 'Xerion Auracle CRM-2120', category: 'Engine Monitor', installedCost: 7500, retainedNew: 0.5, annualDecay: 0.06, floorPct: 0.3, yearsSinceInstall: 4, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['Xerion Auracle CRM-2120'] },
 
   // Audio panels
   { item: 'Garmin GMA 345 (Bluetooth)', category: 'Audio Panel', installedCost: 3500, retainedNew: 0.4, annualDecay: 0.07, floorPct: 0.2, yearsSinceInstall: 4, lpvWaas: false, adsbOut: false, adsbIn: false, coupledAp: false, glassPfd: false, aliases: ['GMA 345 audio'] },
@@ -185,6 +191,16 @@ export function computeAvionicsAdjustment(
   // FIKI supersedes inadvertent/known-ice TKS — do not stack both.
   if (counts.has('FIKI certified (known ice)') && counts.has('Known ice / inadvertent TKS')) {
     counts.delete('Known ice / inadvertent TKS')
+  }
+
+  // Legacy Single/Dual NAV/COM is for steam/King panels only. If modern GPS/NAV/COM
+  // navigators are present, drop the legacy checkbox so it cannot confuse pricing.
+  const modernNav = [...counts.keys()].some((item) =>
+    /GTN|GNS 530|GNS 430|GNS 480|GNC 355|GPS 175|GNX 375|IFD|G1000|G3X/i.test(item),
+  )
+  if (modernNav) {
+    counts.delete('Single NAV/COM')
+    counts.delete('Dual NAV/COM')
   }
 
   const lineItems: AvionicsLineItem[] = []
