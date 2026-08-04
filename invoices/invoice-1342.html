@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Invoice 1342 — Back in the Saddle, LLC</title>
+<style>
+  @page { size: letter; margin: 0.5in; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #1a1a1a;
+    font-size: 10.5pt;
+    line-height: 1.35;
+    margin: 0;
+    padding: 0;
+  }
+  .sheet { max-width: 7.5in; margin: 0 auto; }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 3px solid #1e3a5f;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+  }
+  .brand h1 {
+    margin: 0;
+    font-size: 18pt;
+    font-weight: 700;
+    color: #1e3a5f;
+    letter-spacing: -0.02em;
+  }
+  .brand .tag {
+    margin-top: 3px;
+    color: #5a6570;
+    font-size: 9pt;
+  }
+  .invoice-meta { text-align: right; }
+  .invoice-meta .label {
+    font-size: 18pt;
+    font-weight: 700;
+    color: #1e3a5f;
+    letter-spacing: 0.08em;
+    margin: 0 0 6px;
+  }
+  .invoice-meta table { margin-left: auto; border-collapse: collapse; }
+  .invoice-meta td { padding: 1px 0 1px 14px; font-size: 9.5pt; }
+  .invoice-meta td:first-child { color: #5a6570; text-align: right; padding-left: 0; }
+  .invoice-meta td:last-child { font-weight: 600; text-align: right; }
+  .parties {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 16px;
+  }
+  .party { flex: 1; }
+  .party h2 {
+    margin: 0 0 6px;
+    font-size: 8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #5a6570;
+    font-weight: 600;
+  }
+  .party .name { font-weight: 700; font-size: 11.5pt; color: #1a1a1a; }
+  .party p { margin: 1px 0; color: #333; }
+  .subject {
+    background: #f4f7fa;
+    border-left: 4px solid #1e3a5f;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+  }
+  .subject .kicker {
+    font-size: 8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #5a6570;
+    margin: 0 0 3px;
+  }
+  .subject h3 { margin: 0; font-size: 12pt; color: #1e3a5f; }
+  .subject p { margin: 3px 0 0; color: #444; font-size: 9.5pt; }
+  table.lines {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 4px;
+  }
+  table.lines thead th {
+    text-align: left;
+    font-size: 8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #5a6570;
+    border-bottom: 2px solid #1e3a5f;
+    padding: 6px 8px;
+    font-weight: 600;
+  }
+  table.lines thead th.amt { text-align: right; }
+  table.lines tbody td {
+    padding: 8px;
+    border-bottom: 1px solid #e2e8ee;
+    vertical-align: top;
+  }
+  table.lines tbody td.amt {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  table.lines tbody td.desc .note {
+    display: block;
+    color: #5a6570;
+    font-size: 9pt;
+    margin-top: 1px;
+  }
+  .totals {
+    margin-top: 4px;
+    margin-left: auto;
+    width: 240px;
+  }
+  .totals .row.grand {
+    display: flex;
+    justify-content: space-between;
+    border-top: 2px solid #1e3a5f;
+    padding-top: 8px;
+    font-size: 13pt;
+    font-weight: 700;
+    color: #1e3a5f;
+  }
+  .pay {
+    margin-top: 22px;
+    display: flex;
+    gap: 16px;
+  }
+  .pay-box {
+    flex: 1;
+    border: 1px solid #d5dde5;
+    padding: 10px 12px;
+  }
+  .pay-box h2 {
+    margin: 0 0 6px;
+    font-size: 8pt;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #5a6570;
+    font-weight: 600;
+  }
+  .pay-box p { margin: 2px 0; font-size: 10pt; }
+  .pay-box .emph { font-weight: 600; }
+  footer {
+    margin-top: 24px;
+    padding-top: 10px;
+    border-top: 1px solid #d5dde5;
+    font-size: 8.5pt;
+    color: #5a6570;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <header>
+      <div class="brand">
+        <h1>Back in the Saddle, LLC</h1>
+        <div class="tag">Hangar 142 · John Tune Airport (KJWN)</div>
+      </div>
+      <div class="invoice-meta">
+        <p class="label">INVOICE</p>
+        <table>
+          <tr><td>Invoice #</td><td>1342</td></tr>
+          <tr><td>Date</td><td>August 4, 2026</td></tr>
+          <tr><td>Terms</td><td>Net 30</td></tr>
+          <tr><td>Due Date</td><td>September 3, 2026</td></tr>
+        </table>
+      </div>
+    </header>
+
+    <div class="parties">
+      <div class="party">
+        <h2>From</h2>
+        <p class="name">Back in the Saddle, LLC</p>
+        <p>Hangar 142</p>
+        <p>John Tune Airport (KJWN)</p>
+      </div>
+      <div class="party">
+        <h2>Bill To</h2>
+        <p class="name">Domestique Capital LLC</p>
+      </div>
+    </div>
+
+    <div class="subject">
+      <p class="kicker">For</p>
+      <h3>Flight to HPN — Craig Perry Long IFR Cross Country</h3>
+      <p>Route: KJWN → KLNS → KHPN</p>
+    </div>
+
+    <table class="lines">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th class="amt">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="desc">Daily rate — 2 days @ $350.00/day</td>
+          <td class="amt">$700.00</td>
+        </tr>
+        <tr>
+          <td class="desc">Marriott</td>
+          <td class="amt">$279.00</td>
+        </tr>
+        <tr>
+          <td class="desc">Meals</td>
+          <td class="amt">$96.39</td>
+        </tr>
+        <tr>
+          <td class="desc">
+            Uber to Marriott
+            <span class="note">Cash</span>
+          </td>
+          <td class="amt">$40.00</td>
+        </tr>
+        <tr>
+          <td class="desc">American Airlines flight</td>
+          <td class="amt">$80.00</td>
+        </tr>
+        <tr>
+          <td class="desc">Uber to LGA</td>
+          <td class="amt">$82.65</td>
+        </tr>
+        <tr>
+          <td class="desc">Uber to Tune</td>
+          <td class="amt">$40.94</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="totals">
+      <div class="row grand">
+        <span>Total Due</span>
+        <span>$1,319.98</span>
+      </div>
+    </div>
+
+    <div class="pay">
+      <div class="pay-box">
+        <h2>Payment Methods</h2>
+        <p><span class="emph">Venmo:</span> @atkpilot1</p>
+        <p><span class="emph">PayPal:</span> jpwallacejr@gmail.com</p>
+      </div>
+      <div class="pay-box">
+        <h2>Terms</h2>
+        <p>Payment due within 30 days of invoice date.</p>
+        <p>Amount due: <span class="emph">$1,319.98</span></p>
+      </div>
+    </div>
+
+    <footer>
+      Thank you for your business · Back in the Saddle, LLC · Invoice #1342
+    </footer>
+  </div>
+</body>
+</html>
