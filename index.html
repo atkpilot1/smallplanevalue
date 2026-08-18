@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#1f2937" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="N7989R W&B" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<link rel="manifest" href="manifest.webmanifest" />
+<title>N7989R Baron W&B</title>
+<style>
+  :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:#111827;background:#f3f4f6}
+  body{margin:0;padding:14px;max-width:760px;margin:auto}.card{background:white;border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 2px 10px #0001}h1{font-size:25px;margin:8px 0 0}h2{font-size:18px;margin:0 0 10px}.sub{color:#6b7280;margin:2px 0 12px}.grid{display:grid;grid-template-columns:1fr 105px;gap:10px;align-items:center}.row{padding:7px 0;border-bottom:1px solid #eee}.row:last-child{border-bottom:0}input{font-size:20px;width:88px;padding:8px;border:1px solid #d1d5db;border-radius:10px;text-align:right}button{font-size:16px;padding:10px 12px;border:0;border-radius:12px;background:#374151;color:white;margin:4px 4px 4px 0}.small{font-size:13px;color:#6b7280}.results{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{border-radius:14px;padding:12px;background:#f9fafb}.metric b{font-size:22px}.ok{background:#dcfce7}.warn{background:#fef9c3}.bad{background:#fee2e2}.wide{grid-column:1/-1}canvas{width:100%;height:270px;border:1px solid #e5e7eb;border-radius:14px}.footer{font-size:12px;color:#6b7280;line-height:1.35}.pill{display:inline-block;border-radius:999px;padding:4px 8px;background:#e5e7eb;font-size:12px;margin-left:4px}</style>
+</head>
+<body>
+  <h1>N7989R Baron D55 Weight & Balance</h1>
+  <p class="sub">TE-714 · Empty WT 3,613.3 lb · Empty CG 80.81 · Moment 291,999.2</p>
+
+  <div class="card">
+    <h2>Loading</h2>
+    <div class="grid">
+      <div class="row">Pilot + Copilot <span class="small">arm 85.0</span></div><input id="front" type="number" inputmode="decimal" value="200">
+      <div class="row">Rear / Dogs <span class="small">arm 121.0</span></div><input id="rear" type="number" inputmode="decimal" value="0">
+      <div class="row">Nose Baggage <span class="small">arm 31.0</span></div><input id="nose" type="number" inputmode="decimal" value="0">
+      <div class="row">Aft Baggage <span class="small">arm 150.0</span></div><input id="aft" type="number" inputmode="decimal" value="0">
+      <div class="row">Fuel Gallons <span class="small">6 lb/gal, arm 75.0</span></div><input id="fuelGal" type="number" inputmode="decimal" value="80">
+      <div class="row">Fuel Burn to Landing <span class="small">gallons</span></div><input id="burnGal" type="number" inputmode="decimal" value="40">
+    </div>
+    <label class="small"><input id="gear" type="checkbox" checked style="width:auto"> Include landing gear retraction moment +623 in-lb</label>
+  </div>
+
+  <div class="card">
+    <h2>Quick Loads</h2>
+    <button onclick="preset(200,0,0,0,80,40)">Just John</button>
+    <button onclick="preset(380,0,40,30,100,50)">Two Adults</button>
+    <button onclick="preset(200,180,30,20,80,40)">John + Dogs</button>
+    <button onclick="preset(380,180,60,60,100,55)">Weekend Trip</button>
+    <button onclick="preset(380,180,80,80,136,65)">Full Fuel</button>
+  </div>
+
+  <div class="card">
+    <h2>Results</h2>
+    <div class="results">
+      <div class="metric" id="takeoffBox">Takeoff WT<br><b id="tow">—</b></div>
+      <div class="metric" id="cgBox">Takeoff CG<br><b id="cg">—</b></div>
+      <div class="metric">Useful Load Left<br><b id="useful">—</b></div>
+      <div class="metric">Landing WT<br><b id="lw">—</b></div>
+      <div class="metric wide" id="landingBox">Landing CG<br><b id="lcg">—</b> <span id="status" class="pill">—</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>CG Picture</h2>
+    <canvas id="chart" width="700" height="340"></canvas>
+    <p class="small">Envelope shown as 74.0–86.0 inches and 5,300 lb max gross from your W&B page. Confirm against the official POH/loading graph before flight.</p>
+  </div>
+
+  <div class="card footer">
+    This is a convenience calculator only. It is not FAA-approved data. Verify arms, CG limits, fuel capacity, gear moment treatment, and all results against the current POH, supplements, and your aircraft records before using for dispatch.
+  </div>
+<script>
+const EW=3613.30, EM=291999.20, MAX=5300, FWD=74, AFT=86, GEAR=623;
+const arms={front:85, rear:121, nose:31, aft:150, fuel:75};
+const ids=['front','rear','nose','aft','fuelGal','burnGal','gear'];
+function n(id){return parseFloat(document.getElementById(id).value)||0}
+function preset(front,rear,nose,aft,fuel,burn){Object.assign(document.getElementById('front'),{value:front});Object.assign(document.getElementById('rear'),{value:rear});Object.assign(document.getElementById('nose'),{value:nose});Object.assign(document.getElementById('aft'),{value:aft});Object.assign(document.getElementById('fuelGal'),{value:fuel});Object.assign(document.getElementById('burnGal'),{value:burn});calc()}
+function classify(w,cg){ if(w>MAX||cg<FWD||cg>AFT) return 'bad'; if(w>MAX-150||cg<FWD+1||cg>AFT-1) return 'warn'; return 'ok'; }
+function fmt(x,d=1){return Number(x).toLocaleString(undefined,{maximumFractionDigits:d,minimumFractionDigits:d})}
+function calc(){
+  const weights={front:n('front'),rear:n('rear'),nose:n('nose'),aft:n('aft'),fuel:n('fuelGal')*6};
+  let wt=EW+weights.front+weights.rear+weights.nose+weights.aft+weights.fuel;
+  let mom=EM+weights.front*arms.front+weights.rear*arms.rear+weights.nose*arms.nose+weights.aft*arms.aft+weights.fuel*arms.fuel+(document.getElementById('gear').checked?GEAR:0);
+  let cg=mom/wt;
+  let burn=Math.min(n('burnGal')*6, weights.fuel);
+  let lwt=wt-burn, lmom=mom-burn*arms.fuel, lcg=lmom/lwt;
+  document.getElementById('tow').textContent=fmt(wt)+' lb'; document.getElementById('cg').textContent=fmt(cg,2)+' in'; document.getElementById('useful').textContent=fmt(MAX-wt)+' lb'; document.getElementById('lw').textContent=fmt(lwt)+' lb'; document.getElementById('lcg').textContent=fmt(lcg,2)+' in';
+  let cls=classify(wt,cg); ['takeoffBox','cgBox'].forEach(id=>document.getElementById(id).className='metric '+cls); let lcls=classify(lwt,lcg); document.getElementById('landingBox').className='metric wide '+lcls; document.getElementById('status').textContent=(cls==='ok'&&lcls==='ok')?'IN LIMITS':(cls==='bad'||lcls==='bad')?'OUT OF LIMITS':'CHECK MARGINS';
+  localStorage.setItem('n7989rWB', JSON.stringify(Object.fromEntries(ids.map(id=>[id, document.getElementById(id).type==='checkbox'?document.getElementById(id).checked:document.getElementById(id).value])))); draw(wt,cg,lwt,lcg);
+}
+function draw(wt,cg,lwt,lcg){const c=document.getElementById('chart'),x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);let L=55,T=25,W=590,H=260;function X(v){return L+(v-72)/(90-72)*W}function Y(v){return T+(5400-v)/(5400-3000)*H}x.strokeStyle='#ddd';x.lineWidth=1;x.font='14px sans-serif';for(let g=72;g<=90;g+=2){x.beginPath();x.moveTo(X(g),T);x.lineTo(X(g),T+H);x.stroke();x.fillText(g,X(g)-8,T+H+22)}for(let w=3000;w<=5400;w+=400){x.beginPath();x.moveTo(L,Y(w));x.lineTo(L+W,Y(w));x.stroke();x.fillText(w,L-48,Y(w)+5)}x.strokeStyle='#111827';x.lineWidth=3;x.strokeRect(X(FWD),Y(MAX),X(AFT)-X(FWD),Y(3000)-Y(MAX));x.fillText('CG inches',L+250,T+H+45);x.save();x.translate(15,T+170);x.rotate(-Math.PI/2);x.fillText('Weight lb',0,0);x.restore();function dot(w,c,label){x.beginPath();x.arc(X(c),Y(w),8,0,Math.PI*2);x.fill();x.fillText(label,X(c)+12,Y(w)-10)}x.fillStyle='#111827';dot(wt,cg,'TO');x.fillStyle='#6b7280';dot(lwt,lcg,'LDG')}
+ids.forEach(id=>document.getElementById(id).addEventListener('input',calc));
+try{const s=JSON.parse(localStorage.getItem('n7989rWB')||'{}'); ids.forEach(id=>{if(s[id]!==undefined){if(document.getElementById(id).type==='checkbox')document.getElementById(id).checked=s[id];else document.getElementById(id).value=s[id];}})}catch(e){}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+calc();
+</script>
+</body>
+</html>
