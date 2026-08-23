@@ -34,6 +34,6 @@ Partners complement SPV; they don’t replace valuation.
 ## Related docs
 
 - [Launch checklist](./launch-checklist.md) — channels and copy-paste posts
-- [Social ads story](./social-ads-story.md) — Instagram, YouTube, Facebook narrative (hangar number, not approach briefings)
-- [Social shoot sheet](./social-shoot-sheet.md) — one-afternoon shoot list, 22s Instagram clip, extra channel ideas
+- [Social marketing](./social-ads-story.md) — Instagram, YouTube, Facebook
+- [Social shoot sheet](./social-shoot-sheet.md) — YouTube/Facebook shoot list and Instagram clip
 - [Pricing tiers](./pricing-tiers.md) — monetization and trust rules
