@@ -2,7 +2,8 @@
 
 **Goal:** Get free-beta feedback from pilots on BeechTalk, Facebook groups, EAA circles, and marketplace bios.  
 **Site:** https://smallplanevalue.com  
-**Positioning:** see [competitive-positioning.md](./competitive-positioning.md)
+**Positioning:** see [competitive-positioning.md](./competitive-positioning.md)  
+**Instagram / YouTube / Facebook:** [social-ads-story.md](./social-ads-story.md) · [social-shoot-sheet.md](./social-shoot-sheet.md)
 
 ---
 
@@ -29,7 +30,7 @@ Free GA aircraft valuations at smallplanevalue.com — honest asking ranges and 
 ### Post B — Differentiation (no trash-talk)
 
 ```
-FindAircraft helps you find the plane. Windsock sells a valuation report. SmallPlaneValue is the free negotiation brief for the listing in front of you — plus pre-buy checklist — without pretending GA has MLS sold prices.
+FindAircraft helps you find the plane. Windsock sells a valuation report. SmallPlaneValue is the free valuation for the listing in front of you — plus a pre-buy checklist — without pretending GA has MLS sold prices.
 
 Try it: https://smallplanevalue.com
 ```
