@@ -6,7 +6,7 @@
 
 Use this instead of “today we’re briefing the ILS.” The product is a **price conversation**, not a flying lesson.
 
-Related: [competitive-positioning.md](./competitive-positioning.md) · [launch-checklist.md](./launch-checklist.md)
+Related: [competitive-positioning.md](./competitive-positioning.md) · [launch-checklist.md](./launch-checklist.md) · [social-shoot-sheet.md](./social-shoot-sheet.md) (YouTube/Facebook shoot sheet + 22s Instagram clip)
 
 ---
 

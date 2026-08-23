@@ -3,7 +3,7 @@
 **Goal:** Get free-beta feedback from pilots on BeechTalk, Facebook groups, EAA circles, and marketplace bios.  
 **Site:** https://smallplanevalue.com  
 **Positioning:** see [competitive-positioning.md](./competitive-positioning.md)  
-**Instagram / YouTube / Facebook:** see [social-ads-story.md](./social-ads-story.md) — hangar-number story, not approach briefings
+**Instagram / YouTube / Facebook:** [social-ads-story.md](./social-ads-story.md) (story) · [social-shoot-sheet.md](./social-shoot-sheet.md) (shoot sheet + 22s clip)
 
 ---
 
