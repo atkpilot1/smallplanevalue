@@ -108,12 +108,47 @@ function promptText(body: unknown): string {
   }
 }
 
+export type AnthropicFail =
+  | 'listing'
+  | 'sale'
+  | 'valuate'
+  | 'comps'
+  | 'checklist'
+  | 'all'
+
+let anthropicFail: AnthropicFail | undefined
+
+export function failAnthropic(kind?: AnthropicFail) {
+  anthropicFail = kind
+}
+
+function shouldFail(prompt: string): boolean {
+  if (!anthropicFail) return false
+  if (anthropicFail === 'all') return true
+  if (anthropicFail === 'listing') return prompt.includes('Parse this aircraft listing')
+  if (anthropicFail === 'sale') return prompt.includes('Parse this aircraft sale')
+  if (anthropicFail === 'valuate') return prompt.includes('expert aircraft appraiser')
+  if (anthropicFail === 'comps') return prompt.includes('aircraft market analyst')
+  if (anthropicFail === 'checklist') return prompt.includes('A&P/IA mechanic')
+  return false
+}
+
 /** Mock Anthropic only. Local Supabase stays live. */
 export async function mockAnthropic(backendMocks: BackendMocks) {
+  failAnthropic(undefined)
   await backendMocks.route('https://api.anthropic.com/**', async (route, request) => {
     const prompt = promptText(request.postDataJSON())
-    let payload: unknown = {}
 
+    if (shouldFail(prompt)) {
+      await route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        json: { type: 'error', error: { type: 'api_error', message: 'mocked Anthropic failure' } },
+      })
+      return
+    }
+
+    let payload: unknown = {}
     if (prompt.includes('Parse this aircraft listing')) payload = listingFixture
     else if (prompt.includes('Parse this aircraft sale')) payload = saleFixture
     else if (prompt.includes('expert aircraft appraiser')) payload = valuationFixture
