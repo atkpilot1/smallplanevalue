@@ -38,6 +38,7 @@ Seeded N-numbers for lookup: `172SP`, `22T`, `182RG`, `58P`.
 | `npm run db:stop` | Stop local Supabase |
 | `npm run db:status` | Print local URLs and keys |
 | `npm run db:reset` | Wipe the local DB, replay migrations, re-seed |
-| `npm run test:e2e` | Playwright tests |
+| `npm run start:e2e` | Nuxt on :3100 with the backend-mocks agent (used by Playwright) |
+| `npm run test:e2e` | Playwright tests (needs `npm run db:start`; does not use :3000) |
 
 `db:start` on a fresh machine pulls Docker images and can take a few minutes.

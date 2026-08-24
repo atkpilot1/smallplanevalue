@@ -1,136 +1,14 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect } from '@playwright-backend-mocks/playwright'
+import { mockAnthropic } from './anthropic'
 
 /**
- * Smoke the main tabs in server/assets/page.html. `/api/*` is mocked so these
- * do not need Anthropic, Supabase, or a seeded local database.
+ * Drive the real Nuxt handlers. Anthropic is mocked at the Node boundary;
+ * local Supabase (FAA lookup, feedback, usage_events) is live.
  */
 
-const FAA_RECORD = {
-  found: true,
-  _realData: true,
-  _source: 'supabase',
-  nnumber: 'N172SP',
-  status: 'Valid',
-  make: 'Cessna',
-  model: '172S',
-  year: 2004,
-  serialNumber: '172S9999',
-  aircraftType: 'Fixed wing single-engine',
-  engineType: 'Reciprocating',
-  engineMake: 'Lycoming',
-  engineModel: 'IO-360-L2A',
-  horsepower: 180,
-  seats: 4,
-  speed: 124,
-  numEngines: 1,
-  weightClass: 'CLASS 1',
-  certDate: '20040115',
-  airworthDate: '20040115',
-  registrationExpiry: '2026-01-31',
-  registrantName: 'Skyhawk LLC',
-  city: 'Wichita',
-  state: 'KS',
-  statusCode: 'V'
-}
-
-async function mockApis(page: Page) {
-  await page.route('**/api/faa-lookup', (route) =>
-    route.fulfill({ json: FAA_RECORD })
-  )
-
-  await page.route('**/api/parse-listing', (route) =>
-    route.fulfill({
-      json: {
-        make: 'Cessna',
-        model: '172S',
-        year: 2004,
-        ttaf: 3200,
-        engines: 1,
-        smoh: 850,
-        smohR: null,
-        propHrs: null,
-        propHrsR: null,
-        condition: 'good',
-        cosmetics: 'average',
-        avionics: ['Garmin G1000'],
-        notes: 'No damage history'
-      }
-    })
-  )
-
-  await page.route('**/api/parse-sale', (route) =>
-    route.fulfill({
-      json: {
-        make: 'Beechcraft',
-        model: 'A36',
-        year: 1998,
-        salePrice: 285000,
-        askingPrice: 310000,
-        ttaf: 4200,
-        smoh: 650,
-        saleMonth: '2025-11',
-        region: 'Southeast US',
-        avionicsTier: 'Modern IFR (GTN/Avidyne + ADS-B)',
-        daysOnMarket: '3-6 months',
-        avionics: ['GTN750', 'G5'],
-        notes: 'Turbonormalized IO-550'
-      }
-    })
-  )
-
-  await page.route('**/api/valuate', (route) =>
-    route.fulfill({
-      json: {
-        sellerAsk: 320000,
-        fairMarketValue: 295000,
-        buyerTarget: 280000,
-        condImpact: '+2%',
-        avImpact: '+5%',
-        engineImpact: '-3%',
-        condVerdict: 'Above average',
-        avVerdict: 'Modern glass premium',
-        engineVerdict: 'Mid-time engine',
-        keyFinding: 'Priced slightly above market',
-        analysis: 'This aircraft is well equipped and fairly priced for the market.',
-        confidence: 'high',
-        negotiatingTips: ['Ask for recent annual', 'Verify SMOH logs']
-      }
-    })
-  )
-
-  await page.route('**/api/comps', (route) =>
-    route.fulfill({
-      json: {
-        summary: 'Active listings show steady demand for the 172S.',
-        askLow: 250000,
-        askMid: 295000,
-        askHigh: 360000,
-        avgDaysListed: 45,
-        activeListings: 18,
-        negotiationNote: 'Most sell within 5% of asking.',
-        listings: [
-          { year: 2004, ttaf: 3200, smoh: 850, ask: 295000, daysListed: 30, cond: 'Good', avionics: 'G1000' },
-          { year: 2006, ttaf: 2800, smoh: 600, ask: 320000, daysListed: 21, cond: 'Excellent', avionics: 'G1000 NXi' }
-        ]
-      }
-    })
-  )
-
-  await page.route('**/api/checklist', (route) =>
-    route.fulfill({
-      json: [
-        { name: 'Firewall SB05-1 inspection', note: 'Check for cracking per Cessna SB', critical: true },
-        { name: 'Seat rail AD 2011-10-09', note: 'Inspect seat rails and locking pins', critical: true }
-      ]
-    })
-  )
-
-  await page.route('**/api/feedback', (route) => route.fulfill({ json: { ok: true } }))
-}
-
-test.beforeEach(async ({ page }) => {
-  await mockApis(page)
-  await page.goto('/')
+test.beforeEach(async ({ page, backendMocks }) => {
+  await mockAnthropic(backendMocks)
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
 })
 
 test('page renders with the expected title and hero', async ({ page }) => {
@@ -151,15 +29,15 @@ test('N-number lookup renders the FAA record', async ({ page }) => {
   await page.locator('#nn').fill('172SP')
   await page.locator('#nn-btn').click()
   const result = page.locator('#nn-result')
-  await expect(result).toContainText('Cessna')
+  await expect(result).toContainText('CESSNA')
   await expect(result).toContainText('172S')
-  await expect(result).toContainText('Skyhawk LLC')
-  await expect(result).toContainText('Lycoming')
+  await expect(result).toContainText('LOCAL DEV')
+  await expect(result).toContainText('LYCOMING')
 })
 
 test('example N-number buttons trigger a lookup', async ({ page }) => {
   await page.getByRole('button', { name: '172SP' }).click()
-  await expect(page.locator('#nn-result')).toContainText('Cessna')
+  await expect(page.locator('#nn-result')).toContainText('CESSNA')
   await expect(page.locator('#nn-result')).toContainText('172S')
 })
 
@@ -179,9 +57,11 @@ test('valuation renders the appraisal result', async ({ page }) => {
   await page.locator('#v-year').fill('2004')
   await page.locator('#v-btn').click()
   const result = page.locator('#v-result')
-  await expect(result).toContainText('$295,000')
-  await expect(result).toContainText('$320,000')
-  await expect(result).toContainText('$280,000')
+  // Missing SMOH is coerced to 0 (fresh). engineAdjustment adds +$23k to the AI baseline.
+  await expect(result).toContainText('$318,000')
+  await expect(result).toContainText('$343,000')
+  await expect(result).toContainText('$303,000')
+  await expect(result).toContainText('Engine time premium')
 })
 
 test('market comps renders listing ranges', async ({ page }) => {

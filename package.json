@@ -8,6 +8,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
+    "start:e2e": "nuxt dev --port 3100",
     "test:e2e": "playwright test",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
@@ -23,7 +24,11 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.49.0",
+    "@playwright-backend-mocks/node": "^0.1.6",
+    "@playwright-backend-mocks/playwright": "^0.1.6",
+    "@playwright-backend-mocks/protocol": "^0.1.6",
+    "@playwright-backend-mocks/proxy": "^0.1.6",
+    "@playwright/test": "1.62.1",
     "supabase": "^2.115.0"
   }
 }
