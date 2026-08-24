@@ -1,7 +1,6 @@
 import { defineConfig, devices } from '@playwright/test'
 
-const PORT = 3100
-const BASE_URL = `http://localhost:${PORT}`
+const BASE_URL = 'http://localhost:3000'
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -12,15 +11,15 @@ export default defineConfig({
   reporter: 'list',
   use: {
     baseURL: BASE_URL,
-    trace: 'on-first-retry'
+    trace: 'on-first-retry',
   },
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } }
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
   ],
   webServer: {
-    command: `npm run dev -- --port ${PORT}`,
+    command: 'npm run dev',
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000
-  }
+    timeout: 120_000,
+  },
 })
