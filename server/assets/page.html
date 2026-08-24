@@ -789,14 +789,6 @@ nav { padding: 0 1.5rem; }
     if (typeof gtag !== 'function') return;
     gtag('event', name, params || {});
   }
-  /** GA4 recommended lead event — mark as key event in Admin > Events */
-  function trackGenerateLead(source, value) {
-    trackEvent('generate_lead', {
-      currency: 'USD',
-      value: value || 24,
-      lead_source: source || 'spv',
-    });
-  }
 </script>
 </head>
 <body>
@@ -1634,10 +1626,6 @@ function getOrCreateClientId() {
 
 function getValuationEmail() {
   return (localStorage.getItem('spv_email') || '').trim();
-}
-
-function setValuationEmail(email) {
-  if (email) localStorage.setItem('spv_email', email.trim().toLowerCase());
 }
 
 function siteShareUrl() {
