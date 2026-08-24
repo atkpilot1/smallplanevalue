@@ -46,7 +46,6 @@ test('twin extras appear for model Baron', async ({ page }) => {
   await expect(page.locator('#cl-result')).toContainText('Engine synchronization')
 })
 
-// BUG: isRetract treats FAA "Fixed wing …" as fixed-gear, so R182 lookup drops retract items.
 test('lookup of 182RG then checklist includes retract-gear items', async ({ page }) => {
   await lookupN(page, '182RG')
   await expect(page.locator('#nn-result')).toContainText('R182')

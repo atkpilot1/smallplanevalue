@@ -8,7 +8,6 @@ Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000`
 
 **Known failing (app bugs, not fixed):**
 
-- Lookup `182RG` → checklist should include retract-gear items. `isRetract` treats FAA `"Fixed wing …"` as fixed-gear, so R182 drops “Gear retraction test”.
 - Lookup `58P` → checklist should include twin-engine items. Twin extras key off `numEngines` / a model regex, not `aircraftType` containing `"multi"`. Valuation already switches to twin for `58P`.
 
 ---
@@ -71,7 +70,7 @@ Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000`
 - [x] Static sections (Documents, Engine, Flight check) always appear
 - [x] Retract extras appear for model `210`
 - [x] Twin extras appear for model `Baron`
-- [x] Lookup `182RG` then checklist includes retract-gear items — **FAILING (app bug)**
+- [x] Lookup `182RG` then checklist includes retract-gear items
 - [x] Lookup `58P` then checklist includes twin-engine items — **FAILING (app bug)**
 - [x] Pass / flag / fail updates progress, stats, and verdict
 - [x] Anthropic 500 still renders the static checklist (no model-specific section)
