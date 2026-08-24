@@ -1,10 +1,8 @@
 import { test, expect, type Page } from '@playwright/test'
 
 /**
- * These tests exercise every user interaction in the ported single-page app.
- * All `/api/*` network calls are mocked so the tests are deterministic and do
- * not require Anthropic / Supabase credentials. The UI/markup is the verbatim
- * port of the original index.html served from server/assets/page.html.
+ * Smoke the main tabs in server/assets/page.html. `/api/*` is mocked so these
+ * do not need Anthropic, Supabase, or a seeded local database.
  */
 
 const FAA_RECORD = {
@@ -128,21 +126,6 @@ async function mockApis(page: Page) {
   )
 
   await page.route('**/api/feedback', (route) => route.fulfill({ json: { ok: true } }))
-
-  await page.route('**/api/valuation-access**', (route) => {
-    if (route.request().method() === 'GET') {
-      return route.fulfill({
-        json: {
-          limit: 1,
-          used: 0,
-          remaining: 999,
-          betaFreeAccess: true,
-          periodStart: '2026-07-01T00:00:00.000Z',
-        },
-      })
-    }
-    return route.fulfill({ json: { ok: true } })
-  })
 }
 
 test.beforeEach(async ({ page }) => {
@@ -152,6 +135,7 @@ test.beforeEach(async ({ page }) => {
 
 test('page renders with the expected title and hero', async ({ page }) => {
   await expect(page).toHaveTitle(/SmallPlaneValue/)
+  await expect(page.locator('.hero-h1')).toContainText('Know What Your')
   await expect(page.locator('#tab-btn-lookup')).toBeVisible()
 })
 
@@ -174,8 +158,9 @@ test('N-number lookup renders the FAA record', async ({ page }) => {
 })
 
 test('example N-number buttons trigger a lookup', async ({ page }) => {
-  await page.getByRole('button', { name: 'C182' }).click()
+  await page.getByRole('button', { name: '172SP' }).click()
   await expect(page.locator('#nn-result')).toContainText('Cessna')
+  await expect(page.locator('#nn-result')).toContainText('172S')
 })
 
 test('parse listing auto-fills the valuation form', async ({ page }) => {
