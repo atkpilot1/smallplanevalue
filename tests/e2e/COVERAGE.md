@@ -6,12 +6,6 @@ Anthropic is mocked at the Node boundary via `playwright-backend-mocks`. Local S
 
 Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000` ask / `$295,000` FMV / `$280,000` buyer) plus the server’s post-AI adjustments.
 
-**Known failing (app bugs, not fixed):**
-
-- Lookup `58P` → checklist should include twin-engine items. Twin extras key off `numEngines` / a model regex, not `aircraftType` containing `"multi"`. Valuation already switches to twin for `58P`.
-
----
-
 ## Shell
 
 - [x] Page title and hero
@@ -71,7 +65,7 @@ Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000`
 - [x] Retract extras appear for model `210`
 - [x] Twin extras appear for model `Baron`
 - [x] Lookup `182RG` then checklist includes retract-gear items
-- [x] Lookup `58P` then checklist includes twin-engine items — **FAILING (app bug)**
+- [x] Lookup `58P` then checklist includes twin-engine items
 - [x] Pass / flag / fail updates progress, stats, and verdict
 - [x] Anthropic 500 still renders the static checklist (no model-specific section)
 - [x] Empty make/model alerts the user

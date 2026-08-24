@@ -55,7 +55,6 @@ test('lookup of 182RG then checklist includes retract-gear items', async ({ page
   await expect(page.locator('#cl-result')).toContainText('Gear retraction test')
 })
 
-// BUG: checklist twin extras key off numEngines/model regex, not aircraftType "multi".
 test('lookup of 58P then checklist includes twin-engine items', async ({ page }) => {
   await lookupN(page, '58P')
   await expect(page.locator('#nn-result')).toContainText('58P')

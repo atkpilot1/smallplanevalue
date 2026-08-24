@@ -2576,7 +2576,7 @@ document.getElementById('cl-result').innerHTML='';
 
 // FAA types say "Fixed wing …" (not rotorcraft). That is not fixed-gear.
 var isRetract = /retract/i.test(window._acType || '') || /arrow|210|baron|bonanza|saratoga|seneca|310|340|414|421|mooney|lance|comanche|centurion|r182|182rg/i.test(model);
-var isMulti = (window._numEng||'') > 1 || model.match(/baron|seneca|310|340|414|421|twin|duchess|seminole|apache|aztec|navajo|chieftain/i);
+var isMulti = Number(window._numEng) > 1 || /multi/i.test(window._acType || '') || /baron|seneca|310|340|414|421|twin|duchess|seminole|apache|aztec|navajo|chieftain/i.test(model);
 
 var base = [
 {name:"Documents and Records", items:[
