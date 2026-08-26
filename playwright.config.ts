@@ -30,11 +30,12 @@ export default defineConfig<object, BackendMocksWorkerOptions>({
       url: BASE_URL,
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
-      env: {
-        ...process.env,
-        PLAYWRIGHT_BACKEND_MOCKS_PROXY_URL: PROXY_URL,
-        NUXT_IGNORE_LOCK: '1',
-      },
+              env: {
+                ...process.env,
+                PLAYWRIGHT_BACKEND_MOCKS_PROXY_URL: PROXY_URL,
+                NITRO_PORT: '3100',
+                PORT: '3100',
+              },
     },
   ],
 })

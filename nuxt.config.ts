@@ -3,11 +3,8 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-01-01',
   devtools: { enabled: false },
 
-  // Deploy to Vercel (Nitro picks this up automatically on Vercel, set explicitly for clarity)
-  // Nitro auto-mounts `server/assets/**` under the `assets:server` storage namespace.
-  nitro: {
-    preset: 'vercel'
-  },
+  // Nitro auto-selects the Vercel preset on Vercel. Local and GitHub CI
+  // produce a Node listener so Playwright can serve the compiled output.
 
   runtimeConfig: {
     // Server-only secrets (never exposed to the client)

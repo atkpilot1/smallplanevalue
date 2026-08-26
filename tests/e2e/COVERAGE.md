@@ -4,7 +4,7 @@
 
 **Locators:** Prefer roles, labels, and button names over CSS ids. Use `data-testid` only on result regions (`lookup-result`, `valuation-result`, `comps-result`, `checklist-result`, `sold-result`, `sold-recent`, `feedback-result`) and pane wrappers. Keep those names when the UI moves to Nuxt components.
 
-Anthropic is mocked at the Node boundary via `playwright-backend-mocks`. Local Supabase must already be running (`npm run db:start`). Playwright starts the mocks proxy and Nuxt on `:3100`.
+Anthropic is mocked at the Node boundary via `playwright-backend-mocks`. Local Supabase must already be running (`npm run db:start`). Playwright serves the production Node build on `:3100` (`npm run build`, then `node .output/server/index.mjs`).
 
 Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000` ask / `$295,000` FMV / `$280,000` buyer) plus the server’s post-AI adjustments.
 
