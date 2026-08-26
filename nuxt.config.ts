@@ -2,9 +2,16 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-01-01',
   devtools: { enabled: false },
+  srcDir: '.',
 
   // Nitro auto-selects the Vercel preset on Vercel. Local and GitHub CI
   // produce a Node listener so Playwright can serve the compiled output.
+
+  css: ['~/assets/css/page.css'],
+
+  components: [
+    { path: '~/components', pathPrefix: false },
+  ],
 
   runtimeConfig: {
     // Server-only secrets (never exposed to the client)
@@ -19,10 +26,29 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: { lang: 'en' },
+      title: 'SmallPlaneValue.com — Honest GA Aircraft Valuations',
       meta: [
         { charset: 'utf-8' },
-        { name: 'viewport', content: 'width=device-width, initial-scale=1' }
-      ]
-    }
-  }
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      ],
+      link: [
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap',
+        },
+        {
+          rel: 'stylesheet',
+          href: 'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css',
+        },
+      ],
+      script: [
+        {
+          src: 'https://www.googletagmanager.com/gtag/js?id=G-9ET7HJRJWC',
+          async: true,
+        },
+      ],
+    },
+  },
 })

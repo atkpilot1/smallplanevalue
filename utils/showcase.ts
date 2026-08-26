@@ -1,6 +1,14 @@
-// Pool of showcase aircraft. To add a plane: drop a JPG in public/planes/ and
-// add an entry here (img is the public URL path, no base64 needed).
-const PLANES = [
+export interface ShowcasePlane {
+  img: string
+  alt: string
+  name: string
+  tag: string
+  icon: string
+  desc: string
+  ask: string
+}
+
+export const PLANES: ShowcasePlane[] = [
   {
     img: '/planes/Cessna.jpg',
     alt: 'Cessna 206',
@@ -47,7 +55,7 @@ const PLANES = [
     ask: '$150k-$500k',
   },
   {
-    img: '/planes/van-rv10.jpg',
+    img: "/planes/van-rv10.jpg",
     alt: "Van's RV-10",
     name: "Van's RV-10",
     tag: 'Experimental',
@@ -57,20 +65,9 @@ const PLANES = [
   },
 ]
 
-// Rotate the showcase every few days: a deterministic set of 3 planes chosen by
-// the current date, so the lineup changes ~every 3 days (same for all visitors).
 const ROTATE_DAYS = 3
 
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-}
-
-function showcasePeriod() {
-  const pinned = process.env.SHOWCASE_PERIOD
+export function showcasePeriod(pinned?: string) {
   if (pinned !== undefined && pinned !== '') {
     const n = Number(pinned)
     if (Number.isFinite(n)) return n
@@ -78,32 +75,9 @@ function showcasePeriod() {
   return Math.floor(Date.now() / (ROTATE_DAYS * 86_400_000))
 }
 
-function pickPlanes(count = 3) {
-  const offset = showcasePeriod() % PLANES.length
+export function pickPlanes(count = 3, period = showcasePeriod()): ShowcasePlane[] {
+  const offset = period % PLANES.length
   return Array.from({ length: Math.min(count, PLANES.length) }, (_, i) => {
     return PLANES[(offset + i) % PLANES.length]
   })
 }
-
-function renderCards(): string {
-  return pickPlanes(3)
-    .map(
-      (p) => `<div class="aircraft-card">
-<img src="${p.img}" alt="${escapeHtml(p.alt)}" loading="lazy">
-<div class="aircraft-card-overlay">
-<div class="aircraft-tag"><i class="ti ${p.icon}" style="font-size:11px"></i> ${escapeHtml(p.tag)}</div>
-<div class="aircraft-name">${escapeHtml(p.name)}</div>
-<div class="aircraft-desc">${escapeHtml(p.desc)}</div>
-</div>
-<div class="aircraft-val-badge">Typical ask: <span>${escapeHtml(p.ask)}</span></div>
-</div>`,
-    )
-    .join('\n')
-}
-
-export default defineEventHandler(async (event) => {
-  const raw = (await useStorage('assets:server').getItem('page.html')) as string
-  const html = raw.replace('<!--SHOWCASE_CARDS-->', renderCards())
-  setHeader(event, 'Content-Type', 'text/html; charset=utf-8')
-  return html
-})
