@@ -50,5 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-results
-          path: test-results
+          path: |
+            test-results
+            playwright-report
           retention-days: 7

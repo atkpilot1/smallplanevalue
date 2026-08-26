@@ -1,0 +1,14 @@
+- tabpanel "Market listings":
+  - paragraph: Enter a make/model to see typical asking price ranges. No fabricated sale prices — just what sellers are asking, plus negotiation guidance.
+  - text: MAKE & MODEL
+  - textbox "MAKE & MODEL":
+    - /placeholder: e.g. Cessna 172S, Van's RV-10
+  - text: YEAR RANGE
+  - combobox "YEAR RANGE":
+    - option "All years" [selected]
+    - option /\d+ – present/
+    - option /\d+ – \d+/
+    - option /\d+ – \d+/
+    - option /\d+ – \d+/
+    - option /Pre-\d+/
+  - button " Search asking prices"

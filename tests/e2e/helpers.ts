@@ -179,6 +179,71 @@ export async function expectValuationDollars(page: Page, fmv: number, ask: numbe
   await expect(result).toContainText(usd(buyer))
 }
 
+const SNAPSHOT_STABILIZE_CSS = `
+html { scroll-behavior: auto !important; }
+*, *::before, *::after {
+  animation: none !important;
+  transition: none !important;
+  caret-color: transparent !important;
+}
+.reveal, .reveal.visible {
+  opacity: 1 !important;
+  transform: none !important;
+}
+* { scrollbar-width: none !important; }
+*::-webkit-scrollbar { width: 0 !important; height: 0 !important; display: none !important; }
+`
+
+/** Kill motion, wait for webfonts/images, force scroll-reveal visible. */
+export async function prepareSnapshot(page: Page) {
+  await page.addStyleTag({ content: SNAPSHOT_STABILIZE_CSS })
+  await page.evaluate(async () => {
+    document.querySelectorAll('.reveal').forEach((el) => el.classList.add('visible'))
+    await document.fonts.ready
+    await Promise.all([
+      document.fonts.load('16px "DM Sans"'),
+      document.fonts.load('700 72px "Bebas Neue"'),
+      document.fonts.load('16px "DM Mono"'),
+    ])
+    await Promise.all(
+      Array.from(document.images).map((img) =>
+        img.complete
+          ? Promise.resolve()
+          : new Promise<void>((resolve) => {
+              img.addEventListener('load', () => resolve(), { once: true })
+              img.addEventListener('error', () => resolve(), { once: true })
+            }),
+      ),
+    )
+  })
+}
+
+export async function expectShot(
+  locator: Locator,
+  name: string,
+  opts: { hideFixedNav?: boolean } = {},
+) {
+  const page = locator.page()
+  if (opts.hideFixedNav) {
+    await page.locator('nav').evaluate((el) => {
+      (el as HTMLElement).style.visibility = 'hidden'
+    })
+  }
+  try {
+    await expect(locator).toHaveScreenshot(`${name}.png`)
+  } finally {
+    if (opts.hideFixedNav) {
+      await page.locator('nav').evaluate((el) => {
+        (el as HTMLElement).style.visibility = ''
+      })
+    }
+  }
+}
+
+export async function expectAria(locator: Locator, name: string) {
+  await expect(locator).toMatchAriaSnapshot({ name })
+}
+
 export async function fetchUsageEvents(clientId: string) {
   const url =
     `${LOCAL_SUPABASE.url}/rest/v1/usage_events` +

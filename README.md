@@ -41,5 +41,17 @@ Seeded N-numbers for lookup: `172SP`, `22T`, `182RG`, `58P`.
 | `npm run build` | Production Nitro build (required before E2E) |
 | `npm run start:e2e` | `node .output/server/index.mjs` on :3100 (used by Playwright) |
 | `npm run test:e2e` | Playwright against the built app (needs `npm run build` and `npm run db:start`) |
+| `npm run test:e2e:snapshots` | Visual + ARIA snapshot tests only |
+| `npm run test:e2e:update-snapshots` | Rewrite snapshot baselines after an intentional UI change |
+| `npm run test:e2e:review-snapshots` | Copy expected / actual / diff images into `test-results/snapshot-review/` |
+
+Snapshot tests lock the current HTML UI so a Nuxt rewrite can match it. Baselines live in `tests/e2e/snapshots.spec.ts-snapshots/` and are generated on Linux Chromium — update them on Linux (or in CI) so they match GitHub Actions.
+
+On a snapshot failure:
+
+1. Open `playwright-report/index.html` (`npx playwright show-report`)
+2. Or run `npm run test:e2e:review-snapshots` and compare the PNGs in `test-results/snapshot-review/` (`*-expected.png`, `*-actual.png`, `*-diff.png`)
+
+`SNAPSHOT_REVIEW=1 npm run test:e2e:snapshots -- --grep "marketing chrome"` forces a known hero-text mismatch so you can see what a diff looks like.
 
 `db:start` on a fresh machine pulls Docker images and can take a few minutes.

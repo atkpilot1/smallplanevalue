@@ -10,11 +10,24 @@ export default defineConfig<object, BackendMocksWorkerOptions>({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   workers: 1,
-  reporter: 'list',
+  reporter: [
+    ['list'],
+    ['html', { open: 'never', outputFolder: 'playwright-report' }],
+  ],
+  expect: {
+    toHaveScreenshot: {
+      animations: 'disabled',
+      caret: 'hide',
+      scale: 'css',
+    },
+  },
   use: {
     baseURL: BASE_URL,
     trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
     backendMocksProxyUrl: PROXY_URL,
+    viewport: { width: 1280, height: 720 },
+    deviceScaleFactor: 1,
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
@@ -30,12 +43,14 @@ export default defineConfig<object, BackendMocksWorkerOptions>({
       url: BASE_URL,
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
-              env: {
-                ...process.env,
-                PLAYWRIGHT_BACKEND_MOCKS_PROXY_URL: PROXY_URL,
-                NITRO_PORT: '3100',
-                PORT: '3100',
-              },
+      env: {
+        ...process.env,
+        PLAYWRIGHT_BACKEND_MOCKS_PROXY_URL: PROXY_URL,
+        NITRO_PORT: '3100',
+        PORT: '3100',
+        // Pin hero showcase so visual snapshots do not drift every 3 days.
+        SHOWCASE_PERIOD: '0',
+      },
     },
   ],
 })

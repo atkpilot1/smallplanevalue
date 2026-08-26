@@ -69,9 +69,17 @@ function escapeHtml(s: string): string {
     .replace(/"/g, '&quot;')
 }
 
+function showcasePeriod() {
+  const pinned = process.env.SHOWCASE_PERIOD
+  if (pinned !== undefined && pinned !== '') {
+    const n = Number(pinned)
+    if (Number.isFinite(n)) return n
+  }
+  return Math.floor(Date.now() / (ROTATE_DAYS * 86_400_000))
+}
+
 function pickPlanes(count = 3) {
-  const period = Math.floor(Date.now() / (ROTATE_DAYS * 86_400_000))
-  const offset = period % PLANES.length
+  const offset = showcasePeriod() % PLANES.length
   return Array.from({ length: Math.min(count, PLANES.length) }, (_, i) => {
     return PLANES[(offset + i) % PLANES.length]
   })

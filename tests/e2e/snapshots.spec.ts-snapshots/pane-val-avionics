@@ -1,0 +1,357 @@
+- tabpanel "Get valuation":
+  - text: PASTE A LISTING (optional)
+  - textbox "Paste a listing":
+    - /placeholder: Paste an aircraft listing from Controller, Trade-A-Plane, Barnstormers, etc. We will auto-fill all fields and avionics for you...
+  - button "Auto-fill from listing"
+  - text: or enter details manually MAKE
+  - textbox "MAKE":
+    - /placeholder: Cessna, Piper, Beech, Cirrus...
+  - text: MODEL
+  - textbox "MODEL":
+    - /placeholder: 172S, Baron D55, SR22, RV-10...
+  - text: YEAR
+  - spinbutton "YEAR"
+  - text: LAST ANNUAL
+  - combobox:
+    - option "Month" [selected]
+    - option "January"
+    - option "February"
+    - option "March"
+    - option "April"
+    - option "May"
+    - option "June"
+    - option "July"
+    - option "August"
+    - option "September"
+    - option "October"
+    - option "November"
+    - option "December"
+  - combobox:
+    - option "Year" [selected]
+    - option /\d+/
+    - option /\d+/
+    - option /\d+/
+    - option /\d+/
+    - option /\d+/
+    - option /\d+/
+    - option /\d+/
+  - checkbox " Out of annual"
+  - text:  Out of annual ENGINE
+  - textbox "ENGINE":
+    - /placeholder: From N-number lookup
+  - text: ASKING PRICE ($)
+  - spinbutton "ASKING PRICE ($)"
+  - text: TOTAL TIME (TTAF HRS)
+  - spinbutton "TOTAL TIME (TTAF HRS)"
+  - text: ENGINES
+  - combobox "ENGINES":
+    - option "Single engine" [selected]
+    - option "Twin engine"
+  - text:  ENGINE TIMES SMOH & TBO drive value as much as avionics — enter times from the logs RECOMMENDED TBO (HRS)
+  - combobox:
+    - option /\d+,\d+ hrs/
+    - option /\d+,\d+ hrs/
+    - option /\d+,\d+ hrs/
+    - option /\d+,\d+ hrs/
+    - option /\d+,\d+ hrs/
+    - option /\d+,\d+ hrs/ [selected]
+    - option /\d+,\d+ hrs/
+    - option /\d+,\d+ hrs/
+  - text: ENGINE CONVERSION / STC
+  - textbox "ENGINE CONVERSION / STC":
+    - /placeholder: e.g. IO-550 conversion, RAM, tip tanks...
+  - text: ENGINE SMOH (HRS)
+  - spinbutton "ENGINE SMOH (HRS)"
+  - text: PROP TSOH (HRS)
+  - spinbutton /e\.g\. \d+/
+  - text: OVERALL CONDITION
+  - combobox:
+    - option "Excellent — like new"
+    - option "Good — minor wear" [selected]
+    - option "Fair — visible wear"
+    - option "Poor — needs work"
+  - text: PAINT & INTERIOR
+  - combobox:
+    - option "Fresh paint & new interior"
+    - option "Good condition" [selected]
+    - option "Fair / dated"
+    - option "Needs refurbishment"
+  - text: LOGBOOKS
+  - combobox "LOGBOOKS":
+    - option "Unknown" [selected]
+    - option "Complete since new (+value)"
+    - option "Complete, no unexplained gaps"
+    - option "Minor gaps"
+    - option "Missing / incomplete (−value)"
+  - text: DAMAGE HISTORY
+  - combobox "DAMAGE HISTORY":
+    - option "Unknown" [selected]
+    - option "None — clean, verified"
+    - option "Repaired — minor, documented"
+    - option "Repaired — major (spar/firewall/prop strike)"
+  - text: AVIONICS PANEL
+  - combobox "AVIONICS PANEL":
+    - option "Select a panel type…" [selected]
+    - option "Steam / round-gauge (basic)"
+    - option "Basic IFR — WAAS GPS + ADS-B"
+    - option /Single glass upgrade — Aspen \/ G5 \/ GI \d+/
+    - option "Modern Garmin suite — GTN + glass + GFC autopilot"
+    - option "Full glass + autopilot — latest Garmin suite"
+  - paragraph: Comfort and safety options — always counted in your valuation when checked.
+  - text: COMFORT & ENVIRONMENT
+  - checkbox "Air conditioning (factory or STC)"
+  - text: Air conditioning (factory or STC) SAFETY & AWARENESS
+  - checkbox "Angle of attack (AOA) indicator"
+  - text: Angle of attack (AOA) indicator
+  - checkbox "FIKI certified (flight into known ice)"
+  - text: FIKI certified (flight into known ice)
+  - checkbox "Known ice / inadvertent TKS (not FIKI — exit icing only)"
+  - text: Known ice / inadvertent TKS (not FIKI — exit icing only)
+  - checkbox "TAWS (terrain awareness / avoidance)"
+  - text: TAWS (terrain awareness / avoidance)
+  - checkbox "Synthetic vision (add-on or retrofit — skip if G1000 NXi / Perspective+)"
+  - text: Synthetic vision (add-on or retrofit — skip if G1000 NXi / Perspective+) PEDIGREE & AWARDS
+  - checkbox "Oshkosh / EAA AirVenture award winner (strongest on experimental/homebuilt)"
+  - text: Oshkosh / EAA AirVenture award winner (strongest on experimental/homebuilt)
+  - group:
+    - text: ▶ AVIONICS — itemize for precision optional — overrides panel above ▶ BASIC / LEGACY
+    - checkbox "Standard six pack (steam gauges)"
+    - text: Standard six pack (steam gauges)
+    - checkbox "Single NAV/COM"
+    - text: Single NAV/COM
+    - checkbox "Dual NAV/COM"
+    - text: Dual NAV/COM
+    - checkbox "ADF"
+    - text: ADF
+    - checkbox "DME"
+    - text: DME
+    - checkbox /King KX-\d+\/\d+/
+    - text: /King KX-\d+\/\d+ ▶ GARMIN/
+    - checkbox "G5 (single or dual) x1"
+    - text: G5 (single or dual)
+    - combobox:
+      - option "x1" [selected]
+      - option "x2"
+    - checkbox /GI \d+ x1/
+    - text: /GI \d+/
+    - combobox:
+      - option "x1" [selected]
+      - option "x2"
+    - checkbox "G500"
+    - text: G500
+    - checkbox /G500 TXi \d+\.\d+"/
+    - text: G500 TXi
+    - combobox:
+      - option /\d+\.\d+"/ [selected]
+      - option "7\""
+      - option /2x \d+\.\d+"/
+      - option "2x 7\""
+      - option /\d+\.\d+"\+7"/
+    - checkbox /G600 TXi \d+\.\d+"/
+    - text: G600 TXi
+    - combobox:
+      - option /\d+\.\d+"/ [selected]
+      - option "7\""
+      - option /2x \d+\.\d+"/
+      - option "2x 7\""
+      - option /\d+\.\d+"\+7"/
+    - checkbox "G1000"
+    - text: G1000
+    - checkbox "G1000 NXi"
+    - text: G1000 NXi
+    - checkbox "G3X Touch"
+    - text: G3X Touch
+    - checkbox /GNS \d+\(non WAAS\) x1/
+    - text: /GNS \d+\(non WAAS\)/
+    - combobox:
+      - option "x1" [selected]
+      - option "x2"
+    - checkbox "GNS 430W (WAAS) x1"
+    - text: GNS 430W (WAAS)
+    - combobox:
+      - option "x1" [selected]
+      - option "x2"
+    - checkbox /GNS \d+ \(non-WAAS\) x1/
+    - text: /GNS \d+ \(non-WAAS\)/
+    - combobox:
+      - option "x1" [selected]
+      - option "x2"
+    - checkbox "GNS 530W (WAAS) x1"
+    - text: GNS 530W (WAAS)
+    - combobox:
+      - option "x1" [selected]
+      - option "x2"
+    - checkbox /GNS \d+ \(WAAS\)/
+    - text: /GNS \d+ \(WAAS\)/
+    - checkbox /GTN \d+ x1/
+    - text: /GTN \d+/
+    - combobox:
+      - option "x1" [selected]
+      - option "x2"
+    - checkbox /GTN \d+ x1/
+    - text: /GTN \d+/
+    - combobox:
+      - option "x1" [selected]
+      - option "x2"
+    - checkbox "GTN 650Xi x1"
+    - text: GTN 650Xi
+    - combobox:
+      - option "x1" [selected]
+      - option "x2"
+    - checkbox "GTN 750Xi x1"
+    - text: GTN 750Xi
+    - combobox:
+      - option "x1" [selected]
+      - option "x2"
+    - checkbox /GPS \d+/
+    - text: /GPS \d+/
+    - checkbox /GNX \d+/
+    - text: /GNX \d+/
+    - checkbox /GNC \d+ \(NAV\/COM\) x1/
+    - text: /GNC \d+ \(NAV\/COM\)/
+    - combobox:
+      - option "x1" [selected]
+      - option "x2"
+    - checkbox /GTR \d+ \(COM radio\) x1/
+    - text: /GTR \d+ \(COM radio\)/
+    - combobox:
+      - option "x1" [selected]
+      - option "x2"
+    - checkbox /GFC \d+ autopilot/
+    - text: /GFC \d+ autopilot/
+    - checkbox /GFC \d+ autopilot/
+    - text: /GFC \d+ autopilot/
+    - checkbox /GFC \d+ autopilot/
+    - text: /GFC \d+ autopilot/
+    - checkbox "Garmin Autoland (HALO/Safe Return/HomeSafe)"
+    - text: Garmin Autoland (HALO/Safe Return/HomeSafe)
+    - checkbox "GAD 43e autopilot adapter"
+    - text: GAD 43e autopilot adapter
+    - checkbox "Garmin MX20 MFD"
+    - text: Garmin MX20 MFD
+    - checkbox /Garmin GMX \d+ MFD/
+    - text: /Garmin GMX \d+ MFD/
+    - checkbox /GDL \d+ \(ADS-B transceiver\)/
+    - text: /GDL \d+ \(ADS-B transceiver\)/
+    - checkbox /GMA \d+ \(Bluetooth\) audio panel/
+    - text: /GMA \d+ \(Bluetooth\) audio panel/
+    - checkbox /GMA \d+\/35c audio panel/
+    - text: /GMA \d+\/35c audio panel/
+    - checkbox /GI \d+ standby instrument/
+    - text: /GI \d+ standby instrument/
+    - checkbox /GTX \d+ \(ADS-B In\/Out transponder\)/
+    - text: /GTX \d+ \(ADS-B In\/Out transponder\)/
+    - checkbox /GWX \d+\/\d+\/\d+\/\d+ weather radar/
+    - text: /GWX \d+\/\d+\/\d+\/\d+ weather radar/
+    - checkbox /GI \d+ EIS \/ TXi EIS engine monitor/
+    - text: /GI \d+ EIS \/ TXi EIS engine monitor ▶ ASPEN AVIONICS/
+    - checkbox "Evolution E5"
+    - text: Evolution E5
+    - checkbox /Evolution Pro \d+ MAX PFD/
+    - text: /Evolution Pro \d+ MAX PFD/
+    - checkbox /Evolution MFD \d+\/\d+/
+    - text: /Evolution MFD \d+\/\d+/
+    - checkbox /Evolution \d+ MAX \(full panel\)/
+    - text: /Evolution \d+ MAX \(full panel\) ▶ AVIDYNE/
+    - checkbox "Entegra PFD/MFD (R9)"
+    - text: Entegra PFD/MFD (R9)
+    - checkbox /EX500\/\d+ MFD/
+    - text: /EX500\/\d+ MFD/
+    - checkbox /IFD \d+/
+    - text: /IFD \d+/
+    - checkbox /IFD \d+\/\d+/
+    - text: /IFD \d+\/\d+/
+    - checkbox /DFC \d+ autopilot/
+    - text: /DFC \d+ autopilot/
+    - checkbox /DFC \d+ autopilot/
+    - text: /DFC \d+ autopilot ▶ DYNON/
+    - checkbox "SkyView HDX (PFD/MFD)"
+    - text: SkyView HDX (PFD/MFD)
+    - checkbox "SkyView SE"
+    - text: SkyView SE
+    - checkbox "D10A/D100 (EFIS)"
+    - text: D10A/D100 (EFIS)
+    - checkbox "SV-AP autopilot"
+    - text: SV-AP autopilot
+    - checkbox "SkyView GPS navigator"
+    - text: SkyView GPS navigator ▶ OTHER AUTOPILOTS
+    - checkbox "S-TEC 55X"
+    - text: S-TEC 55X
+    - checkbox "S-TEC (other)"
+    - text: S-TEC (other)
+    - checkbox /S-TEC \d+/
+    - text: /S-TEC \d+/
+    - checkbox /King KFC \d+\/\d+\/\d+/
+    - text: /King KFC \d+\/\d+\/\d+/
+    - checkbox "TruTrak / BendixKing"
+    - text: TruTrak / BendixKing ▶ PS ENGINEERING
+    - checkbox /PMA \d+ series audio panel/
+    - text: /PMA \d+ series audio panel/
+    - checkbox /PMA [\d,.]+[bkmBKM]+ audio panel/
+    - text: /PMA [\d,.]+[bkmBKM]+ audio panel/
+    - checkbox /PMA \d+\/\d+ audio panel/
+    - text: /PMA \d+\/\d+ audio panel ▶ L3 \/ L3HARRIS/
+    - checkbox /ESI-\d+ electronic standby/
+    - text: /ESI-\d+ electronic standby ▶ UAVIONIX \(mostly experimental\)/
+    - checkbox "skyBeacon (wingtip ADS-B Out)"
+    - text: skyBeacon (wingtip ADS-B Out)
+    - checkbox "tailBeacon (tail ADS-B Out)"
+    - text: tailBeacon (tail ADS-B Out)
+    - checkbox "echoUAT (ADS-B In/Out)"
+    - text: echoUAT (ADS-B In/Out)
+    - checkbox "tailBeaconX (transponder + ADS-B)"
+    - text: tailBeaconX (transponder + ADS-B)
+    - checkbox /AV-\d+-C \/ AV-\d+-E \(EFIS\)/
+    - text: /AV-\d+-C \/ AV-\d+-E \(EFIS\)/
+    - checkbox "AvLink (Wi-Fi gateway)"
+    - text: AvLink (Wi-Fi gateway)
+    - checkbox "BeaconX series"
+    - text: BeaconX series ▶ TRANSPONDER / ADS-B
+    - checkbox "ADS-B Out (other)"
+    - text: ADS-B Out (other)
+    - checkbox "Traffic (TAS/TCAD)"
+    - text: Traffic (TAS/TCAD)
+    - checkbox /Stormscope WX-\d+/
+    - text: /Stormscope WX-\d+/
+    - checkbox /BendixKing RDR \d+\/\d+ radar/
+    - text: /BendixKing RDR \d+\/\d+ radar/
+    - checkbox /Legacy radar \(RDS-\d+\/\d+, other\)/
+    - text: /Legacy radar \(RDS-\d+\/\d+, other\) ▶ ENGINE MONITORS/
+    - checkbox "EI CGR-30P x1"
+    - text: EI CGR-30P
+    - combobox:
+      - option "x1" [selected]
+      - option "x2"
+      - option "x3"
+    - checkbox "EI (other) x1"
+    - text: EI (other)
+    - combobox:
+      - option "x1" [selected]
+      - option "x2"
+      - option "x3"
+    - checkbox /JPI EDM \d+\/\d+\/\d+ x1/
+    - text: /JPI EDM \d+\/\d+\/\d+/
+    - combobox:
+      - option "x1" [selected]
+      - option "x2"
+      - option "x3"
+    - text: ▶ OTHER
+    - checkbox "XM/SiriusXM weather"
+    - text: XM/SiriusXM weather ▶ UPGRADES & MODIFICATIONS
+    - checkbox "Engine STC / conversion"
+    - text: Engine STC / conversion
+    - checkbox "3-blade prop upgrade"
+    - text: 3-blade prop upgrade
+    - checkbox "CiES fuel senders"
+    - text: CiES fuel senders
+    - checkbox "LED lighting upgrade"
+    - text: LED lighting upgrade
+    - checkbox "Fresh annual inspection"
+    - text: Fresh annual inspection
+    - checkbox "Built-in oxygen system"
+    - text: Built-in oxygen system
+  - text: NOTES (damage history, engine OH type, storage, special equipment)
+  - textbox "NOTES (damage history, engine OH type, storage, special equipment)":
+    - /placeholder: No damage history, all logs since new, hangared, factory reman engines at 200 SMOH, RAM conversion...
+  - button " Get honest valuation"
+  - paragraph: Free beta — unlimited valuations while we gather pilot feedback.

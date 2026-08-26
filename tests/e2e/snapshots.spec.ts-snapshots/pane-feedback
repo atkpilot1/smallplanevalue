@@ -1,0 +1,25 @@
+- tabpanel "Feedback":
+  - paragraph: Help us improve SmallPlaneValue — we're in free beta and want your honest take.
+  - text: Spread the word
+  - paragraph: Share with BeechTalk, Facebook groups, Instagram, or X — every pilot who tries it makes valuations better for everyone.
+  - link "Facebook":
+    - /url: https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A3100
+  - link "X":
+    - /url: https://twitter.com/intent/tweet?text=Free%20GA%20aircraft%20valuations%20at%20http%3A%2F%2Flocalhost%3A3100%20%E2%80%94%20honest%20asking%20ranges%20and%20fair-market%20estimates%2C%20no%20fabricated%20sale%20prices.%20Paste%20a%20listing%20or%20enter%20your%20aircraft.%20Looking%20for%20feedback%20from%20pilots%20%E2%80%94%20especially%20BeechTalk%20and%20type-club%20folks.%20Try%20it%20and%20tell%20us%20what%20we%20got%20right%20or%20wrong.
+  - button " Copy for BeechTalk / FB"
+  - paragraph
+  - text: YOUR EMAIL (optional)
+  - textbox "pilot@email.com"
+  - text: AIRCRAFT
+  - textbox "AIRCRAFT":
+    - /placeholder: e.g. 1981 Beech B58 Baron
+  - text: VALUATION ACCURACY
+  - combobox "VALUATION ACCURACY":
+    - option "N/A" [selected]
+    - option "Too low"
+    - option "About right"
+    - option "Too high"
+  - text: YOUR FEEDBACK
+  - textbox "YOUR FEEDBACK":
+    - /placeholder: What did we get wrong? What features do you want?
+  - button " Send feedback"

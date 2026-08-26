@@ -1,0 +1,82 @@
+- navigation:
+  - link " SmallPlane Value":
+    - /url: "#"
+  - link "Tools":
+    - /url: "#tools"
+  - link "How it works":
+    - /url: "#how-it-works"
+  - link "Aircraft types":
+    - /url: "#aircraft-types"
+  - link "Get a valuation":
+    - /url: "#app"
+  - button "Look up my plane"
+- text:  The Honest GA Valuation Tool
+- heading "Know What Your Plane Is Worth." [level=1]
+- paragraph: Real asking price ranges for piston singles, twins, LSA, and experimental aircraft — with transparent discount bands, not fabricated sale prices.
+- paragraph: /Unlike index tools or \d+-page reports — built for the listing you're looking at right now\./
+- link " Get a free valuation":
+  - /url: "#app"
+- link " How it works":
+  - /url: "#how-it-works"
+- text: /6 Aircraft categories AI Powered estimates \d+% Free to use 0 Fabricated sale prices/
+- img /Cessna \d+/
+- text: "/ Piston Single Cessna \\d+ 6-seat utility single · commonly used for utility and bush operations Typical ask: \\$[\\d,.]+[bkmBKM]+-\\$[\\d,.]+[bkmBKM]+/"
+- img /Cessna \d+/
+- text: "/ Vintage Classic Cessna \\d+ 5-seat businessliner · Jacobs R-\\d+ radial · \\d+-\\d+ Typical ask: \\$[\\d,.]+[bkmBKM]+-\\$[\\d,.]+[bkmBKM]+/"
+- img "Beechcraft Staggerwing"
+- text: "/ Vintage \\/ Warbird Beech Staggerwing 5-seat biplane · \\d+-\\d+ · R-\\d+ Wasp Jr\\. Typical ask: \\$[\\d,.]+[bkmBKM]+-\\$[\\d,.]+[bkmBKM]+ Why SmallPlaneValue/"
+- heading "Built for GA, not jet brokers." [level=2]
+- paragraph: Vref and Aircraft Bluebook focus on larger turbine aircraft. We built the tool that actually works for piston singles, twins, LSA, and experimental aircraft — the planes most pilots actually fly.
+- text: / No fabricated sale prices Unlike real estate, GA aircraft sale prices aren't publicly recorded\. We're honest about that — we show asking price ranges with transparent negotiation bands instead of making numbers up\.  Aircraft-specific intelligence Our AI knows the difference between a \d+ Cherokee \d+ and a \d+ SR22T\. Model-specific ADs, known issues, and avionics premiums are all factored in\.  The full buyer workflow Look up the N-number, get the valuation, run the pre-buy checklist, then use flagged issues to negotiate\. One site, the complete process\. How it works/
+- heading "From N-number to negotiating position." [level=2]
+- text: /\d+ Look up the N-number Enter any US registration and pull the full FAA record — make, model, year, engine, and ownership history in seconds\. \d+ Get the valuation See the typical asking price range for that aircraft, the likely negotiated price, and what's driving value up or down\. \d+ Run the pre-buy checklist Get an AI-generated inspection checklist specific to that make and model\. Mark items pass, flag, or fail\. \d+ Negotiate with confidence Flagged issues feed back into a price adjustment analysis, so you walk in knowing exactly what to ask for\. The toolkit/
+- heading "Everything in one place." [level=2]
+- paragraph: Five integrated tools that cover the entire aircraft buying and selling process.
+- link " Step 2 AI valuation Enter make, model, year, time, condition, and avionics. Get asking price range, likely sale range, and factor-by-factor analysis. ":
+  - /url: "#app"
+- link " Step 1 N-number lookup One N-number pulls the full FAA record — make, model, ownership history, ADs, registration expiry, and buyer flags. ":
+  - /url: "#app"
+- link " Step 3 Pre-buy checklist AI-generated inspection checklist specific to your aircraft type. Track pass, flag, and fail items. Get price adjustment guidance. ":
+  - /url: "#app"
+- link " Reference Market listings See current asking price ranges for any model — low, median, and high — plus days on market and negotiation context. ":
+  - /url: "#app"
+- link " Community Report a sale Submit what you actually paid (or sold for). Anonymous crowd-sourced data that builds the transaction database nobody else has. ":
+  - /url: "#app"
+- text: Coverage
+- heading "Built for the planes people actually fly." [level=2]
+- paragraph: We cover the full spectrum of general aviation — from first trainers to high-performance experimentals.
+- text:  Piston singles  Piston twins  Experimental / Homebuilt  Light Sport (LSA)  Turboprop singles  Vintage / Warbird  A note on GA aircraft valuations Unlike real estate, GA aircraft sale prices are not publicly recorded anywhere. SmallPlaneValue.com shows asking price ranges pulled from active listings (Trade-A-Plane, Controller, Barnstormers) paired with category-specific discount bands that represent typical negotiated outcomes — based on broker experience, not verified transactions. We believe being honest about this is more useful than showing made-up "sale prices." The tools
+- heading "Start your research." [level=2]
+- tablist "Tools":
+  - tab "N-number lookup" [selected]
+  - tab "Get valuation"
+  - tab "Market listings"
+  - tab "Pre-buy checklist"
+  - tab "Report a sale"
+  - tab "Feedback"
+- tabpanel "N-number lookup":
+  - text: N-NUMBER N
+  - textbox "N-NUMBER":
+    - /placeholder: 12345 or SR22T
+  - button " Look up"
+  - text: "Try:"
+  - button "172SP"
+  - button "RV10"
+  - button "SR22T"
+  - button "PA28"
+  - button "C182"
+- strong: SmallPlaneValue.com
+- text: provides AI-generated estimates for research and educational purposes only. Not a certified appraisal. For financing, insurance, or legal transactions, engage an ASA-certified aircraft appraiser. GA sale prices are not publicly recorded — our valuations are based on asking price analysis, category discount bands, and anonymous crowd-sourced transaction data.
+- contentinfo:
+  - text: SmallPlaneValue.com Honest GA aircraft valuations · Built for pilots, by pilots.
+  - link "Tools":
+    - /url: "#tools"
+  - link "How it works":
+    - /url: "#how-it-works"
+  - link "Aircraft types":
+    - /url: "#aircraft-types"
+  - link "Share on Facebook":
+    - /url: https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A3100
+  - link "Share on X":
+    - /url: https://twitter.com/intent/tweet?text=Free%20GA%20aircraft%20valuations%20at%20http%3A%2F%2Flocalhost%3A3100%20%E2%80%94%20honest%20asking%20ranges%20and%20fair-market%20estimates%2C%20no%20fabricated%20sale%20prices.%20Paste%20a%20listing%20or%20enter%20your%20aircraft.%20Looking%20for%20feedback%20from%20pilots%20%E2%80%94%20especially%20BeechTalk%20and%20type-club%20folks.%20Try%20it%20and%20tell%20us%20what%20we%20got%20right%20or%20wrong.
+  - text: /© \d+ SmallPlaneValue\.com · All rights reserved Not affiliated with FAA, Vref, or Aircraft Bluebook/

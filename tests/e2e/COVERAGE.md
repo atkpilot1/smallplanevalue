@@ -93,3 +93,20 @@ Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000`
 
 - [x] Copy-for-BeechTalk sets the copied confirmation
 - [x] Facebook and X links point at the current origin
+
+## Visual + ARIA snapshots (`@snapshot`)
+
+Lock the current HTML UI so a Nuxt rewrite can match it pixel-for-pixel and in the accessibility tree. Mock Anthropic; use live local Supabase. Pin the hero showcase with `SHOWCASE_PERIOD=0`.
+
+**Regions to keep as rewrite anchors:** `nav`, `.hero`, `#why`, `#how-it-works`, `#tools`, `#aircraft-types`, `#app`, `.disclaimer`, `footer`, pane/result `data-testid`s.
+
+**Review a failure:** `npx playwright show-report` or `npm run test:e2e:review-snapshots` then open `test-results/snapshot-review/` (`expected` / `actual` / `diff`). Update intentional changes with `npm run test:e2e:update-snapshots` on Linux. `SNAPSHOT_REVIEW=1` on the marketing-chrome test forces a known hero mismatch for checking the review path.
+
+- [x] Marketing chrome (nav, hero, why, how-it-works, tools, types, disclaimer, footer) + page ARIA
+- [x] Empty tool panes (all six) + pane ARIA; valuation avionics-open ARIA
+- [x] Valuation pane twin-engine and Cirrus-generation variants
+- [x] Lookup success and not-found result cards
+- [x] Engine-life bar + valuation result (with listing ask)
+- [x] Comps result card
+- [x] Checklist first section + full checklist ARIA
+- [x] Sold thank-you / recent list + feedback thank-you

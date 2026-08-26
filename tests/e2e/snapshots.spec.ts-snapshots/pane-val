@@ -1,0 +1,121 @@
+- tabpanel "Get valuation":
+  - text: PASTE A LISTING (optional)
+  - textbox "Paste a listing":
+    - /placeholder: Paste an aircraft listing from Controller, Trade-A-Plane, Barnstormers, etc. We will auto-fill all fields and avionics for you...
+  - button "Auto-fill from listing"
+  - text: or enter details manually MAKE
+  - textbox "MAKE":
+    - /placeholder: Cessna, Piper, Beech, Cirrus...
+  - text: MODEL
+  - textbox "MODEL":
+    - /placeholder: 172S, Baron D55, SR22, RV-10...
+  - text: YEAR
+  - spinbutton "YEAR"
+  - text: LAST ANNUAL
+  - combobox:
+    - option "Month" [selected]
+    - option "January"
+    - option "February"
+    - option "March"
+    - option "April"
+    - option "May"
+    - option "June"
+    - option "July"
+    - option "August"
+    - option "September"
+    - option "October"
+    - option "November"
+    - option "December"
+  - combobox:
+    - option "Year" [selected]
+    - option /\d+/
+    - option /\d+/
+    - option /\d+/
+    - option /\d+/
+    - option /\d+/
+    - option /\d+/
+    - option /\d+/
+  - checkbox " Out of annual"
+  - text:  Out of annual ENGINE
+  - textbox "ENGINE":
+    - /placeholder: From N-number lookup
+  - text: ASKING PRICE ($)
+  - spinbutton "ASKING PRICE ($)"
+  - text: TOTAL TIME (TTAF HRS)
+  - spinbutton "TOTAL TIME (TTAF HRS)"
+  - text: ENGINES
+  - combobox "ENGINES":
+    - option "Single engine" [selected]
+    - option "Twin engine"
+  - text:  ENGINE TIMES SMOH & TBO drive value as much as avionics — enter times from the logs RECOMMENDED TBO (HRS)
+  - combobox:
+    - option /\d+,\d+ hrs/
+    - option /\d+,\d+ hrs/
+    - option /\d+,\d+ hrs/
+    - option /\d+,\d+ hrs/
+    - option /\d+,\d+ hrs/
+    - option /\d+,\d+ hrs/ [selected]
+    - option /\d+,\d+ hrs/
+    - option /\d+,\d+ hrs/
+  - text: ENGINE CONVERSION / STC
+  - textbox "ENGINE CONVERSION / STC":
+    - /placeholder: e.g. IO-550 conversion, RAM, tip tanks...
+  - text: ENGINE SMOH (HRS)
+  - spinbutton "ENGINE SMOH (HRS)"
+  - text: PROP TSOH (HRS)
+  - spinbutton /e\.g\. \d+/
+  - text: OVERALL CONDITION
+  - combobox:
+    - option "Excellent — like new"
+    - option "Good — minor wear" [selected]
+    - option "Fair — visible wear"
+    - option "Poor — needs work"
+  - text: PAINT & INTERIOR
+  - combobox:
+    - option "Fresh paint & new interior"
+    - option "Good condition" [selected]
+    - option "Fair / dated"
+    - option "Needs refurbishment"
+  - text: LOGBOOKS
+  - combobox "LOGBOOKS":
+    - option "Unknown" [selected]
+    - option "Complete since new (+value)"
+    - option "Complete, no unexplained gaps"
+    - option "Minor gaps"
+    - option "Missing / incomplete (−value)"
+  - text: DAMAGE HISTORY
+  - combobox "DAMAGE HISTORY":
+    - option "Unknown" [selected]
+    - option "None — clean, verified"
+    - option "Repaired — minor, documented"
+    - option "Repaired — major (spar/firewall/prop strike)"
+  - text: AVIONICS PANEL
+  - combobox "AVIONICS PANEL":
+    - option "Select a panel type…" [selected]
+    - option "Steam / round-gauge (basic)"
+    - option "Basic IFR — WAAS GPS + ADS-B"
+    - option /Single glass upgrade — Aspen \/ G5 \/ GI \d+/
+    - option "Modern Garmin suite — GTN + glass + GFC autopilot"
+    - option "Full glass + autopilot — latest Garmin suite"
+  - paragraph: Comfort and safety options — always counted in your valuation when checked.
+  - text: COMFORT & ENVIRONMENT
+  - checkbox "Air conditioning (factory or STC)"
+  - text: Air conditioning (factory or STC) SAFETY & AWARENESS
+  - checkbox "Angle of attack (AOA) indicator"
+  - text: Angle of attack (AOA) indicator
+  - checkbox "FIKI certified (flight into known ice)"
+  - text: FIKI certified (flight into known ice)
+  - checkbox "Known ice / inadvertent TKS (not FIKI — exit icing only)"
+  - text: Known ice / inadvertent TKS (not FIKI — exit icing only)
+  - checkbox "TAWS (terrain awareness / avoidance)"
+  - text: TAWS (terrain awareness / avoidance)
+  - checkbox "Synthetic vision (add-on or retrofit — skip if G1000 NXi / Perspective+)"
+  - text: Synthetic vision (add-on or retrofit — skip if G1000 NXi / Perspective+) PEDIGREE & AWARDS
+  - checkbox "Oshkosh / EAA AirVenture award winner (strongest on experimental/homebuilt)"
+  - text: Oshkosh / EAA AirVenture award winner (strongest on experimental/homebuilt)
+  - group: ▶ AVIONICS — itemize for precision optional — overrides panel above
+  - text: NOTES (damage history, engine OH type, storage, special equipment)
+  - textbox "NOTES (damage history, engine OH type, storage, special equipment)":
+    - /placeholder: No damage history, all logs since new, hangared, factory reman engines at 200 SMOH, RAM conversion...
+  - button " Get honest valuation"
+  - paragraph: Free beta — unlimited valuations while we gather pilot feedback.
