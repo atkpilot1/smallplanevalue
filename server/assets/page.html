@@ -1023,32 +1023,32 @@ Real asking price ranges for piston singles, twins, LSA, and experimental aircra
 <div class="section-kicker">The tools</div>
 <h2 class="section-h2">Start your research.</h2>
 </div>
-<div class="tab-bar">
-<button class="tab-btn active" id="tab-btn-lookup" onclick="switchTab('lookup')">
-<i class="ti ti-id"></i> N-number lookup
+<div class="tab-bar" role="tablist" aria-label="Tools">
+<button class="tab-btn active" role="tab" id="tab-btn-lookup" aria-selected="true" aria-controls="pane-lookup" onclick="switchTab('lookup')">
+<i class="ti ti-id" aria-hidden="true"></i> N-number lookup
 </button>
-<button class="tab-btn highlight" id="tab-btn-val" onclick="if(window._lastLookup){prefillVal(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.aircraftType||'',window._lastLookup.numEngines||'',window._lastLookup.engineMake||'',window._lastLookup.engineModel||'');}switchTab('val');">
-<i class="ti ti-calculator"></i> Get valuation
+<button class="tab-btn highlight" role="tab" id="tab-btn-val" aria-selected="false" aria-controls="pane-val" onclick="if(window._lastLookup){prefillVal(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.aircraftType||'',window._lastLookup.numEngines||'',window._lastLookup.engineMake||'',window._lastLookup.engineModel||'');}switchTab('val');">
+<i class="ti ti-calculator" aria-hidden="true"></i> Get valuation
 </button>
-<button class="tab-btn" id="tab-btn-comps" onclick="if(window._lastLookup){var ci=document.getElementById('c-model');if(ci)ci.value=window._lastLookup.make+' '+window._lastLookup.model;}switchTab('comps')">
-<i class="ti ti-search"></i> Market listings
+<button class="tab-btn" role="tab" id="tab-btn-comps" aria-selected="false" aria-controls="pane-comps" onclick="if(window._lastLookup){var ci=document.getElementById('c-model');if(ci)ci.value=window._lastLookup.make+' '+window._lastLookup.model;}switchTab('comps')">
+<i class="ti ti-search" aria-hidden="true"></i> Market listings
 </button>
-<button class="tab-btn" id="tab-btn-checklist" onclick="if(window._lastLookup){prefillCl(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.engineMake||'',window._lastLookup.engineModel||'',window._lastLookup.aircraftType||'',window._lastLookup.numEngines||'');}switchTab('checklist')">
-<i class="ti ti-clipboard-check"></i> Pre-buy checklist
+<button class="tab-btn" role="tab" id="tab-btn-checklist" aria-selected="false" aria-controls="pane-checklist" onclick="if(window._lastLookup){prefillCl(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.engineMake||'',window._lastLookup.engineModel||'',window._lastLookup.aircraftType||'',window._lastLookup.numEngines||'');}switchTab('checklist')">
+<i class="ti ti-clipboard-check" aria-hidden="true"></i> Pre-buy checklist
 </button>
-<button class="tab-btn highlight" id="tab-btn-sold" onclick="switchTab('sold')">
-<i class="ti ti-currency-dollar"></i> Report a sale
+<button class="tab-btn highlight" role="tab" id="tab-btn-sold" aria-selected="false" aria-controls="pane-sold" onclick="switchTab('sold')">
+<i class="ti ti-currency-dollar" aria-hidden="true"></i> Report a sale
 </button>
-<button class="tab-btn" id="tab-btn-feedback" onclick="switchTab('feedback')" style="font-weight:600">
-<i class="ti ti-message-circle"></i> Feedback
+<button class="tab-btn" role="tab" id="tab-btn-feedback" aria-selected="false" aria-controls="pane-feedback" onclick="switchTab('feedback')" style="font-weight:600">
+<i class="ti ti-message-circle" aria-hidden="true"></i> Feedback
 </button>
 </div>
 
 <!-- N-NUMBER LOOKUP -->
-<div class="tab-pane active" id="pane-lookup">
+<div class="tab-pane active" role="tabpanel" id="pane-lookup" data-testid="pane-lookup" aria-labelledby="tab-btn-lookup">
 <div class="n-row">
 <div style="flex:1">
-<label style="display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px;letter-spacing:.03em">N-NUMBER</label>
+<label for="nn" style="display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px;letter-spacing:.03em">N-NUMBER</label>
 <div style="display:flex">
 <div class="n-prefix">N</div>
 <input type="text" id="nn" class="n-input form-group" placeholder="12345 or SR22T"
@@ -1070,15 +1070,15 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 <button class="ex-btn" onclick="tryN('C182')">C182</button>
 </div>
 <div class="spin" id="nn-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Querying FAA registry...</div></div>
-<div id="nn-result"></div>
+<div id="nn-result" data-testid="lookup-result"></div>
 </div>
 
 <!-- VALUATION -->
-<div class="tab-pane" id="pane-val">
+<div class="tab-pane" role="tabpanel" id="pane-val" data-testid="pane-val" aria-labelledby="tab-btn-val">
 
 <div style="margin-bottom:16px;padding:14px;background:rgba(19,64,116,0.04);border:1px dashed var(--sky);border-radius:var(--radius)">
 <div style="font-size:12px;font-weight:500;color:var(--sky);margin-bottom:8px;letter-spacing:.03em">PASTE A LISTING (optional)</div>
-<textarea id="v-paste" rows="4" style="width:100%;font-size:13px;margin-bottom:8px" placeholder="Paste an aircraft listing from Controller, Trade-A-Plane, Barnstormers, etc. We will auto-fill all fields and avionics for you..."></textarea>
+<textarea id="v-paste" rows="4" style="width:100%;font-size:13px;margin-bottom:8px" aria-label="Paste a listing" placeholder="Paste an aircraft listing from Controller, Trade-A-Plane, Barnstormers, etc. We will auto-fill all fields and avionics for you..."></textarea>
 <button class="n-lookup-btn" id="paste-btn" onclick="parseListing()" style="width:auto;padding:8px 20px">Auto-fill from listing</button>
 <div class="spin" id="paste-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Parsing listing...</div></div>
 </div>
@@ -1086,23 +1086,23 @@ onkeydown="if(event.key==='Enter')doLookup()" />
 <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:12px">or enter details manually</div>
 
 <div class="form-grid-2">
-<div class="form-group"><label>MAKE</label><input type="text" id="v-make" placeholder="Cessna, Piper, Beech, Cirrus..." oninput="toggleCirrusGen()" /></div>
-<div class="form-group"><label>MODEL</label><input type="text" id="v-model" placeholder="172S, Baron D55, SR22, RV-10..." oninput="toggleCirrusGen()" /></div>
+<div class="form-group"><label for="v-make">MAKE</label><input type="text" id="v-make" placeholder="Cessna, Piper, Beech, Cirrus..." oninput="toggleCirrusGen()" /></div>
+<div class="form-group"><label for="v-model">MODEL</label><input type="text" id="v-model" placeholder="172S, Baron D55, SR22, RV-10..." oninput="toggleCirrusGen()" /></div>
 </div>
 <div class="form-grid-3">
-<div class="form-group"><label>YEAR</label><input type="number" id="v-year" placeholder="e.g. 1969" min="1930" max="2026" oninput="toggleCirrusGen()" /></div>
+<div class="form-group"><label for="v-year">YEAR</label><input type="number" id="v-year" placeholder="e.g. 1969" min="1930" max="2026" oninput="toggleCirrusGen()" /></div>
 <div class="form-group"><label>LAST ANNUAL</label><div style="display:flex;gap:6px;width:100%"><select id="v-annual-month" style="flex:1"><option value="">Month</option><option value="01">January</option><option value="02">February</option><option value="03">March</option><option value="04">April</option><option value="05">May</option><option value="06">June</option><option value="07">July</option><option value="08">August</option><option value="09">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select><select id="v-annual-year" style="flex:1"><option value="">Year</option></select></div><label class="chk-label out-of-annual-label"><input type="checkbox" id="v-out-of-annual" /> <i class="ti ti-alert-triangle" style="font-size:15px"></i> Out of annual</label></div>
-<div class="form-group"><label>ENGINE</label><input type="text" id="v-engine-display" placeholder="From N-number lookup" readonly style="background:var(--offwhite);color:var(--muted)" /></div>
-<div class="form-group"><label>ASKING PRICE ($)</label><input type="number" id="v-asking" placeholder="e.g. 299000" /></div>
-<div class="form-group"><label>TOTAL TIME (TTAF HRS)</label><input type="number" id="v-ttaf" placeholder="e.g. 3200" /></div>
-<div class="form-group"><label>ENGINES</label>
+<div class="form-group"><label for="v-engine-display">ENGINE</label><input type="text" id="v-engine-display" placeholder="From N-number lookup" readonly style="background:var(--offwhite);color:var(--muted)" /></div>
+<div class="form-group"><label for="v-asking">ASKING PRICE ($)</label><input type="number" id="v-asking" placeholder="e.g. 299000" /></div>
+<div class="form-group"><label for="v-ttaf">TOTAL TIME (TTAF HRS)</label><input type="number" id="v-ttaf" placeholder="e.g. 3200" /></div>
+<div class="form-group"><label for="v-engines">ENGINES</label>
 <select id="v-engines" onchange="toggleEngineFields()">
 <option value="1">Single engine</option>
 <option value="2">Twin engine</option>
 </select>
 </div>
 <div class="form-group" id="v-cirrusgen-group" style="display:none">
-<label>CIRRUS GENERATION</label>
+<label for="v-cirrusgen">CIRRUS GENERATION</label>
 <select id="v-cirrusgen" onchange="this.dataset.touched='1'">
 <option value="">Auto-detect from year</option>
 <option value="G1">G1 (2001–2003)</option>
@@ -1126,23 +1126,23 @@ ENGINE TIMES
 <div class="engine-section-body">
 <div class="form-grid-2" style="margin-bottom:10px">
 <div class="form-group"><label style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span>RECOMMENDED TBO (HRS)</span><button type="button" id="v-tbo-reset" class="tbo-reset-btn" onclick="resetTboAuto()" style="display:none">Use auto</button></label><select id="v-tbo" onchange="onTboOverride()"><option value="1500">1,500 hrs</option><option value="1600">1,600 hrs</option><option value="1700">1,700 hrs</option><option value="1800">1,800 hrs</option><option value="1900">1,900 hrs</option><option value="2000" selected>2,000 hrs</option><option value="2100">2,100 hrs</option><option value="2200">2,200 hrs</option></select></div>
-<div class="form-group"><label>ENGINE CONVERSION / STC</label><input type="text" id="v-eng-conv" placeholder="e.g. IO-550 conversion, RAM, tip tanks..." oninput="refreshEngineLife()" /></div>
+<div class="form-group"><label for="v-eng-conv">ENGINE CONVERSION / STC</label><input type="text" id="v-eng-conv" placeholder="e.g. IO-550 conversion, RAM, tip tanks..." oninput="refreshEngineLife()" /></div>
 </div>
 
 <!-- Single engine fields -->
 <div id="single-eng-fields">
 <div class="form-grid-2">
-<div class="form-group"><label>ENGINE SMOH (HRS)</label><input type="number" id="v-smoh" placeholder="e.g. 800" oninput="refreshEngineLife()" /></div>
+<div class="form-group"><label for="v-smoh">ENGINE SMOH (HRS)</label><input type="number" id="v-smoh" placeholder="e.g. 800" oninput="refreshEngineLife()" /></div>
 <div class="form-group"><label>PROP TSOH (HRS)</label><input type="number" id="v-prop1" placeholder="e.g. 400" /></div>
 </div>
-<div id="engine-life-single" class="engine-life-wrap"></div>
+<div id="engine-life-single" class="engine-life-wrap" data-testid="engine-life"></div>
 </div>
 
 <!-- Twin engine fields -->
 <div id="twin-eng-fields" style="display:none">
 <div class="form-grid-2" style="margin-bottom:10px">
-<div class="form-group"><label>LEFT ENGINE SMOH (HRS)</label><input type="number" id="v-smoh-l" placeholder="e.g. 800" oninput="refreshEngineLife()" /></div>
-<div class="form-group"><label>RIGHT ENGINE SMOH (HRS)</label><input type="number" id="v-smoh-r" placeholder="e.g. 900" oninput="refreshEngineLife()" /></div>
+<div class="form-group"><label for="v-smoh-l">LEFT ENGINE SMOH (HRS)</label><input type="number" id="v-smoh-l" placeholder="e.g. 800" oninput="refreshEngineLife()" /></div>
+<div class="form-group"><label for="v-smoh-r">RIGHT ENGINE SMOH (HRS)</label><input type="number" id="v-smoh-r" placeholder="e.g. 900" oninput="refreshEngineLife()" /></div>
 </div>
 <div class="form-grid-2">
 <div class="form-group"><label>LEFT PROP TSOH (HRS)</label><input type="number" id="v-prop-l" placeholder="e.g. 400" /></div>
@@ -1150,7 +1150,7 @@ ENGINE TIMES
 </div>
 <div id="engine-life-twin" class="engine-life-wrap"></div>
 </div>
-<div class="engine-tbo-note" id="engine-tbo-note"></div>
+<div class="engine-tbo-note" id="engine-tbo-note" data-testid="engine-tbo-note"></div>
 </div>
 </div>
 
@@ -1174,7 +1174,7 @@ ENGINE TIMES
 </div>
 
 <div class="form-grid-2">
-<div class="form-group"><label>LOGBOOKS</label>
+<div class="form-group"><label for="v-logbooks">LOGBOOKS</label>
 <select id="v-logbooks">
 <option value="">Unknown</option>
 <option value="Complete since new">Complete since new (+value)</option>
@@ -1183,7 +1183,7 @@ ENGINE TIMES
 <option value="Missing / incomplete">Missing / incomplete (−value)</option>
 </select>
 </div>
-<div class="form-group"><label>DAMAGE HISTORY</label>
+<div class="form-group"><label for="v-damage">DAMAGE HISTORY</label>
 <select id="v-damage">
 <option value="">Unknown</option>
 <option value="None (clean, verified)">None — clean, verified</option>
@@ -1194,7 +1194,7 @@ ENGINE TIMES
 </div>
 
 <div class="form-group">
-<label>AVIONICS PANEL</label>
+<label for="v-avionics-package">AVIONICS PANEL</label>
 <select id="v-avionics-package">
 <option value="">Select a panel type…</option>
 <option value="Steam / round-gauge (basic)">Steam / round-gauge (basic)</option>
@@ -1359,7 +1359,7 @@ ENGINE TIMES
 </details>
 
 <div class="form-group" style="margin-bottom:0">
-<label>NOTES (damage history, engine OH type, storage, special equipment)</label>
+<label for="v-notes">NOTES (damage history, engine OH type, storage, special equipment)</label>
 <textarea id="v-notes" placeholder="No damage history, all logs since new, hangared, factory reman engines at 200 SMOH, RAM conversion..."></textarea>
 </div>
 <button class="submit-btn accent-btn" id="v-btn" onclick="doValuation()">
@@ -1370,16 +1370,16 @@ ENGINE TIMES
 <div>Searching live listings &amp; recent sales...</div>
 <p class="partner-tip" id="v-partner-tip"></p>
 </div>
-<div id="v-result"></div>
+<div id="v-result" data-testid="valuation-result"></div>
 <p class="val-free-note" id="v-free-note">Free beta — unlimited valuations while we gather pilot feedback.</p>
 </div>
 
 <!-- MARKET COMPS -->
-<div class="tab-pane" id="pane-comps">
+<div class="tab-pane" role="tabpanel" id="pane-comps" data-testid="pane-comps" aria-labelledby="tab-btn-comps">
 <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:1rem">Enter a make/model to see typical asking price ranges. No fabricated sale prices — just what sellers are asking, plus negotiation guidance.</p>
 <div class="form-grid-2">
-<div class="form-group"><label>MAKE &amp; MODEL</label><input type="text" id="c-model" placeholder="e.g. Cessna 172S, Van's RV-10" /></div>
-<div class="form-group"><label>YEAR RANGE</label>
+<div class="form-group"><label for="c-model">MAKE &amp; MODEL</label><input type="text" id="c-model" placeholder="e.g. Cessna 172S, Van's RV-10" /></div>
+<div class="form-group"><label for="c-years">YEAR RANGE</label>
 <select id="c-years">
 <option>All years</option><option>2015 – present</option><option>2005 – 2014</option>
 <option>1995 – 2004</option><option>1985 – 1994</option><option>Pre-1985</option>
@@ -1390,38 +1390,38 @@ ENGINE TIMES
 <i class="ti ti-search"></i> Search asking prices
 </button>
 <div class="spin" id="c-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Pulling active listing ranges...</div></div>
-<div id="c-result"></div>
+<div id="c-result" data-testid="comps-result"></div>
 </div>
 
 <!-- FEEDBACK -->
-<div class="tab-pane" id="pane-feedback">
+<div class="tab-pane" role="tabpanel" id="pane-feedback" data-testid="pane-feedback" aria-labelledby="tab-btn-feedback">
 <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:1rem">Help us improve SmallPlaneValue — we're in free beta and want your honest take.</p>
 <div class="share-pilot-box">
 <div style="font-size:14px;font-weight:600;color:var(--sky);margin-bottom:6px">Spread the word</div>
 <p style="font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:12px">Share with BeechTalk, Facebook groups, Instagram, or X — every pilot who tries it makes valuations better for everyone.</p>
 <div class="share-btn-row">
-<a class="share-btn" id="share-fb" href="#" target="_blank" rel="noopener noreferrer"><i class="ti ti-brand-facebook"></i> Facebook</a>
-<a class="share-btn" id="share-x" href="#" target="_blank" rel="noopener noreferrer"><i class="ti ti-brand-x"></i> X</a>
+<a class="share-btn" id="share-fb" href="#" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="ti ti-brand-facebook" aria-hidden="true"></i> Facebook</a>
+<a class="share-btn" id="share-x" href="#" target="_blank" rel="noopener noreferrer" aria-label="X"><i class="ti ti-brand-x" aria-hidden="true"></i> X</a>
 <button type="button" class="share-btn" id="share-copy" onclick="copyShareBlurb()"><i class="ti ti-copy"></i> Copy for BeechTalk / FB</button>
 </div>
 <p class="share-copy-msg" id="share-copy-msg"></p>
 </div>
 <div class="form-group"><label>YOUR EMAIL (optional)</label><input type="text" id="fb-email" placeholder="pilot@email.com" /></div>
-<div class="form-group"><label>AIRCRAFT</label><input type="text" id="fb-aircraft" placeholder="e.g. 1981 Beech B58 Baron" /></div>
-<div class="form-group"><label>VALUATION ACCURACY</label><select id="fb-accuracy"><option value="">N/A</option><option value="low">Too low</option><option value="right">About right</option><option value="high">Too high</option></select></div>
-<div class="form-group"><label>YOUR FEEDBACK</label><textarea id="fb-message" rows="4" placeholder="What did we get wrong? What features do you want?"></textarea></div>
+<div class="form-group"><label for="fb-aircraft">AIRCRAFT</label><input type="text" id="fb-aircraft" placeholder="e.g. 1981 Beech B58 Baron" /></div>
+<div class="form-group"><label for="fb-accuracy">VALUATION ACCURACY</label><select id="fb-accuracy"><option value="">N/A</option><option value="low">Too low</option><option value="right">About right</option><option value="high">Too high</option></select></div>
+<div class="form-group"><label for="fb-message">YOUR FEEDBACK</label><textarea id="fb-message" rows="4" placeholder="What did we get wrong? What features do you want?"></textarea></div>
 <button class="submit-btn" id="fb-btn" onclick="submitFeedback()"><i class="ti ti-send"></i> Send feedback</button>
-<div id="fb-result"></div>
+<div id="fb-result" data-testid="feedback-result"></div>
 </div>
 
 <!-- PRE-BUY CHECKLIST -->
-<div class="tab-pane" id="pane-checklist">
+<div class="tab-pane" role="tabpanel" id="pane-checklist" data-testid="pane-checklist" aria-labelledby="tab-btn-checklist">
 <div class="form-grid-2">
-<div class="form-group"><label>MAKE</label><input type="text" id="cl-make" placeholder="Cessna, Piper, Van's..." /></div>
-<div class="form-group"><label>MODEL</label><input type="text" id="cl-model" placeholder="172S, RV-10, SR22..." /></div>
+<div class="form-group"><label for="cl-make">MAKE</label><input type="text" id="cl-make" placeholder="Cessna, Piper, Van's..." /></div>
+<div class="form-group"><label for="cl-model">MODEL</label><input type="text" id="cl-model" placeholder="172S, RV-10, SR22..." /></div>
 </div>
 <div class="form-grid-3">
-<div class="form-group"><label>YEAR</label><input type="number" id="cl-year" placeholder="e.g. 2003" /></div>
+<div class="form-group"><label for="cl-year">YEAR</label><input type="number" id="cl-year" placeholder="e.g. 2003" /></div>
 <div class="form-group"><label>ENGINE TYPE</label>
 <select id="cl-eng">
 <option>Lycoming</option><option>Continental</option>
@@ -1451,11 +1451,11 @@ ENGINE TIMES
 <i class="ti ti-clipboard-list"></i> Generate inspection checklist
 </button>
 <div class="spin" id="cl-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Building your aircraft-specific checklist...</div></div>
-<div id="cl-result"></div>
+<div id="cl-result" data-testid="checklist-result"></div>
 </div>
 
 <!-- REPORT A SALE -->
-<div class="tab-pane" id="pane-sold">
+<div class="tab-pane" role="tabpanel" id="pane-sold" data-testid="pane-sold" aria-labelledby="tab-btn-sold">
 <div style="background:rgba(232,160,32,0.08);border:1px solid rgba(232,160,32,0.2);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:1.5rem;display:flex;gap:14px;align-items:flex-start">
 <i class="ti ti-lock" style="font-size:20px;color:var(--accent);flex-shrink:0;margin-top:2px"></i>
 <div>
@@ -1465,18 +1465,18 @@ ENGINE TIMES
 </div>
 
 <div style="font-size:12px;font-weight:500;color:var(--sky);margin-bottom:8px;letter-spacing:.03em">PASTE A SALE POST (optional)</div>
-<textarea id="sd-paste" rows="4" style="width:100%;font-size:13px;margin-bottom:8px" placeholder="Paste a BeechTalk sold thread, forum recap, or listing text — we'll auto-fill the fields below..."></textarea>
+<textarea id="sd-paste" rows="4" style="width:100%;font-size:13px;margin-bottom:8px" aria-label="Paste a sale post" placeholder="Paste a BeechTalk sold thread, forum recap, or listing text — we'll auto-fill the fields below..."></textarea>
 <button class="n-lookup-btn" id="sd-paste-btn" onclick="parseSalePost()" style="width:auto;padding:8px 20px;margin-bottom:1.25rem">Auto-fill from post</button>
 <div class="spin" id="sd-paste-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Parsing sale post...</div></div>
 
 <div class="form-grid-2">
-<div class="form-group"><label>AIRCRAFT MAKE</label><input type="text" id="sd-make" placeholder="Cessna, Piper, Beechcraft, Cirrus..." /></div>
-<div class="form-group"><label>MODEL</label><input type="text" id="sd-model" placeholder="172S, Cherokee 180, Bonanza A36..." /></div>
+<div class="form-group"><label for="sd-make">AIRCRAFT MAKE</label><input type="text" id="sd-make" placeholder="Cessna, Piper, Beechcraft, Cirrus..." /></div>
+<div class="form-group"><label for="sd-model">MODEL</label><input type="text" id="sd-model" placeholder="172S, Cherokee 180, Bonanza A36..." /></div>
 </div>
 <div class="form-grid-3">
-<div class="form-group"><label>YEAR</label><input type="number" id="sd-year" placeholder="e.g. 1998" /></div>
-<div class="form-group"><label>SALE PRICE ($)</label><input type="number" id="sd-price" placeholder="e.g. 135000" /></div>
-<div class="form-group"><label>ORIGINAL ASKING PRICE ($)</label><input type="number" id="sd-ask" placeholder="e.g. 159000" /></div>
+<div class="form-group"><label for="sd-year">YEAR</label><input type="number" id="sd-year" placeholder="e.g. 1998" /></div>
+<div class="form-group"><label for="sd-price">SALE PRICE ($)</label><input type="number" id="sd-price" placeholder="e.g. 135000" /></div>
+<div class="form-group"><label for="sd-ask">ORIGINAL ASKING PRICE ($)</label><input type="number" id="sd-ask" placeholder="e.g. 159000" /></div>
 </div>
 <div class="form-grid-3">
 <div class="form-group"><label>TOTAL TIME (TTAF)</label><input type="number" id="sd-ttaf" placeholder="e.g. 3200" /></div>
@@ -1532,9 +1532,9 @@ I confirm this is a real transaction I was involved in. I understand this data i
 <i class="ti ti-send"></i> Submit sale data
 </button>
 <div class="spin" id="sd-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Submitting...</div></div>
-<div id="sd-result"></div>
+<div id="sd-result" data-testid="sold-result"></div>
 
-<div id="sd-recent" style="margin-top:2rem"></div>
+<div id="sd-recent" data-testid="sold-recent" style="margin-top:2rem"></div>
 </div>
 </div>
 </section>
@@ -1569,9 +1569,14 @@ I confirm this is a real transaction I was involved in. I understand this data i
 /* ── tab switching ── */
 function switchTab(id) {
 document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+document.querySelectorAll('.tab-btn').forEach(b => {
+  b.classList.remove('active');
+  b.setAttribute('aria-selected', 'false');
+});
 document.getElementById('pane-'+id).classList.add('active');
-document.getElementById('tab-btn-'+id).classList.add('active');
+var tab = document.getElementById('tab-btn-'+id);
+tab.classList.add('active');
+tab.setAttribute('aria-selected', 'true');
 document.getElementById('app').scrollIntoView({behavior:'smooth'});
 }
 
@@ -2344,7 +2349,9 @@ async function submitValuationFeedback(accuracy) {
   });
   row.dataset.submitted = '1';
   btns.forEach(function(b) {
-    b.classList.toggle('selected', b.getAttribute('data-acc') === accuracy);
+    var on = b.getAttribute('data-acc') === accuracy;
+    b.classList.toggle('selected', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
   var msgEl = document.getElementById('val-accuracy-msg');
   if (msgEl) {
@@ -2497,9 +2504,9 @@ ${engLifeHtml}
 <div class="val-accuracy-row" id="val-accuracy-row">
 <div class="val-accuracy-label">How was this valuation?</div>
 <div class="val-accuracy-btns">
-<button type="button" class="val-acc-btn" data-acc="low" onclick="submitValuationFeedback('low')">Too low</button>
-<button type="button" class="val-acc-btn" data-acc="right" onclick="submitValuationFeedback('right')">About right</button>
-<button type="button" class="val-acc-btn" data-acc="high" onclick="submitValuationFeedback('high')">Too high</button>
+<button type="button" class="val-acc-btn" data-acc="low" aria-pressed="false" onclick="submitValuationFeedback('low')">Too low</button>
+<button type="button" class="val-acc-btn" data-acc="right" aria-pressed="false" onclick="submitValuationFeedback('right')">About right</button>
+<button type="button" class="val-acc-btn" data-acc="high" aria-pressed="false" onclick="submitValuationFeedback('high')">Too high</button>
 </div>
 <div class="val-accuracy-msg" id="val-accuracy-msg"></div>
 </div>
@@ -2708,7 +2715,7 @@ let html=`
 <div style="font-size:16px;font-weight:500;color:var(--sky)">${cl.aircraft}</div>
 <div style="display:flex;align-items:center;gap:8px"><button onclick="window.print()" style="padding:6px 14px;font-size:13px;border:1px solid rgba(11,37,69,0.15);border-radius:6px;background:var(--offwhite);color:var(--sky);cursor:pointer;display:flex;align-items:center;gap:5px"><i class="ti ti-printer" style="font-size:15px"></i> Print</button><div class="cl-stats" id="cl-stats-row"></div></div>
 </div>
-<div class="progress-bar"><div class="prog-fill" id="cl-prog" style="width:0%"></div></div>`;
+<div class="progress-bar"><div class="prog-fill" id="cl-prog" role="progressbar" aria-label="Checklist progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" style="width:0%"></div></div>`;
 cl.sections.forEach((sec,si)=>{
 const sitems=clItems.filter(i=>i.si===si);
 html+=`<div class="cl-section" id="cls-${si}">
@@ -2727,9 +2734,9 @@ html+=`<div class="cl-item" id="cli-${item.id}">
 ${item.critical&&item.criticalReason?`<div class="cl-item-crit"><i class="ti ti-alert-triangle" style="font-size:13px"></i>${item.criticalReason}</div>`:''}
 </div>
 <div class="btn-grp">
-<button class="s-btn" onclick="clStatus(${item.id},'pass')" title="Pass"><i class="ti ti-check" style="font-size:13px"></i></button>
-<button class="s-btn" onclick="clStatus(${item.id},'flag')" title="Flag"><i class="ti ti-flag" style="font-size:13px"></i></button>
-<button class="s-btn" onclick="clStatus(${item.id},'fail')" title="Fail"><i class="ti ti-x" style="font-size:13px"></i></button>
+<button class="s-btn" onclick="clStatus(${item.id},'pass')" title="Pass" aria-label="Pass"><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i></button>
+<button class="s-btn" onclick="clStatus(${item.id},'flag')" title="Flag" aria-label="Flag"><i class="ti ti-flag" style="font-size:13px" aria-hidden="true"></i></button>
+<button class="s-btn" onclick="clStatus(${item.id},'fail')" title="Fail" aria-label="Fail"><i class="ti ti-x" style="font-size:13px" aria-hidden="true"></i></button>
 </div>
 </div>`;
 });
@@ -2763,7 +2770,7 @@ const flag=clItems.filter(i=>i.status==='flag').length;
 const fail=clItems.filter(i=>i.status==='fail').length;
 const open=clItems.filter(i=>i.status==='open').length;
 const total=clItems.length; const pct=total>0?Math.round((total-open)/total*100):0;
-const prog=document.getElementById('cl-prog'); if(prog)prog.style.width=pct+'%';
+const prog=document.getElementById('cl-prog'); if(prog){prog.style.width=pct+'%';prog.setAttribute('aria-valuenow',String(pct));}
 const sr=document.getElementById('cl-stats-row');
 if(sr)sr.innerHTML=`<span class="stat-pill" style="background:rgba(26,122,74,0.1);color:var(--success)"><i class="ti ti-check" style="font-size:12px"></i> ${pass}</span><span class="stat-pill" style="background:rgba(232,160,32,0.12);color:var(--warn)"><i class="ti ti-flag" style="font-size:12px"></i> ${flag}</span><span class="stat-pill" style="background:rgba(192,57,43,0.08);color:var(--danger)"><i class="ti ti-x" style="font-size:12px"></i> ${fail}</span><span class="stat-pill" style="background:var(--offwhite);color:var(--muted)">${open} left</span>`;
 const flagged=clItems.filter(i=>i.status==='flag'||i.status==='fail');

@@ -1,4 +1,10 @@
-import { expect, type Page } from '@playwright-backend-mocks/playwright'
+import { expect, type Locator, type Page } from '@playwright-backend-mocks/playwright'
+
+/**
+ * Locators prefer what a user sees: roles, labels, and button names.
+ * data-testid is only for result regions that wrap mixed copy.
+ * Keep these names when the UI moves to Nuxt components.
+ */
 
 /** Public local Supabase defaults (same as `.env.example`). */
 export const LOCAL_SUPABASE = {
@@ -14,6 +20,17 @@ export const AI_BASELINE = {
   fairMarketValue: 295_000,
   buyerTarget: 280_000,
 }
+
+export const TABS = {
+  lookup: 'N-number lookup',
+  val: 'Get valuation',
+  comps: 'Market listings',
+  checklist: 'Pre-buy checklist',
+  sold: 'Report a sale',
+  feedback: 'Feedback',
+} as const
+
+export type TabId = keyof typeof TABS
 
 export function usd(n: number) {
   return '$' + Math.round(n).toLocaleString('en-US')
@@ -32,23 +49,68 @@ export async function expectAlert(page: Page, click: () => Promise<void>, messag
   await clickP
 }
 
-/** Itemized avionics live inside a collapsed <details>. */
-export async function checkAvionics(page: Page, id: string) {
-  await page.locator('details.adv-section').evaluate((el) => {
-    (el as HTMLDetailsElement).open = true
-  })
-  await page.locator(`#${id}`).check({ force: true })
+export function tab(page: Page, id: TabId) {
+  return page.getByRole('tab', { name: TABS[id] })
 }
 
-export async function openTab(page: Page, id: 'lookup' | 'val' | 'comps' | 'checklist' | 'sold' | 'feedback') {
-  await page.locator(`#tab-btn-${id}`).click()
-  await expect(page.locator(`#pane-${id}`)).toHaveClass(/active/)
+export function pane(page: Page, id: TabId) {
+  return page.getByTestId(`pane-${id}`)
+}
+
+export function lookupResult(page: Page) {
+  return page.getByTestId('lookup-result')
+}
+
+export function valuationResult(page: Page) {
+  return page.getByTestId('valuation-result')
+}
+
+export function compsResult(page: Page) {
+  return page.getByTestId('comps-result')
+}
+
+export function checklistResult(page: Page) {
+  return page.getByTestId('checklist-result')
+}
+
+export function soldResult(page: Page) {
+  return page.getByTestId('sold-result')
+}
+
+export function soldRecent(page: Page) {
+  return page.getByTestId('sold-recent')
+}
+
+export function feedbackResult(page: Page) {
+  return page.getByTestId('feedback-result')
+}
+
+/** Case-insensitive exact label. Playwright's `{ exact: true }` is case-sensitive. */
+export function field(root: Page | Locator, name: string | RegExp) {
+  if (typeof name !== 'string') return root.getByLabel(name)
+  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return root.getByLabel(new RegExp(`^${escaped}$`, 'i'))
+}
+
+/** Itemized avionics live inside a collapsed disclosure. */
+export async function openAvionics(page: Page) {
+  await pane(page, 'val').getByText(/itemize for precision/i).click()
+}
+
+export async function checkAvionics(page: Page, name: string) {
+  await openAvionics(page)
+  await pane(page, 'val').getByRole('checkbox', { name, exact: true }).check()
+}
+
+export async function openTab(page: Page, id: TabId) {
+  await tab(page, id).click()
+  await expect(tab(page, id)).toHaveAttribute('aria-selected', 'true')
 }
 
 export async function lookupN(page: Page, nnumber: string) {
   await openTab(page, 'lookup')
-  await page.locator('#nn').fill(nnumber)
-  await page.locator('#nn-btn').click()
+  await field(pane(page, 'lookup'), 'N-number').fill(nnumber)
+  await pane(page, 'lookup').getByRole('button', { name: 'Look up' }).click()
 }
 
 export async function fillValuation(
@@ -71,20 +133,21 @@ export async function fillValuation(
   },
 ) {
   await openTab(page, 'val')
-  await page.locator('#v-make').fill(fields.make)
-  await page.locator('#v-model').fill(fields.model)
-  if (fields.year) await page.locator('#v-year').fill(fields.year)
-  if (fields.engines) await page.locator('#v-engines').selectOption(fields.engines)
-  if (fields.smoh != null) await page.locator('#v-smoh').fill(fields.smoh)
-  if (fields.smohL != null) await page.locator('#v-smoh-l').fill(fields.smohL)
-  if (fields.smohR != null) await page.locator('#v-smoh-r').fill(fields.smohR)
-  if (fields.outOfAnnual) await page.locator('#v-out-of-annual').check()
-  if (fields.logbooks) await page.locator('#v-logbooks').selectOption(fields.logbooks)
-  if (fields.damage) await page.locator('#v-damage').selectOption(fields.damage)
-  if (fields.avionicsPackage) await page.locator('#v-avionics-package').selectOption(fields.avionicsPackage)
-  if (fields.conversion) await page.locator('#v-eng-conv').fill(fields.conversion)
-  if (fields.asking) await page.locator('#v-asking').fill(fields.asking)
-  if (fields.notes) await page.locator('#v-notes').fill(fields.notes)
+  const form = pane(page, 'val')
+  await field(form, 'Make').fill(fields.make)
+  await field(form, 'Model').fill(fields.model)
+  if (fields.year) await field(form, 'Year').fill(fields.year)
+  if (fields.engines) await field(form, 'Engines').selectOption(fields.engines)
+  if (fields.smoh != null) await field(form, 'Engine SMOH (hrs)').fill(fields.smoh)
+  if (fields.smohL != null) await field(form, 'Left engine SMOH (hrs)').fill(fields.smohL)
+  if (fields.smohR != null) await field(form, 'Right engine SMOH (hrs)').fill(fields.smohR)
+  if (fields.outOfAnnual) await form.getByRole('checkbox', { name: 'Out of annual' }).check()
+  if (fields.logbooks) await field(form, 'Logbooks').selectOption(fields.logbooks)
+  if (fields.damage) await field(form, 'Damage history').selectOption(fields.damage)
+  if (fields.avionicsPackage) await field(form, 'Avionics panel').selectOption(fields.avionicsPackage)
+  if (fields.conversion) await field(form, /engine conversion/i).fill(fields.conversion)
+  if (fields.asking) await field(form, 'Asking price ($)').fill(fields.asking)
+  if (fields.notes) await field(form, /^notes/i).fill(fields.notes)
 }
 
 /** Mid-time on the default 2,000 hr TBO — engineAdjustment is $0. */
@@ -105,12 +168,12 @@ export async function fillMidtimeValuation(
 }
 
 export async function submitValuation(page: Page) {
-  await page.locator('#v-btn').click()
-  await expect(page.locator('#v-result')).toContainText('AIRCRAFT VALUATION', { timeout: 20_000 })
+  await pane(page, 'val').getByRole('button', { name: 'Get honest valuation' }).click()
+  await expect(valuationResult(page)).toContainText('AIRCRAFT VALUATION', { timeout: 20_000 })
 }
 
 export async function expectValuationDollars(page: Page, fmv: number, ask: number, buyer: number) {
-  const result = page.locator('#v-result')
+  const result = valuationResult(page)
   await expect(result).toContainText(usd(fmv))
   await expect(result).toContainText(usd(ask))
   await expect(result).toContainText(usd(buyer))

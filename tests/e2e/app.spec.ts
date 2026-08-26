@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright-backend-mocks/playwright'
 import { mockAnthropic } from './anthropic'
-import { openApp } from './helpers'
+import { openApp, tab, TABS } from './helpers'
 
 test.beforeEach(async ({ page, backendMocks }) => {
   await mockAnthropic(backendMocks)
@@ -9,14 +9,13 @@ test.beforeEach(async ({ page, backendMocks }) => {
 
 test('page renders with the expected title and hero', async ({ page }) => {
   await expect(page).toHaveTitle(/SmallPlaneValue/)
-  await expect(page.locator('.hero-h1')).toContainText('Know What Your')
-  await expect(page.locator('#tab-btn-lookup')).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Know What Your/ })).toBeVisible()
+  await expect(tab(page, 'lookup')).toBeVisible()
 })
 
 test('tab switching activates each pane', async ({ page }) => {
-  const tabs = ['val', 'comps', 'checklist', 'sold', 'feedback', 'lookup']
-  for (const id of tabs) {
-    await page.locator(`#tab-btn-${id}`).click()
-    await expect(page.locator(`#pane-${id}`)).toHaveClass(/active/)
+  for (const id of Object.keys(TABS) as Array<keyof typeof TABS>) {
+    await tab(page, id).click()
+    await expect(tab(page, id)).toHaveAttribute('aria-selected', 'true')
   }
 })

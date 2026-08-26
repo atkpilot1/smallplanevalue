@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright-backend-mocks/playwright'
 import { mockAnthropic } from './anthropic'
-import { expectAlert, fillMidtimeValuation, openApp, openTab, submitValuation } from './helpers'
+import { expectAlert, feedbackResult, field, fillMidtimeValuation, openApp, openTab, pane, submitValuation, valuationResult } from './helpers'
 
 test.beforeEach(async ({ page, backendMocks }) => {
   await mockAnthropic(backendMocks)
@@ -9,15 +9,16 @@ test.beforeEach(async ({ page, backendMocks }) => {
 
 test('submit shows thank-you and backs up to localStorage', async ({ page }) => {
   await openTab(page, 'feedback')
-  await page.locator('#fb-aircraft').fill('1981 Beech B58 Baron')
-  await page.locator('#fb-message').fill('Great tool, very accurate.')
+  const form = pane(page, 'feedback')
+  await field(form, 'Aircraft').fill('1981 Beech B58 Baron')
+  await field(form, 'Your feedback').fill('Great tool, very accurate.')
 
   const responseP = page.waitForResponse((r) => r.url().includes('/api/feedback') && r.request().method() === 'POST')
-  await page.locator('#fb-btn').click()
+  await form.getByRole('button', { name: 'Send feedback' }).click()
   const response = await responseP
   expect(response.ok()).toBeTruthy()
 
-  await expect(page.locator('#fb-result')).toContainText('Thank you for your feedback')
+  await expect(feedbackResult(page)).toContainText('Thank you for your feedback')
 
   const stored = await page.evaluate(() => localStorage.getItem('spv_feedback'))
   expect(stored).toBeTruthy()
@@ -27,11 +28,12 @@ test('submit shows thank-you and backs up to localStorage', async ({ page }) => 
 
 test('accuracy-only submit is accepted', async ({ page }) => {
   await openTab(page, 'feedback')
-  await page.locator('#fb-accuracy').selectOption('right')
+  const form = pane(page, 'feedback')
+  await field(form, 'Valuation accuracy').selectOption('right')
   const responseP = page.waitForResponse((r) => r.url().includes('/api/feedback') && r.request().method() === 'POST')
-  await page.locator('#fb-btn').click()
+  await form.getByRole('button', { name: 'Send feedback' }).click()
   expect((await responseP).ok()).toBeTruthy()
-  await expect(page.locator('#fb-result')).toContainText('Thank you for your feedback')
+  await expect(feedbackResult(page)).toContainText('Thank you for your feedback')
 
   const stored = await page.evaluate(() => localStorage.getItem('spv_feedback'))
   const arr = JSON.parse(stored as string)
@@ -42,7 +44,7 @@ test('empty submit alerts the user', async ({ page }) => {
   await openTab(page, 'feedback')
   await expectAlert(
     page,
-    () => page.locator('#fb-btn').click({ force: true }),
+    () => pane(page, 'feedback').getByRole('button', { name: 'Send feedback' }).click({ force: true }),
     'Please enter feedback or select accuracy.',
   )
 })
@@ -51,10 +53,13 @@ test('post-valuation accuracy buttons write feedback', async ({ page }) => {
   await fillMidtimeValuation(page)
   await submitValuation(page)
   const responseP = page.waitForResponse((r) => r.url().includes('/api/feedback') && r.request().method() === 'POST')
-  await page.locator('#v-result').getByRole('button', { name: 'About right' }).click()
+  await valuationResult(page).getByRole('button', { name: 'About right' }).click()
   expect((await responseP).ok()).toBeTruthy()
-  await expect(page.locator('#val-accuracy-msg')).toContainText('your rating helps us improve')
-  await expect(page.locator('#v-result').getByRole('button', { name: 'About right' })).toHaveClass(/selected/)
+  await expect(valuationResult(page)).toContainText('your rating helps us improve')
+  await expect(valuationResult(page).getByRole('button', { name: 'About right' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
 
   const stored = await page.evaluate(() => localStorage.getItem('spv_feedback'))
   const arr = JSON.parse(stored as string)

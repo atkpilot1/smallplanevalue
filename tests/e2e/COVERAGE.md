@@ -2,6 +2,8 @@
 
 **Philosophy:** Thoroughly test the entire shipped app. Mock only the outside world (Anthropic). Drive the real Nuxt handlers, the real valuation/checklist/lookup logic, and the local Supabase instance. A test that stubs `/api/*` in the browser does not count. If a user-visible path is broken, write the failing test and leave the app alone (TDD).
 
+**Locators:** Prefer roles, labels, and button names over CSS ids. Use `data-testid` only on result regions (`lookup-result`, `valuation-result`, `comps-result`, `checklist-result`, `sold-result`, `sold-recent`, `feedback-result`) and pane wrappers. Keep those names when the UI moves to Nuxt components.
+
 Anthropic is mocked at the Node boundary via `playwright-backend-mocks`. Local Supabase must already be running (`npm run db:start`). Playwright starts the mocks proxy and Nuxt on `:3100`.
 
 Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000` ask / `$295,000` FMV / `$280,000` buyer) plus the server’s post-AI adjustments.
