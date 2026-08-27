@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import { AUTH_STORAGE_KEY } from '~/utils/authStorage'
 
 let client: SupabaseClient | null = null
 
@@ -10,12 +11,13 @@ export function useSupabase() {
   if (!url || !key) {
     throw new Error('Supabase is not configured')
   }
-  client = createClient(url, key, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: false,
-    },
-  })
+    client = createClient(url, key, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: false,
+        storageKey: AUTH_STORAGE_KEY,
+      },
+    })
   return client
 }

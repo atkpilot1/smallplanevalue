@@ -1,6 +1,25 @@
 import { expect, type Page } from '@playwright-backend-mocks/playwright'
+import { AUTH_STORAGE_KEY } from '../../utils/authStorage'
 
 const MAILPIT = process.env.MAILPIT_URL || 'http://127.0.0.1:54324'
+
+const SUPABASE_URL = process.env.SUPABASE_URL || 'http://127.0.0.1:54321'
+const SUPABASE_ANON =
+  process.env.SUPABASE_ANON_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+const SERVICE_ROLE =
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.SUPABASE_SERVICE_KEY ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU'
+
+type AuthSession = {
+  access_token: string
+  refresh_token: string
+  expires_in?: number
+  expires_at?: number
+  token_type?: string
+  user?: unknown
+}
 
 type MailpitList = {
   messages: Array<{
@@ -86,4 +105,65 @@ export async function signInWithOtp(page: Page, email = uniqueTestEmail()) {
   await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
   await expect(dialog).toBeHidden()
   return email
+}
+
+/** Create a confirmed user + password session via the local Auth Admin API. */
+export async function createAdminSession(email = uniqueTestEmail()) {
+  const password = `E2e-${crypto.randomUUID()}-Aa1!`
+  const createRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users`, {
+    method: 'POST',
+    headers: {
+      apikey: SERVICE_ROLE,
+      Authorization: `Bearer ${SERVICE_ROLE}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, password, email_confirm: true }),
+  })
+  if (!createRes.ok) {
+    throw new Error(`Admin create user failed: ${createRes.status} ${await createRes.text()}`)
+  }
+
+  const tokenRes = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+    method: 'POST',
+    headers: {
+      apikey: SUPABASE_ANON,
+      Authorization: `Bearer ${SUPABASE_ANON}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, password }),
+  })
+  if (!tokenRes.ok) {
+    throw new Error(`Password grant failed: ${tokenRes.status} ${await tokenRes.text()}`)
+  }
+  const session = (await tokenRes.json()) as AuthSession
+  if (!session.access_token || !session.refresh_token) {
+    throw new Error('Password grant returned no tokens')
+  }
+  if (!session.expires_at && session.expires_in) {
+    session.expires_at = Math.floor(Date.now() / 1000) + session.expires_in
+  }
+  return { email, session }
+}
+
+/** Inject a session so the next navigation hydrates as signed in. */
+export async function seedAdminSession(page: Page, email = uniqueTestEmail()) {
+  const { email: used, session } = await createAdminSession(email)
+  await page.addInitScript(
+    ({ key, sess }) => {
+      localStorage.setItem(key, JSON.stringify(sess))
+    },
+    { key: AUTH_STORAGE_KEY, sess: session },
+  )
+  return used
+}
+
+/** Seed a session and wait for the nav to show Manage Account (reloads if already on a page). */
+export async function signInWithAdminSession(page: Page, email = uniqueTestEmail()) {
+  const used = await seedAdminSession(page, email)
+  const url = page.url()
+  if (url && url !== 'about:blank') {
+    await page.reload({ waitUntil: 'domcontentloaded' })
+  }
+  await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
+  return used
 }

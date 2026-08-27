@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright-backend-mocks/playwright'
 import { mockAnthropic } from './anthropic'
+import { signInWithAdminSession } from './auth'
 import { expectAlert, feedbackResult, field, fillMidtimeValuation, openApp, openTab, pane, submitValuation, valuationResult } from './helpers'
 
 test.beforeEach(async ({ page, backendMocks }) => {
@@ -50,6 +51,7 @@ test('empty submit alerts the user', async ({ page }) => {
 })
 
 test('post-valuation accuracy buttons write feedback', async ({ page }) => {
+  await signInWithAdminSession(page)
   await fillMidtimeValuation(page)
   await submitValuation(page)
   const responseP = page.waitForResponse((r) => r.url().includes('/api/feedback') && r.request().method() === 'POST')

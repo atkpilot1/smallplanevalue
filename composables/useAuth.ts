@@ -109,6 +109,12 @@ export function useAuth() {
     error.value = ''
   }
 
+  async function getAccessToken() {
+    if (!import.meta.client) return null
+    const { data } = await useSupabase().auth.getSession()
+    return data.session?.access_token ?? null
+  }
+
   async function signOut() {
     await useSupabase().auth.signOut()
     closeDialog()
@@ -130,6 +136,7 @@ export function useAuth() {
     sendCode,
     verifyCode,
     backToEmail,
+    getAccessToken,
     signOut,
   }
 }

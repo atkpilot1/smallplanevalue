@@ -9,6 +9,7 @@ import {
 } from '../utils/valuationAccess'
 import { engineAdjustment } from '../utils/valuationEngine'
 import { engineLifeRemaining, lookupEngineTbo } from '../data/engineTbo'
+import { requireAuthUser } from '../utils/supabase'
 
 const bodySchema = z.object({
   make: z.string().min(1),
@@ -323,6 +324,8 @@ export default defineEventHandler(async (event) => {
   const d = parsed.data
   const avs = d.avionics
   const clientId = (d.clientId || '').trim()
+
+  await requireAuthUser(event)
 
   if (VALUATION_LIMITS_ENABLED && clientId) {
     const used = await countValuationsThisMonth(clientId)

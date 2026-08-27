@@ -1,6 +1,14 @@
 import { test, expect } from '@playwright-backend-mocks/playwright'
 import { failAnthropic, mockAnthropic } from './anthropic'
 import {
+  fetchOtp,
+  loginDialog,
+  manageAccountButton,
+  requestOtp,
+  seedAdminSession,
+  uniqueTestEmail,
+} from './auth'
+import {
   AI_BASELINE,
   checkAvionics,
   openAvionics,
@@ -22,8 +30,72 @@ import {
 
 test.beforeEach(async ({ page, backendMocks }) => {
   await mockAnthropic(backendMocks)
-  await openApp(page)
 })
+
+test.describe('login required', () => {
+  test.beforeEach(async ({ page }) => {
+    await openApp(page)
+  })
+
+  test('anonymous POST /api/valuate is 401', async ({ request }) => {
+    const res = await request.post('/api/valuate', {
+      data: { make: 'Cessna', model: '172S', year: '2004' },
+    })
+    expect(res.status()).toBe(401)
+    const body = (await res.json()) as { statusMessage?: string; message?: string }
+    expect(`${body.statusMessage || ''} ${body.message || ''}`).toMatch(/sign in/i)
+  })
+
+  test('invalid bearer token is 401', async ({ request }) => {
+    const res = await request.post('/api/valuate', {
+      headers: { Authorization: 'Bearer not-a-real-token' },
+      data: { make: 'Cessna', model: '172S', year: '2004' },
+    })
+    expect(res.status()).toBe(401)
+  })
+
+  test('logged-out submit opens sign-in and does not POST /api/valuate', async ({ page }) => {
+    await fillMidtimeValuation(page)
+    const valuatePosts: string[] = []
+    page.on('request', (req) => {
+      if (req.method() === 'POST' && req.url().includes('/api/valuate')) {
+        valuatePosts.push(req.url())
+      }
+    })
+    await pane(page, 'val').getByRole('button', { name: 'Get honest valuation' }).click()
+    await expect(loginDialog(page)).toBeVisible()
+    await expect(valuationResult(page)).not.toContainText('AIRCRAFT VALUATION')
+    expect(valuatePosts).toEqual([])
+  })
+
+  test('OTP from the valuation dialog then a second submit values', async ({ page }) => {
+    await fillMidtimeValuation(page)
+    await pane(page, 'val').getByRole('button', { name: 'Get honest valuation' }).click()
+    await expect(loginDialog(page)).toBeVisible()
+
+    const email = uniqueTestEmail()
+    await requestOtp(page, email)
+    const code = await fetchOtp(email)
+    const dialog = loginDialog(page)
+    await dialog.getByLabel(/verification code/i).fill(code)
+    await dialog.getByRole('button', { name: /^verify$/i }).click()
+    await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
+    await expect(dialog).toBeHidden()
+
+    await expect(field(pane(page, 'val'), 'Make')).toHaveValue('Cessna')
+    await expect(field(pane(page, 'val'), 'Model')).toHaveValue('172S')
+    await expect(valuationResult(page)).not.toContainText('AIRCRAFT VALUATION')
+
+    await submitValuation(page)
+  })
+})
+
+test.describe('signed in', () => {
+  test.beforeEach(async ({ page }) => {
+    await seedAdminSession(page)
+    await openApp(page)
+    await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
+  })
 
 test('parse listing auto-fills identity, times, and G1000', async ({ page }) => {
   await openTab(page, 'val')
@@ -237,4 +309,5 @@ test('engine life bar appears after entering SMOH', async ({ page }) => {
   const life = page.getByTestId('engine-life')
   await expect(life).toContainText('life remaining', { timeout: 10_000 })
   await expect(life).toContainText('50%')
+})
 })

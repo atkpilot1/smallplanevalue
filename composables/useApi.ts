@@ -1,7 +1,15 @@
-export async function apiPost<T = Record<string, unknown>>(path: string, body: unknown): Promise<T> {
+export async function apiPost<T = Record<string, unknown>>(
+  path: string,
+  body: unknown,
+  opts?: { accessToken?: string | null },
+): Promise<T> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (opts?.accessToken) {
+    headers.Authorization = `Bearer ${opts.accessToken}`
+  }
   const r = await fetch(path, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(body),
   })
   const data = await r.json().catch(() => ({})) as Record<string, unknown> & {

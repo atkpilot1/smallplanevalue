@@ -40,6 +40,10 @@ Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000`
 
 ## Valuation (live `POST /api/valuate` + `GET /api/engine-tbo`)
 
+- [x] Anonymous `POST /api/valuate` is 401; a garbage bearer token is 401
+- [x] Logged-out **Get honest valuation** opens the sign-in dialog and does not POST `/api/valuate`
+- [x] OTP from that dialog does not auto-submit; a second click produces a valuation
+- [x] Signed-in valuation cases use an Admin-seeded session (OTP UI stays in Auth)
 - [x] Parse listing auto-fills identity (make / model / year)
 - [x] Parse listing also fills TTAF, SMOH, and checks G1000
 - [x] Parse listing failure alerts the user

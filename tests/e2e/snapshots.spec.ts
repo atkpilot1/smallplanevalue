@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright-backend-mocks/playwright'
 import { mockAnthropic } from './anthropic'
+import { signInWithAdminSession } from './auth'
 import {
   TABS,
   checklistResult,
@@ -95,6 +96,8 @@ test.describe('snapshots', { tag: '@snapshot' }, () => {
   })
 
   test('valuation result', async ({ page }) => {
+    await signInWithAdminSession(page)
+    await prepareSnapshot(page)
     await fillMidtimeValuation(page, { asking: '340000' })
     await expect(page.getByTestId('engine-life')).toContainText(/TBO|life|SMOH/i)
     await expectShot(page.getByTestId('engine-life'), 'engine-life', { hideFixedNav: true })

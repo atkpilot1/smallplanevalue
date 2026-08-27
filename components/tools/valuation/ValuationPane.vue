@@ -43,6 +43,7 @@ import { getOrCreateClientId, getValuationEmail } from '~/composables/useClientI
 import { trackEvent } from '~/composables/useAnalytics'
 
 const { activeTab } = useToolsTab()
+const { openLogin, getAccessToken } = useAuth()
 const val = useValuationForm()
 const notes = val.notes
 const loading = ref(false)
@@ -82,6 +83,12 @@ async function doValuation() {
     return
   }
 
+  const accessToken = await getAccessToken()
+  if (!accessToken) {
+    openLogin()
+    return
+  }
+
   await val.refreshEngineLife()
   const body = val.buildValuationPayload({
     clientId: getOrCreateClientId(),
@@ -97,7 +104,7 @@ async function doValuation() {
   result.value = null
   failMsg.value = ''
   try {
-    const v = await apiPost<ValuationResult>('/api/valuate', body)
+    const v = await apiPost<ValuationResult>('/api/valuate', body, { accessToken })
     submittedMake.value = body.make
     submittedModel.value = body.model
     submittedYear.value = body.year
@@ -106,8 +113,13 @@ async function doValuation() {
     val.hasResult.value = true
     trackEvent('valuation_completed', { make: body.make, model: body.model })
   } catch (e) {
-    console.error('Valuation error:', e)
-    failMsg.value = (e as Error).message || String(e)
+    const err = e as Error & { status?: number }
+    if (err.status === 401) {
+      openLogin()
+    } else {
+      console.error('Valuation error:', e)
+      failMsg.value = err.message || String(e)
+    }
   }
   loading.value = false
   stopPartnerTipRotation()
