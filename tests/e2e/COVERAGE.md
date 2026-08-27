@@ -13,6 +13,16 @@ Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000`
 - [x] Page title and hero
 - [x] All six tabs activate their panes
 
+## Auth (live local GoTrue + Mailpit OTP)
+
+- [x] Nav shows **Sign In** (not **Manage Account**) next to **Look up my plane**
+- [x] **Sign In** opens a dialog; Close and Escape dismiss it
+- [x] Empty / invalid email stay on the email step with an error
+- [x] Full OTP: Mailpit code → **Manage Account**, account popup shows email, reload keeps session, **Sign out** returns **Sign In**
+- [x] Bad OTP stays logged out and shows an error
+- [x] **Use a different email** returns to the email step
+- [x] Signing in as a second account replaces the previous session
+
 ## N-number lookup (live `aircraft` table)
 
 - [x] Seeded `172SP` renders Cessna 172S / LOCAL DEV / Lycoming

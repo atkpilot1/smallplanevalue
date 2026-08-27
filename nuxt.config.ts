@@ -18,6 +18,12 @@ export default defineNuxtConfig({
     anthropicApiKey: process.env.ANTHROPIC_API_KEY,
     supabaseUrl: process.env.SUPABASE_URL,
     supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+    public: {
+      supabaseUrl: process.env.SUPABASE_URL || 'http://127.0.0.1:54321',
+      supabaseAnonKey:
+        process.env.SUPABASE_ANON_KEY ||
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+    },
     // Model selection (overridable via env)
     modelMain: process.env.SPV_MODEL_MAIN || 'claude-sonnet-4-6',
     modelFast: process.env.SPV_MODEL_FAST || 'claude-haiku-4-5-20251001',

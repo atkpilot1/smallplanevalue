@@ -1,5 +1,13 @@
 /** Shared `useState` keys. A typo here is a compile error, not a silent second store. */
 export const STATE = {
+  authUser: 'auth-user',
+  authReady: 'auth-ready',
+  authDialog: 'auth-dialog',
+  authError: 'auth-error',
+  authSending: 'auth-sending',
+  authVerifying: 'auth-verifying',
+  authOtpEmail: 'auth-otp-email',
+  authStep: 'auth-step',
   toolsTab: 'tools-tab',
   lastLookup: 'last-lookup',
   pendingLookup: 'pending-lookup',

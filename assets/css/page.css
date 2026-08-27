@@ -71,6 +71,15 @@ cursor: pointer; font-family: var(--body);
 transition: background .15s;
 }
 .nav-cta:hover { background: var(--accent-light); }
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+.nav-account {
+background: transparent; color: var(--white);
+border: 1px solid rgba(255,255,255,0.28); border-radius: var(--radius);
+padding: 7px 14px; font-size: 13px; font-weight: 500;
+cursor: pointer; font-family: var(--body);
+transition: background .15s, border-color .15s;
+}
+.nav-account:hover { border-color: var(--white); background: rgba(255,255,255,0.06); }
 
 /* ── hero ────────────────────────────────────────────── */
 .hero {
@@ -761,9 +770,61 @@ to { opacity: 1; transform: translateY(0); }
 .step-num { top: 0; }
 nav { padding: 0 1.5rem; }
 .nav-links { display: none; }
+.nav-actions { gap: 8px; }
+.nav-cta, .nav-account { padding: 7px 10px; font-size: 12px; }
 .hero-content, .showcase { padding-left: 1.5rem; padding-right: 1.5rem; }
 .footer-links { display: none; }
 }
+
+/* ── auth dialogs ────────────────────────────────────── */
+.auth-overlay {
+position: fixed; inset: 0; z-index: 200;
+background: rgba(11,37,69,0.55);
+display: flex; align-items: center; justify-content: center;
+padding: 1.5rem;
+}
+.auth-dialog {
+position: relative;
+background: var(--card-bg); color: var(--sky);
+border-radius: var(--radius-lg);
+width: 100%; max-width: 420px;
+padding: 1.6rem 1.5rem 1.35rem;
+box-shadow: 0 18px 48px rgba(11,37,69,0.28);
+}
+.auth-dialog h2 {
+font-family: var(--display);
+font-size: 30px; letter-spacing: 0.03em;
+line-height: 1.1; margin-bottom: 0.35rem;
+}
+.auth-dialog-lead { font-size: 14px; color: var(--muted); margin-bottom: 1.15rem; }
+.auth-form { display: flex; flex-direction: column; gap: 12px; }
+.auth-submit { width: 100%; justify-content: center; height: 42px; }
+.auth-sent { font-size: 13px; color: var(--sky); margin: 0; }
+.auth-back {
+background: none; border: none; padding: 0;
+color: var(--sky-mid); font-size: 13px; font-weight: 500;
+cursor: pointer; font-family: var(--body); text-align: left;
+}
+.auth-back:hover { color: var(--sky-light); }
+.auth-error { color: var(--danger); font-size: 13px; margin: 0.85rem 0 0; }
+.auth-email {
+font-size: 15px; font-weight: 500; margin: -0.5rem 0 1rem;
+word-break: break-all;
+}
+.auth-credits {
+border: 1px solid var(--card-border); border-radius: var(--radius);
+padding: 12px 14px; margin-bottom: 1rem;
+}
+.auth-credits-label { font-size: 11px; letter-spacing: 0.04em; color: var(--muted); font-weight: 500; }
+.auth-credits-value { font-size: 15px; font-weight: 500; margin-top: 2px; }
+.auth-close {
+position: absolute; top: 12px; right: 12px;
+width: 32px; height: 32px; border: none; border-radius: 8px;
+background: transparent; color: var(--muted); cursor: pointer;
+display: flex; align-items: center; justify-content: center;
+}
+.auth-close:hover { background: rgba(11,37,69,0.06); color: var(--sky); }
+.auth-close i { font-size: 18px; }
 
 /* Nuxt root — keep layout/a11y tree matching the original body children. */
 #__nuxt { display: contents; }

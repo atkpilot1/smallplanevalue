@@ -10,6 +10,7 @@
   - link "Get a valuation":
     - /url: "#app"
   - button "Look up my plane"
+  - button "Sign In"
 - text:  The Honest GA Valuation Tool
 - heading "Know What Your Plane Is Worth." [level=1]
 - paragraph: Real asking price ranges for piston singles, twins, LSA, and experimental aircraft — with transparent discount bands, not fabricated sale prices.

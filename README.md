@@ -25,7 +25,8 @@ npm run dev
 ```
 
 App: http://localhost:3000  
-Studio: http://127.0.0.1:54323
+Studio: http://127.0.0.1:54323  
+Mailpit (local Auth emails / OTP): http://127.0.0.1:54324
 
 Seeded N-numbers for lookup: `172SP`, `22T`, `182RG`, `58P`.
 
