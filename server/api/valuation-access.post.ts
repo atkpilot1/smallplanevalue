@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
   })
 
   // Tie email to this browser for future paid tier (no extra valuation credit in Phase 1).
-  await supabaseInsert('usage_events', {
+  await supabaseAdminInsert('usage_events', {
     client_id: clientId,
     email: email.trim().toLowerCase(),
     feature: 'valuation_email_registered',

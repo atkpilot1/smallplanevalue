@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright-backend-mocks/playwright'
 import { failAnthropic, mockAnthropic } from './anthropic'
 import {
+  accountDialog,
+  createAdminSession,
   fetchOtp,
   loginDialog,
   manageAccountButton,
@@ -14,6 +16,7 @@ import {
   openAvionics,
   expectAlert,
   expectValuationDollars,
+  fetchProfile,
   fetchUsageEvents,
   fillMidtimeValuation,
   field,
@@ -91,8 +94,10 @@ test.describe('login required', () => {
 })
 
 test.describe('signed in', () => {
+  let account: { email: string; userId: string }
+
   test.beforeEach(async ({ page }) => {
-    await seedAdminSession(page)
+    account = await seedAdminSession(page)
     await openApp(page)
     await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
   })
@@ -289,6 +294,7 @@ test('successful valuation writes clientId and a usage_events row', async ({ pag
   const rows = await fetchUsageEvents(clientId as string)
   expect(rows.length).toBeGreaterThan(0)
   expect(rows[0].feature).toBe('valuate')
+  expect(rows[0].user_id).toBe(account.userId)
   expect(rows[0].metadata).toMatchObject({ make: 'Cessna', model: '172S' })
 })
 
@@ -310,4 +316,54 @@ test('engine life bar appears after entering SMOH', async ({ page }) => {
   await expect(life).toContainText('life remaining', { timeout: 10_000 })
   await expect(life).toContainText('50%')
 })
+})
+
+test.describe('valuation counter', () => {
+  test('successful valuations increment profiles.valuation_count', async ({ page }) => {
+    const { userId } = await seedAdminSession(page)
+    await openApp(page)
+    await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
+    expect((await fetchProfile(userId))?.valuation_count ?? 0).toBe(0)
+
+    await fillMidtimeValuation(page)
+    await submitValuation(page)
+    expect((await fetchProfile(userId))?.valuation_count).toBe(1)
+
+    await submitValuation(page)
+    expect((await fetchProfile(userId))?.valuation_count).toBe(2)
+
+    await manageAccountButton(page).click()
+    await expect(accountDialog(page).getByLabel('Valuations run')).toHaveText('2')
+  })
+
+  test('Anthropic 500 does not increment the account counter', async ({ page }) => {
+    const { userId } = await seedAdminSession(page)
+    await openApp(page)
+    await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
+
+    failAnthropic('valuate')
+    await fillMidtimeValuation(page)
+    await pane(page, 'val').getByRole('button', { name: 'Get honest valuation' }).click()
+    await expect(valuationResult(page)).toContainText('Failed:', { timeout: 20_000 })
+    expect((await fetchProfile(userId))?.valuation_count ?? 0).toBe(0)
+  })
+
+  test('accounts have independent valuation counters', async ({ request }) => {
+    const a = await createAdminSession()
+    const b = await createAdminSession()
+    const body = { make: 'Cessna', model: '172S', year: '2004' }
+
+    const post = (token: string) =>
+      request.post('/api/valuate', {
+        headers: { Authorization: `Bearer ${token}` },
+        data: body,
+      })
+
+    expect((await post(a.session.access_token)).ok()).toBeTruthy()
+    expect((await post(a.session.access_token)).ok()).toBeTruthy()
+    expect((await post(b.session.access_token)).ok()).toBeTruthy()
+
+    expect((await fetchProfile(a.userId))?.valuation_count).toBe(2)
+    expect((await fetchProfile(b.userId))?.valuation_count).toBe(1)
+  })
 })

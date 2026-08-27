@@ -3,6 +3,7 @@ import { generateText, stepCountIs, tool } from 'ai'
 import { findComparables, formatComparables } from '../data/aircraftDb'
 import {
   countValuationsThisMonth,
+  incrementValuationCount,
   recordValuationUsage,
   FREE_VALUATIONS_PER_MONTH,
   VALUATION_LIMITS_ENABLED,
@@ -325,7 +326,7 @@ export default defineEventHandler(async (event) => {
   const avs = d.avionics
   const clientId = (d.clientId || '').trim()
 
-  await requireAuthUser(event)
+  const user = await requireAuthUser(event)
 
   if (VALUATION_LIMITS_ENABLED && clientId) {
     const used = await countValuationsThisMonth(clientId)
@@ -569,12 +570,18 @@ export default defineEventHandler(async (event) => {
   })
   out = applyEquippedF33AFloor(out, d)
 
+  await incrementValuationCount(user.id)
   if (clientId) {
-    await recordValuationUsage(clientId, d.email, {
-      make: d.make,
-      model: d.model,
-      year: d.year || null,
-    })
+    await recordValuationUsage(
+      clientId,
+      d.email,
+      {
+        make: d.make,
+        model: d.model,
+        year: d.year || null,
+      },
+      user.id,
+    )
   }
 
   return out

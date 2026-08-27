@@ -135,6 +135,7 @@ export async function createAdminSession(email = uniqueTestEmail()) {
   if (!tokenRes.ok) {
     throw new Error(`Password grant failed: ${tokenRes.status} ${await tokenRes.text()}`)
   }
+  const created = (await createRes.json()) as { id?: string }
   const session = (await tokenRes.json()) as AuthSession
   if (!session.access_token || !session.refresh_token) {
     throw new Error('Password grant returned no tokens')
@@ -142,28 +143,32 @@ export async function createAdminSession(email = uniqueTestEmail()) {
   if (!session.expires_at && session.expires_in) {
     session.expires_at = Math.floor(Date.now() / 1000) + session.expires_in
   }
-  return { email, session }
+  const userId = (session.user as { id?: string } | undefined)?.id || created.id
+  if (!userId) {
+    throw new Error('Admin session had no user id')
+  }
+  return { email, userId, session }
 }
 
 /** Inject a session so the next navigation hydrates as signed in. */
 export async function seedAdminSession(page: Page, email = uniqueTestEmail()) {
-  const { email: used, session } = await createAdminSession(email)
+  const { email: used, userId, session } = await createAdminSession(email)
   await page.addInitScript(
     ({ key, sess }) => {
       localStorage.setItem(key, JSON.stringify(sess))
     },
     { key: AUTH_STORAGE_KEY, sess: session },
   )
-  return used
+  return { email: used, userId }
 }
 
 /** Seed a session and wait for the nav to show Manage Account (reloads if already on a page). */
 export async function signInWithAdminSession(page: Page, email = uniqueTestEmail()) {
-  const used = await seedAdminSession(page, email)
+  const seeded = await seedAdminSession(page, email)
   const url = page.url()
   if (url && url !== 'about:blank') {
     await page.reload({ waitUntil: 'domcontentloaded' })
   }
   await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
-  return used
+  return seeded
 }

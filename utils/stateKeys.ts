@@ -8,6 +8,7 @@ export const STATE = {
   authVerifying: 'auth-verifying',
   authOtpEmail: 'auth-otp-email',
   authStep: 'auth-step',
+  authValuationCount: 'auth-valuation-count',
   toolsTab: 'tools-tab',
   lastLookup: 'last-lookup',
   pendingLookup: 'pending-lookup',

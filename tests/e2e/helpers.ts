@@ -12,6 +12,10 @@ export const LOCAL_SUPABASE = {
   anon:
     process.env.SUPABASE_ANON_KEY ||
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
+  serviceRole:
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_SERVICE_KEY ||
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU',
 }
 
 /** Mocked AI baseline before post-AI adjustments. */
@@ -244,16 +248,29 @@ export async function expectAria(locator: Locator, name: string) {
   await expect(locator).toMatchAriaSnapshot({ name })
 }
 
-export async function fetchUsageEvents(clientId: string) {
-  const url =
-    `${LOCAL_SUPABASE.url}/rest/v1/usage_events` +
-    `?client_id=eq.${encodeURIComponent(clientId)}&feature=eq.valuate&select=id,feature,metadata,client_id`
-  const res = await fetch(url, {
+async function supabaseAdminRest<T>(path: string): Promise<T> {
+  const res = await fetch(`${LOCAL_SUPABASE.url}/rest/v1/${path}`, {
     headers: {
-      apikey: LOCAL_SUPABASE.anon,
-      Authorization: `Bearer ${LOCAL_SUPABASE.anon}`,
+      apikey: LOCAL_SUPABASE.serviceRole,
+      Authorization: `Bearer ${LOCAL_SUPABASE.serviceRole}`,
     },
   })
-  if (!res.ok) throw new Error(`usage_events query failed: ${res.status} ${await res.text()}`)
-  return (await res.json()) as Array<{ id: string; feature: string; client_id: string; metadata: unknown }>
+  if (!res.ok) throw new Error(`Supabase admin query failed: ${res.status} ${await res.text()}`)
+  return (await res.json()) as T
+}
+
+export async function fetchUsageEvents(clientId: string) {
+  const path =
+    `usage_events?client_id=eq.${encodeURIComponent(clientId)}&feature=eq.valuate` +
+    `&select=id,feature,metadata,client_id,user_id`
+  return supabaseAdminRest<
+    Array<{ id: string; feature: string; client_id: string; user_id: string | null; metadata: unknown }>
+  >(path)
+}
+
+export async function fetchProfile(userId: string) {
+  const rows = await supabaseAdminRest<Array<{ user_id: string; valuation_count: number }>>(
+    `profiles?user_id=eq.${encodeURIComponent(userId)}&select=user_id,valuation_count`,
+  )
+  return rows[0] ?? null
 }

@@ -4,6 +4,8 @@ Add Supabase email OTP so a visitor can sign in, see account state, and (in late
 
 Work in three sequential steps. Each step ships with Playwright coverage before the next starts.
 
+**Status:** Steps 1–3 are implemented. Stripe and the “3 free then pay” gate remain out of scope.
+
 ## Locked decisions
 
 | Topic | Decision |
@@ -162,21 +164,19 @@ Account popup can then show “Valuations run: N” (or remaining-free later). S
 ## Playwright vs local Supabase
 
 **Public table data: already in good shape.**  
-Helpers use the local REST URL + anon key (`LOCAL_SUPABASE` in `tests/e2e/helpers.ts`). Lookup tests hit the real `aircraft` seed. One valuation test already asserts `usage_events` via `fetchUsageEvents()`. CI starts Supabase (`npm run db:start`) then runs Playwright. Tests are serial (`workers: 1`), which fits a shared local DB.
+Helpers use the local REST URL (`LOCAL_SUPABASE` in `tests/e2e/helpers.ts`). Lookup tests hit the real `aircraft` seed with the anon key. `usage_events` and `profiles` are read with the service role after RLS tightened. CI starts Supabase (`npm run db:start`) then runs Playwright. Tests are serial (`workers: 1`), which fits a shared local DB.
 
-**Auth users and OTP mail: not wired yet.**  
-Nothing in `tests/` talks to `auth.users`, the Auth Admin API, or Inbucket/Mailpit. There is no service-role key in the Playwright env today (`.env.example` only comments `SUPABASE_SERVICE_KEY` for FAA ingest). `auth.users` is not a PostgREST table you can query with the current anon helper.
-
-**What we will add when step 1 tests land**
+**Auth, profiles, and usage_events: wired.**  
+OTP reads Mailpit (`:54324`). Sessions can be seeded via the Auth Admin API. `fetchProfile` / `fetchUsageEvents` use the local service-role REST key so they still work after RLS tightened on `usage_events` and `profiles`.
 
 | Need | How |
 |---|---|
-| OTP code | HTTP to local mail UI/API on `:54324` (Inbucket/Mailpit already enabled). |
+| OTP code | HTTP to local Mailpit on `:54324`. |
 | “Is this user in Auth?” | Auth Admin API with the local service role JWT (`/auth/v1/admin/users`). |
-| Browser session | Drive the real popup (source of truth) and/or seed a session for valuation specs. |
-| Profile / count rows | Same REST style as `fetchUsageEvents`, preferably with the service role once RLS is not world-readable. |
+| Browser session | Drive the real popup, or `seedAdminSession` / `signInWithAdminSession`. |
+| Profile / count rows | `fetchProfile(userId)` — service-role REST against `public.profiles`. |
 
-We do **not** need a raw `psql` connection for these steps. REST + Auth Admin + Inbucket is enough if we add those helpers.
+We do **not** need a raw `psql` connection. REST + Auth Admin + Mailpit is enough.
 
 **Local Auth caveats to handle in step 1**
 

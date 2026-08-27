@@ -18,7 +18,7 @@ Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000`
 - [x] Nav shows **Sign In** (not **Manage Account**) next to **Look up my plane**
 - [x] **Sign In** opens a dialog; Close and Escape dismiss it
 - [x] Empty / invalid email stay on the email step with an error
-- [x] Full OTP: Mailpit code → **Manage Account**, account popup shows email, reload keeps session, **Sign out** returns **Sign In**
+- [x] Full OTP: Mailpit code → **Manage Account**, account popup shows email and **Valuations run** `0`, reload keeps session, **Sign out** returns **Sign In**
 - [x] Bad OTP stays logged out and shows an error
 - [x] **Use a different email** returns to the email step
 - [x] Signing in as a second account replaces the previous session
@@ -62,7 +62,10 @@ Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000`
 - [x] Asking price renders the listing-vs-market narrative
 - [x] Empty make/model alerts the user
 - [x] Anthropic 500 surfaces a valuation failure in the UI
-- [x] Successful valuation writes `spv_client_id` and a `usage_events` row
+- [x] Successful valuation writes `spv_client_id` and a `usage_events` row with `user_id`
+- [x] Successful valuations increment `profiles.valuation_count` (1 then 2); account popup shows **Valuations run**
+- [x] Anthropic 500 does not increment `profiles.valuation_count`
+- [x] Two accounts have independent `profiles.valuation_count` values
 - [x] Lookup `172SP` then value: engine TBO note + fresh-engine adj uses IO-360 overhaul ($18k)
 - [x] Engine life bar appears after entering SMOH (`GET /api/engine-tbo`)
 

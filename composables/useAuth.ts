@@ -17,6 +17,7 @@ export function useAuth() {
   const verifying = useState(STATE.authVerifying, () => false)
   const otpEmail = useState(STATE.authOtpEmail, () => '')
   const step = useState<AuthStep>(STATE.authStep, () => 'email')
+  const valuationCount = useState(STATE.authValuationCount, () => 0)
 
   async function init() {
     if (!import.meta.client || ready.value) return
@@ -39,6 +40,20 @@ export function useAuth() {
   function openAccount() {
     error.value = ''
     dialog.value = 'account'
+    void refreshValuationCount()
+  }
+
+  async function refreshValuationCount() {
+    if (!import.meta.client || !user.value) {
+      valuationCount.value = 0
+      return
+    }
+    const { data } = await useSupabase()
+      .from('profiles')
+      .select('valuation_count')
+      .eq('user_id', user.value.id)
+      .maybeSingle()
+    valuationCount.value = data?.valuation_count ?? 0
   }
 
   function closeDialog() {
@@ -117,6 +132,7 @@ export function useAuth() {
 
   async function signOut() {
     await useSupabase().auth.signOut()
+    valuationCount.value = 0
     closeDialog()
   }
 
@@ -129,6 +145,7 @@ export function useAuth() {
     verifying,
     otpEmail,
     step,
+    valuationCount,
     init,
     openLogin,
     openAccount,

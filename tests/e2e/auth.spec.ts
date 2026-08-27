@@ -57,7 +57,7 @@ test('OTP sign-in, account popup, sign out, and session persist across reload', 
   const account = accountDialog(page)
   await expect(account).toBeVisible()
   await expect(account).toContainText(email)
-  await expect(account).toContainText(/coming soon/i)
+  await expect(account.getByLabel('Valuations run')).toHaveText('0')
 
   await account.getByRole('button', { name: 'Close' }).click()
   await expect(account).toBeHidden()
