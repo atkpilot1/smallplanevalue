@@ -1,25 +1,15 @@
-import { AV_PARSE_MAP, ALL_AVIONICS_ITEMS, collectAvionics } from '~/data/avionicsCatalog'
+import { AV_PARSE_MAP, collectAvionics } from '~/data/avionicsCatalog'
 import type { EngineLifeState, EngineTboSpec, LookupRecord, ParsedListing, ValuationRequest } from '~/types/app'
 import { isTwinFromLookup } from '~/utils/lookupPrefill'
 import { STATE } from '~/utils/stateKeys'
+import {
+  VALUATION_FORM_STORAGE_KEY,
+  emptyValuationForm,
+  mergeValuationForm,
+  type ValuationFormSnapshot,
+} from '~/utils/valuationFormStorage'
 
 const TBO_PRESETS = ['1500', '1600', '1700', '1800', '1900', '2000', '2100', '2200']
-
-function emptyAvChecked() {
-  return Object.fromEntries(ALL_AVIONICS_ITEMS.map((i) => [i.id, false])) as Record<string, boolean>
-}
-
-function emptyAvQty() {
-  return Object.fromEntries(
-    ALL_AVIONICS_ITEMS.filter((i) => i.qtyOptions).map((i) => [i.id, '1']),
-  ) as Record<string, string>
-}
-
-function emptyAvSize() {
-  return Object.fromEntries(
-    ALL_AVIONICS_ITEMS.filter((i) => i.sizeOptions).map((i) => [i.id, i.sizeOptions![0].value]),
-  ) as Record<string, string>
-}
 
 export function cirrusGenFromYear(yearStr: string, model: string) {
   const y = parseInt(String(yearStr || '').replace(/[^0-9]/g, ''), 10)
@@ -39,44 +29,61 @@ export function cirrusGenFromYear(yearStr: string, model: string) {
   return 'G7'
 }
 
+function bindValuationFormPersistence(
+  form: Ref<ValuationFormSnapshot>,
+  ctx: ReturnType<typeof useAircraftContext>,
+  refreshEngineLife: () => Promise<void>,
+) {
+  if (import.meta.server) return
+
+  const persisted = useLocalStorage(VALUATION_FORM_STORAGE_KEY, emptyValuationForm(), {
+    mergeDefaults: true,
+    initOnMounted: true,
+    writeDefaults: false,
+  })
+
+  const bound = useState(STATE.vFormPersistBound, () => false)
+  if (bound.value) return
+  bound.value = true
+
+  onMounted(async () => {
+    await nextTick()
+    const hasStored = !!localStorage.getItem(VALUATION_FORM_STORAGE_KEY)
+    if (hasStored) {
+      Object.assign(form.value, mergeValuationForm(persisted.value))
+      ctx.valEngMake.value = form.value.valEngMake
+      ctx.valEngModel.value = form.value.valEngModel
+    }
+
+    watch(
+      form,
+      (v) => {
+        const next = mergeValuationForm(v)
+        if (JSON.stringify(persisted.value) !== JSON.stringify(next)) {
+          persisted.value = next
+        }
+      },
+      { deep: true },
+    )
+
+    if (hasStored && (form.value.smoh || form.value.smohL || form.value.smohR)) {
+      void refreshEngineLife()
+    }
+  })
+}
+
 export function useValuationForm() {
   const ctx = useAircraftContext()
+  const form = useState<ValuationFormSnapshot>(STATE.vForm, emptyValuationForm)
+  const {
+    paste, make, model, year, annualMonth, annualYear, outOfAnnual, engineDisplay,
+    asking, ttaf, engines, cirrusGen, cirrusTouched, tbo, engConv, smoh, prop1,
+    smohL, smohR, propL, propR, cond, cosm, logbooks, damage, avionicsPackage,
+    notes, avChecked, avQty, avSize, tboUserOverride, extraTbo, engineTboAuto,
+  } = toRefs(toReactive(form))
+
   const tboCache = useState<Record<string, EngineTboSpec>>(STATE.engineTboCache, () => ({}))
   const lastEngineLife = useState<EngineLifeState | null>(STATE.lastEngineLife, () => null)
-  const tboUserOverride = useState(STATE.tboUserOverride, () => false)
-  const engineTboAuto = useState(STATE.engineTboAuto, () => 2000)
-  const extraTbo = useState<string | null>(STATE.extraTbo, () => null)
-
-  const paste = useState(STATE.vPaste, () => '')
-  const make = useState(STATE.vMake, () => '')
-  const model = useState(STATE.vModel, () => '')
-  const year = useState(STATE.vYear, () => '')
-  const annualMonth = useState(STATE.vAnnualMonth, () => '')
-  const annualYear = useState(STATE.vAnnualYear, () => '')
-  const outOfAnnual = useState(STATE.vOutOfAnnual, () => false)
-  const engineDisplay = useState(STATE.vEngineDisplay, () => '')
-  const asking = useState(STATE.vAsking, () => '')
-  const ttaf = useState(STATE.vTtaf, () => '')
-  const engines = useState(STATE.vEngines, () => '1')
-  const cirrusGen = useState(STATE.vCirrusGen, () => '')
-  const cirrusTouched = useState(STATE.vCirrusTouched, () => false)
-  const tbo = useState(STATE.vTbo, () => '2000')
-  const engConv = useState(STATE.vEngConv, () => '')
-  const smoh = useState(STATE.vSmoh, () => '')
-  const prop1 = useState(STATE.vProp1, () => '')
-  const smohL = useState(STATE.vSmohL, () => '')
-  const smohR = useState(STATE.vSmohR, () => '')
-  const propL = useState(STATE.vPropL, () => '')
-  const propR = useState(STATE.vPropR, () => '')
-  const cond = useState(STATE.vCond, () => 'Good — minor wear')
-  const cosm = useState(STATE.vCosm, () => 'Good condition')
-  const logbooks = useState(STATE.vLogbooks, () => '')
-  const damage = useState(STATE.vDamage, () => '')
-  const avionicsPackage = useState(STATE.vAvionicsPackage, () => '')
-  const notes = useState(STATE.vNotes, () => '')
-  const avChecked = useState<Record<string, boolean>>(STATE.vAvChecked, emptyAvChecked)
-  const avQty = useState<Record<string, string>>(STATE.vAvQty, emptyAvQty)
-  const avSize = useState<Record<string, string>>(STATE.vAvSize, emptyAvSize)
   const tboNote = useState(STATE.vTboNote, () => '')
   const hasResult = useState(STATE.vHasResult, () => false)
 
@@ -189,47 +196,22 @@ export function useValuationForm() {
   }
 
   function resetForm() {
-    make.value = ''
-    model.value = ''
-    year.value = ''
-    ttaf.value = ''
-    engines.value = '1'
-    smoh.value = ''
-    prop1.value = ''
-    smohL.value = ''
-    smohR.value = ''
-    propL.value = ''
-    propR.value = ''
-    cond.value = 'Good — minor wear'
-    cosm.value = 'Good condition'
-    notes.value = ''
-    engineDisplay.value = ''
-    asking.value = ''
-    annualMonth.value = ''
-    annualYear.value = ''
-    outOfAnnual.value = false
-    engConv.value = ''
-    extraTbo.value = null
-    tbo.value = '2000'
-    tboUserOverride.value = false
-    tboNote.value = ''
+    const keepEng = {
+      valEngMake: form.value.valEngMake,
+      valEngModel: form.value.valEngModel,
+    }
+    Object.assign(form.value, emptyValuationForm(), keepEng)
     lastEngineLife.value = null
-    cirrusGen.value = ''
-    cirrusTouched.value = false
-    logbooks.value = ''
-    damage.value = ''
-    avionicsPackage.value = ''
-    avChecked.value = emptyAvChecked()
-    avQty.value = emptyAvQty()
-    avSize.value = emptyAvSize()
-    paste.value = ''
+    tboNote.value = ''
     hasResult.value = false
     toggleCirrusGen()
   }
 
   function prefillFromLookup(d: LookupRecord) {
-    ctx.valEngMake.value = d.engineMake || ''
-    ctx.valEngModel.value = d.engineModel || ''
+    form.value.valEngMake = d.engineMake || ''
+    form.value.valEngModel = d.engineModel || ''
+    ctx.valEngMake.value = form.value.valEngMake
+    ctx.valEngModel.value = form.value.valEngModel
     resetForm()
     engineDisplay.value = ((d.engineMake || '') + ' ' + (d.engineModel || '')).trim()
     make.value = d.make || ''
@@ -247,6 +229,8 @@ export function useValuationForm() {
     if (L.year) year.value = String(L.year)
     ctx.valEngMake.value = L.engineMake || ctx.valEngMake.value || ''
     ctx.valEngModel.value = L.engineModel || ctx.valEngModel.value || ''
+    form.value.valEngMake = ctx.valEngMake.value
+    form.value.valEngModel = ctx.valEngModel.value
     engineDisplay.value = ((ctx.valEngMake.value || '') + ' ' + (ctx.valEngModel.value || '')).trim()
     if (isTwinFromLookup(L)) engines.value = '2'
     if (d.make) make.value = d.make
@@ -371,6 +355,8 @@ export function useValuationForm() {
       engineConversion: engConv.value.trim() || '',
     }
   }
+
+  bindValuationFormPersistence(form, ctx, refreshEngineLife)
 
   return {
     paste, make, model, year, annualMonth, annualYear, outOfAnnual, engineDisplay,

@@ -35,6 +35,7 @@ test.describe('snapshots', { tag: '@snapshot' }, () => {
     await page.addInitScript(() => {
       localStorage.removeItem('spv_sold')
       localStorage.removeItem('spv_feedback')
+      localStorage.removeItem('spv_valuation_form')
     })
     await openApp(page)
     await prepareSnapshot(page)

@@ -367,3 +367,77 @@ test.describe('valuation counter', () => {
     expect((await fetchProfile(b.userId))?.valuation_count).toBe(1)
   })
 })
+
+test.describe('valuation form persist', () => {
+  test('reload restores filled fields from localStorage', async ({ page }) => {
+    await openApp(page)
+    await fillValuation(page, {
+      make: 'Cessna',
+      model: '172S',
+      year: '2004',
+      smoh: '850',
+      asking: '189000',
+      notes: 'Hangared, no damage',
+      outOfAnnual: true,
+      logbooks: 'Complete since new',
+    })
+    await checkAvionics(page, 'G1000')
+
+    const stored = JSON.parse(
+      (await page.evaluate(() => localStorage.getItem('spv_valuation_form'))) || 'null',
+    ) as { make?: string; avChecked?: Record<string, boolean> } | null
+    expect(stored).toMatchObject({
+      make: 'Cessna',
+      model: '172S',
+      year: '2004',
+      smoh: '850',
+      asking: '189000',
+      notes: 'Hangared, no damage',
+      outOfAnnual: true,
+      logbooks: 'Complete since new',
+    })
+    expect(stored?.avChecked?.['av-g1000']).toBe(true)
+
+    await page.reload({ waitUntil: 'domcontentloaded' })
+    await openTab(page, 'val')
+    const form = pane(page, 'val')
+    await expect(field(form, 'Make')).toHaveValue('Cessna')
+    await expect(field(form, 'Model')).toHaveValue('172S')
+    await expect(field(form, 'Year')).toHaveValue('2004')
+    await expect(field(form, 'Engine SMOH (hrs)')).toHaveValue('850')
+    await expect(field(form, 'Asking price ($)')).toHaveValue('189000')
+    await expect(field(form, /^notes/i)).toHaveValue('Hangared, no damage')
+    await expect(form.getByRole('checkbox', { name: 'Out of annual' })).toBeChecked()
+    await expect(field(form, 'Logbooks')).toHaveValue('Complete since new')
+    await openAvionics(page)
+    await expect(form.getByRole('checkbox', { name: 'G1000', exact: true })).toBeChecked()
+    await expect(valuationResult(page)).not.toContainText('AIRCRAFT VALUATION')
+  })
+
+  test('Checkout-style return keeps the form and does not auto-submit', async ({ page }) => {
+    await openApp(page)
+    await fillMidtimeValuation(page, { notes: 'Keep me after checkout' })
+    await openApp(page, '/?paid=1')
+    await openTab(page, 'val')
+    await expect(field(pane(page, 'val'), 'Make')).toHaveValue('Cessna')
+    await expect(field(pane(page, 'val'), 'Model')).toHaveValue('172S')
+    await expect(field(pane(page, 'val'), 'Engine SMOH (hrs)')).toHaveValue('1000')
+    await expect(field(pane(page, 'val'), /^notes/i)).toHaveValue('Keep me after checkout')
+    await expect(valuationResult(page)).not.toContainText('AIRCRAFT VALUATION')
+  })
+
+  test('lookup prefill survives reload', async ({ page }) => {
+    await openApp(page)
+    await lookupN(page, '172SP')
+    await lookupResult(page).getByRole('button', { name: 'Get valuation' }).click()
+    await expect(field(pane(page, 'val'), 'Make')).toHaveValue('CESSNA')
+    await expect(field(pane(page, 'val'), 'Engine')).toHaveValue(/LYCOMING\s+IO-360-L2A/)
+
+    await page.reload({ waitUntil: 'domcontentloaded' })
+    await openTab(page, 'val')
+    await expect(field(pane(page, 'val'), 'Make')).toHaveValue('CESSNA')
+    await expect(field(pane(page, 'val'), 'Model')).toHaveValue('172S')
+    await expect(field(pane(page, 'val'), 'Year')).toHaveValue('2005')
+    await expect(field(pane(page, 'val'), 'Engine')).toHaveValue(/LYCOMING\s+IO-360-L2A/)
+  })
+})

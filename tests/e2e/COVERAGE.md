@@ -68,6 +68,8 @@ Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000`
 - [x] Two accounts have independent `profiles.valuation_count` values
 - [x] Lookup `172SP` then value: engine TBO note + fresh-engine adj uses IO-360 overhaul ($18k)
 - [x] Engine life bar appears after entering SMOH (`GET /api/engine-tbo`)
+- [x] Valuation form persists to `spv_valuation_form`; reload restores fields, avionics, and lookup engine
+- [x] Simulated Checkout return (`/?paid=1`) keeps the form and does not auto-submit
 
 ## Market comps (live `POST /api/comps`)
 

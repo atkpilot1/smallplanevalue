@@ -7,6 +7,8 @@ export default defineNuxtConfig({
   // Nitro auto-selects the Vercel preset on Vercel. Local and GitHub CI
   // produce a Node listener so Playwright can serve the compiled output.
 
+  modules: ['@vueuse/nuxt'],
+
   css: ['~/assets/css/page.css'],
 
   components: [
