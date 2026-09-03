@@ -268,9 +268,35 @@ export async function fetchUsageEvents(clientId: string) {
   >(path)
 }
 
+export type ProfileRow = {
+  user_id: string
+  valuation_count: number
+  credit_balance: number
+}
+
 export async function fetchProfile(userId: string) {
-  const rows = await supabaseAdminRest<Array<{ user_id: string; valuation_count: number }>>(
-    `profiles?user_id=eq.${encodeURIComponent(userId)}&select=user_id,valuation_count`,
+  const rows = await supabaseAdminRest<ProfileRow[]>(
+    `profiles?user_id=eq.${encodeURIComponent(userId)}&select=user_id,valuation_count,credit_balance`,
   )
   return rows[0] ?? null
+}
+
+export async function setProfile(
+  userId: string,
+  fields: { valuation_count?: number; credit_balance?: number },
+) {
+  const res = await fetch(
+    `${LOCAL_SUPABASE.url}/rest/v1/profiles?user_id=eq.${encodeURIComponent(userId)}`,
+    {
+      method: 'PATCH',
+      headers: {
+        apikey: LOCAL_SUPABASE.serviceRole,
+        Authorization: `Bearer ${LOCAL_SUPABASE.serviceRole}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify(fields),
+    },
+  )
+  if (!res.ok) throw new Error(`setProfile failed: ${res.status} ${await res.text()}`)
 }

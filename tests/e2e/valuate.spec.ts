@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright-backend-mocks/playwright'
-import { failAnthropic, mockAnthropic } from './anthropic'
+import { failAnthropic, getAnthropicValuateHits, mockAnthropic } from './anthropic'
 import {
   accountDialog,
   createAdminSession,
   fetchOtp,
   loginDialog,
   manageAccountButton,
+  paywallDialog,
   requestOtp,
   seedAdminSession,
   uniqueTestEmail,
@@ -26,6 +27,7 @@ import {
   openApp,
   openTab,
   pane,
+  setProfile,
   submitValuation,
   usd,
   valuationResult,
@@ -334,6 +336,8 @@ test.describe('valuation counter', () => {
 
     await manageAccountButton(page).click()
     await expect(accountDialog(page).getByLabel('Valuations run')).toHaveText('2')
+    await expect(accountDialog(page).getByLabel('Free remaining')).toHaveText('1')
+    await expect(accountDialog(page).getByLabel('Paid credits')).toHaveText('0')
   })
 
   test('Anthropic 500 does not increment the account counter', async ({ page }) => {
@@ -365,6 +369,95 @@ test.describe('valuation counter', () => {
 
     expect((await fetchProfile(a.userId))?.valuation_count).toBe(2)
     expect((await fetchProfile(b.userId))?.valuation_count).toBe(1)
+  })
+})
+
+test.describe('credit gate', () => {
+  test('three free valuations then the fourth is 402 and skips Anthropic', async ({ page }) => {
+    const { userId } = await seedAdminSession(page)
+    await openApp(page)
+    await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
+    await fillMidtimeValuation(page)
+
+    await submitValuation(page)
+    await submitValuation(page)
+    await submitValuation(page)
+    expect((await fetchProfile(userId))?.valuation_count).toBe(3)
+
+    const before = getAnthropicValuateHits()
+    const resP = page.waitForResponse((r) => r.url().includes('/api/valuate') && r.request().method() === 'POST')
+    await pane(page, 'val').getByRole('button', { name: 'Get honest valuation' }).click()
+    const res = await resP
+    expect(res.status()).toBe(402)
+    expect(getAnthropicValuateHits()).toBe(before)
+    await expect(paywallDialog(page)).toBeVisible()
+    await expect(paywallDialog(page)).toContainText(/3 free valuations/i)
+    await expect(paywallDialog(page).getByRole('button', { name: '1 valuation — $24' })).toBeVisible()
+    await expect(paywallDialog(page).getByRole('button', { name: '5 valuations — $75' })).toBeVisible()
+    await expect(valuationResult(page)).not.toContainText('Failed:')
+    expect((await fetchProfile(userId))?.valuation_count).toBe(3)
+  })
+
+  test('Anthropic 500 on the third free does not consume', async ({ page }) => {
+    const { userId } = await seedAdminSession(page)
+    await setProfile(userId, { valuation_count: 2, credit_balance: 0 })
+    await openApp(page)
+    await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
+
+    failAnthropic('valuate')
+    await fillMidtimeValuation(page)
+    await pane(page, 'val').getByRole('button', { name: 'Get honest valuation' }).click()
+    await expect(valuationResult(page)).toContainText('Failed:', { timeout: 20_000 })
+    expect((await fetchProfile(userId))?.valuation_count).toBe(2)
+    expect((await fetchProfile(userId))?.credit_balance ?? 0).toBe(0)
+  })
+
+  test('paid credit is consumed after the free three', async ({ page }) => {
+    const { userId } = await seedAdminSession(page)
+    await setProfile(userId, { valuation_count: 3, credit_balance: 1 })
+    await openApp(page)
+    await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
+    await fillMidtimeValuation(page)
+    await submitValuation(page)
+
+    const profile = await fetchProfile(userId)
+    expect(profile?.valuation_count).toBe(4)
+    expect(profile?.credit_balance).toBe(0)
+  })
+
+  test('no paid credits after the free three opens the paywall', async ({ page }) => {
+    const { userId } = await seedAdminSession(page)
+    await setProfile(userId, { valuation_count: 3, credit_balance: 0 })
+    await openApp(page)
+    await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
+    await fillMidtimeValuation(page)
+
+    const before = getAnthropicValuateHits()
+    await pane(page, 'val').getByRole('button', { name: 'Get honest valuation' }).click()
+    await expect(paywallDialog(page)).toBeVisible()
+    await expect(valuationResult(page)).not.toContainText('AIRCRAFT VALUATION')
+    expect(getAnthropicValuateHits()).toBe(before)
+    expect((await fetchProfile(userId))?.valuation_count).toBe(3)
+  })
+
+  test('accounts have independent free and paid balances', async ({ request }) => {
+    const a = await createAdminSession()
+    const b = await createAdminSession()
+    await setProfile(a.userId, { valuation_count: 3, credit_balance: 1 })
+    await setProfile(b.userId, { valuation_count: 3, credit_balance: 0 })
+    const body = { make: 'Cessna', model: '172S', year: '2004' }
+
+    const post = (token: string) =>
+      request.post('/api/valuate', {
+        headers: { Authorization: `Bearer ${token}` },
+        data: body,
+      })
+
+    expect((await post(a.session.access_token)).ok()).toBeTruthy()
+    expect((await post(b.session.access_token)).status()).toBe(402)
+
+    expect(await fetchProfile(a.userId)).toMatchObject({ valuation_count: 4, credit_balance: 0 })
+    expect(await fetchProfile(b.userId)).toMatchObject({ valuation_count: 3, credit_balance: 0 })
   })
 })
 
@@ -424,6 +517,7 @@ test.describe('valuation form persist', () => {
     await expect(field(pane(page, 'val'), 'Engine SMOH (hrs)')).toHaveValue('1000')
     await expect(field(pane(page, 'val'), /^notes/i)).toHaveValue('Keep me after checkout')
     await expect(valuationResult(page)).not.toContainText('AIRCRAFT VALUATION')
+    await expect(page.getByRole('status')).toHaveCount(0)
   })
 
   test('lookup prefill survives reload', async ({ page }) => {

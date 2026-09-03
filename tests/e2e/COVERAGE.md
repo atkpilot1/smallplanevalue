@@ -1,6 +1,6 @@
 # E2E coverage checklist
 
-**Philosophy:** Thoroughly test the entire shipped app. Mock only the outside world (Anthropic). Drive the real Nuxt handlers, the real valuation/checklist/lookup logic, and the local Supabase instance. A test that stubs `/api/*` in the browser does not count. If a user-visible path is broken, write the failing test and leave the app alone (TDD).
+**Philosophy:** Thoroughly test the entire shipped app. Mock only the outside world (Anthropic and Stripe HTTP). Drive the real Nuxt handlers, the real valuation/checklist/lookup logic, and the local Supabase instance. A test that stubs `/api/*` in the browser does not count. If a user-visible path is broken, write the failing test and leave the app alone (TDD).
 
 **Locators:** Prefer roles, labels, and button names over CSS ids. Use `data-testid` only on result regions (`lookup-result`, `valuation-result`, `comps-result`, `checklist-result`, `sold-result`, `sold-recent`, `feedback-result`) and pane wrappers. Keep those names when the UI moves to Nuxt components.
 
@@ -18,7 +18,7 @@ Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000`
 - [x] Nav shows **Sign In** (not **Manage Account**) next to **Look up my plane**
 - [x] **Sign In** opens a dialog; Close and Escape dismiss it
 - [x] Empty / invalid email stay on the email step with an error
-- [x] Full OTP: Mailpit code → **Manage Account**, account popup shows email and **Valuations run** `0`, reload keeps session, **Sign out** returns **Sign In**
+- [x] Full OTP: Mailpit code → **Manage Account**, account popup shows email, **Free remaining** `3`, **Paid credits** `0`, **Valuations run** `0`, buy buttons, reload keeps session, **Sign out** returns **Sign In**
 - [x] Bad OTP stays logged out and shows an error
 - [x] **Use a different email** returns to the email step
 - [x] Signing in as a second account replaces the previous session
@@ -63,13 +63,34 @@ Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000`
 - [x] Empty make/model alerts the user
 - [x] Anthropic 500 surfaces a valuation failure in the UI
 - [x] Successful valuation writes `spv_client_id` and a `usage_events` row with `user_id`
-- [x] Successful valuations increment `profiles.valuation_count` (1 then 2); account popup shows **Valuations run**
+- [x] Successful valuations increment `profiles.valuation_count` (1 then 2); account popup shows **Valuations run**, **Free remaining**, **Paid credits**
 - [x] Anthropic 500 does not increment `profiles.valuation_count`
 - [x] Two accounts have independent `profiles.valuation_count` values
+- [x] Three free valuations then the fourth is 402 `credits_required`; paywall opens; Anthropic is not called
+- [x] Anthropic 500 on the third free does not consume a slot
+- [x] `valuation_count = 3`, `credit_balance = 1` succeeds and consumes the paid credit
+- [x] `valuation_count = 3`, `credit_balance = 0` opens the paywall and does not call Anthropic
+- [x] Two accounts have independent free + paid balances
 - [x] Lookup `172SP` then value: engine TBO note + fresh-engine adj uses IO-360 overhaul ($18k)
 - [x] Engine life bar appears after entering SMOH (`GET /api/engine-tbo`)
 - [x] Valuation form persists to `spv_valuation_form`; reload restores fields, avionics, and lookup engine
-- [x] Simulated Checkout return (`/?paid=1`) keeps the form and does not auto-submit
+- [x] Simulated Checkout return (`/?paid=1` without a session) keeps the form, does not show a credits-added note, and does not auto-submit
+
+## Stripe Checkout (mocked `api.stripe.com` + signed webhooks)
+
+- [x] Account **1 valuation — $24** creates a Checkout Session and navigates toward `checkout.stripe.com`
+- [x] Paywall **5 valuations — $75** does the same
+- [x] Signed `checkout.session.completed` grants `credit_balance`
+- [x] Same `event_id` / `session_id` is idempotent
+- [x] Webhook for user B does not credit A
+- [x] Bad signature is 400 and does not grant
+- [x] After a grant, a fourth valuation succeeds and the account dialog updates
+- [x] `POST /api/stripe/confirm` grants a paid mocked session
+- [x] Success URL return confirms credits, keeps the form, and does not auto-submit
+- [x] Cancel URL return (`/?tab=val&paid=0`) keeps the form, shows a canceled note, does not grant credits, and does not auto-submit
+- [x] Confirm of another account’s session is 403 and does not grant
+- [x] Unpaid session does not grant via confirm or webhook
+- [x] Webhook then confirm on the same session grants once
 
 ## Market comps (live `POST /api/comps`)
 

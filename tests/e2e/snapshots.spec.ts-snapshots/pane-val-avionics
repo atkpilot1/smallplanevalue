@@ -354,4 +354,4 @@
   - textbox "NOTES (damage history, engine OH type, storage, special equipment)":
     - /placeholder: No damage history, all logs since new, hangared, factory reman engines at 200 SMOH, RAM conversion...
   - button " Get honest valuation"
-  - paragraph: Free beta — unlimited valuations while we gather pilot feedback.
+  - paragraph: 3 free valuations per account, then $24 each or $75 for five.

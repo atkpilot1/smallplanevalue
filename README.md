@@ -19,6 +19,8 @@ cp .env.example .env
 
 Add `ANTHROPIC_API_KEY` to `.env`. The Supabase URL and anon key in `.env.example` are the public local defaults.
 
+Stripe env vars are **required at process start** (`nuxt dev` and the production server exit if they are missing). For local UI work, copy the placeholders from `.env.test`. Real Stripe test keys and Price IDs are only needed to click through hosted Checkout.
+
 ```bash
 npm run db:start
 npm run dev
@@ -40,7 +42,7 @@ Seeded N-numbers for lookup: `172SP`, `22T`, `182RG`, `58P`.
 | `npm run db:status` | Print local URLs and keys |
 | `npm run db:reset` | Wipe the local DB, replay migrations, re-seed |
 | `npm run build` | Production Nitro build (required before E2E) |
-| `npm run start:e2e` | `node .output/server/index.mjs` on :3100 (used by Playwright) |
+| `npm run start:e2e` | `node --env-file=.env.test .output/server/index.mjs` on :3100 (used by Playwright) |
 | `npm run test:e2e` | Playwright against the built app (needs `npm run build` and `npm run db:start`) |
 | `npm run test:e2e:snapshots` | Visual + ARIA snapshot tests only |
 | `npm run test:e2e:update-snapshots` | Rewrite snapshot baselines after an intentional UI change |

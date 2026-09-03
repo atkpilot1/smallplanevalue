@@ -4,7 +4,7 @@ Add Supabase email OTP so a visitor can sign in, see account state, and (in late
 
 Work in three sequential steps. Each step ships with Playwright coverage before the next starts.
 
-**Status:** Steps 1–3 are implemented. Stripe and the “3 free then pay” gate remain out of scope.
+**Status:** Steps 1–3 are implemented. The 3-free / paid-balance gate and Stripe Checkout are in [stripe-credits-plan.md](./stripe-credits-plan.md).
 
 ## Locked decisions
 
@@ -29,7 +29,7 @@ Work in three sequential steps. Each step ships with Playwright coverage before 
 ## Current baseline (what we are extending)
 
 - Nav: logo, mid links, gold **Look up my plane** CTA. No auth UI.
-- Valuate already accepts optional `clientId` / `email` and can write `usage_events`. Limits are **off** (`VALUATION_LIMITS_ENABLED = false`).
+- Valuate accepts optional `clientId` / `email` and can write `usage_events`. Account credits (3 free, then paid) are the gate — see [stripe-credits-plan.md](./stripe-credits-plan.md).
 - Server talks to Supabase with the **anon** key via REST helpers. There is no Supabase Auth client, no session, no `profiles` table.
 - Playwright already hits live local Supabase for `aircraft` (lookup) and `usage_events` (one valuation test). See [Playwright vs local Supabase](#playwright-vs-local-supabase) below.
 
@@ -97,7 +97,7 @@ Goal: anonymous submit cannot spend an Anthropic call. No remaining-credit math.
 
 - Pass the access token from the browser session on `POST /api/valuate` (`Authorization: Bearer …`).
 - Verify the JWT on the server (Supabase Auth `/user` or JWT secret). Reject missing/invalid tokens before building the valuation prompt.
-- Keep `VALUATION_LIMITS_ENABLED` off. Do not count remaining credits. Do not 402.
+- Step 2 does not count remaining credits and does not 402. The 3-free gate is in [stripe-credits-plan.md](./stripe-credits-plan.md).
 - Optional: if they open valuate from the login popup path, still do **not** auto-submit.
 
 ### Playwright (step 2)

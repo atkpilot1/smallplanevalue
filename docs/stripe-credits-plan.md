@@ -2,7 +2,7 @@
 
 Hosted Stripe Checkout after three lifetime free valuations. Two one-time SKUs: **$24 for 1** or **$75 for 5**. Form fields must survive the leave-and-return to Checkout.
 
-**Status:** Plan only. Auth steps 1–3 are done. Do not implement until this plan is accepted.
+**Status:** Steps 4–5 implemented. Form persist was already shipped. Playwright mocks `api.stripe.com` and signs webhooks locally.
 
 ## Locked decisions
 
@@ -11,9 +11,9 @@ Hosted Stripe Checkout after three lifetime free valuations. Two one-time SKUs: 
 | Checkout UI | Hosted Stripe Checkout (leave the site). Not Embedded Checkout, not Payment Element. |
 | How the user picks a SKU | Two buttons on **our** paywall / account dialog. Each button creates a Checkout Session with one Price. Stripe’s page does not present both products. |
 | SKUs | One-time `mode: 'payment'`. Price A: $24 / 1 credit. Price B: $75 / 5 credits. No subscriptions, no Customer Portal in this work. |
-| Free allowance | **3 lifetime** per account, not monthly. Replace the unused `VALUATION_LIMITS_ENABLED` / `clientId`-per-month path; do not revive it. |
+| Free allowance | **3 lifetime** per account, not monthly. The old `clientId` monthly path (`GET /api/valuation-access`) is gone. Do not revive it. |
 | Credit model | Keep `profiles.valuation_count` (successful runs). Add `profiles.credit_balance` (purchased, unused). Allowed if `valuation_count < 3` **or** `credit_balance > 0`. Free slots are consumed first. |
-| When to consume | **Check before** Anthropic (402, no LLM spend). **Consume after** a successful result (Anthropic 500 does not consume). Same contract as today’s increment. |
+| When to consume | **Atomic claim before** Anthropic (`consume_valuation` `UPDATE … WHERE`). 402 if the row does not change. **Refund** on Anthropic/parse failure so a 500 does not keep the slot. |
 | Server as source of truth | `/api/valuate` returns **402** `{ code: 'credits_required' }` when the account cannot run. The UI does not honor-system a client flag. |
 | Form survival | Persist the valuation form with VueUse `useLocalStorage` (`spv_valuation_form`). Hydrate on mount. **Done** (ahead of Stripe). |
 | After login or after pay | Do **not** auto-submit. Unlock the button; they click **Get honest valuation** again. |
@@ -36,24 +36,16 @@ A single Checkout Session cannot cleanly offer “pick exactly one of these two 
 
 ### Does `/api/valuate` already fail without credits?
 
-**Login yes, credits no.**
-
-Today:
-
-- No JWT → **401** (`requireAuthUser`). That stays.
-- `VALUATION_LIMITS_ENABLED` is **false**, so the old 402 / monthly `clientId` branch never runs.
-- After a successful LLM result we increment `profiles.valuation_count` and write `usage_events`. There is no remaining-credit check.
-
-We will add an account-based check **before** the prompt is built, and keep consume **after** success.
+**Yes.** Login and credits are both server-enforced.
 
 ```
-requireAuthUser
-  → assertCanValuate(user.id)     // 402 if no free slot and credit_balance === 0
+requireAuthUser                  // 401 without a JWT
+  → consumeValuation(user.id)    // service-role RPC; 402 if allowed !== true
   → Anthropic + post-process
-  → consumeValuation(user.id)     // increment count; decrement credit_balance only if this run was paid
+  → on failure: refundValuation  // undo the claim; Anthropic 500 does not keep the slot
 ```
 
-`GET /api/valuation-access` is still the old clientId helper. Do not use it for the paywall. Add a session-authenticated read (or just read `profiles` from the client the way we already read `valuation_count`).
+The browser reads `profiles` (own row) for the account dialog. It does not decide whether a valuation may run.
 
 ### Do we need Supabase subscriptions?
 
@@ -86,15 +78,15 @@ stripe_events
   created_at
 ```
 
-RPCs (service role only):
+Credit writes are `LANGUAGE sql` functions, service-role RPC only (`REVOKE` from anon/authenticated). The increment is `column = column + 1` in one `UPDATE`.
 
-- `assert_can_valuate(p_user_id)` → remaining free, `credit_balance`, `allowed`
-- `consume_valuation(p_user_id)` → increment `valuation_count`; if the new count is `> 3`, decrement `credit_balance` (this run used a paid credit)
-- `grant_credits(p_user_id, p_credits, p_session_id)` → add to `credit_balance`; no-op if `session_id` already granted
+- `consume_valuation(user, free)` → `UPDATE … WHERE` remaining; `allowed: false` if no row changes
+- `refund_valuation(user, free)` → undo one claim
+- `grant_credits` → insert `stripe_events` then add to `credit_balance` in one statement; no-op if `event_id` / `session_id` already exists
 
 Buying before the free three are used is fine: paid credits sit until free slots are gone.
 
-A double-submit race (two tabs both see `valuation_count = 2`) can theoretically yield a fourth free run. Accept that at this volume; do not add a reservation row.
+A double-submit race is closed by the `UPDATE … WHERE`. Do not add a Playwright case for that race (it would be flaky).
 
 ---
 
@@ -120,7 +112,7 @@ A double-submit race (two tabs both see `valuation_count = 2`) can theoretically
 
 - `success_url`: `/?tab=val&paid=1&session_id={CHECKOUT_SESSION_ID}`
 - `cancel_url`: `/?tab=val&paid=0`
-- Show a short “Credits added” / “Checkout canceled” state if query params are present.
+- Cancel (`paid=0`) shows “Checkout canceled.” Success copy waits until `POST /api/stripe/confirm` reports the session was paid. `?paid=1` alone does not grant credits and does not show the success note.
 - Do not auto-valuate.
 
 **Env (server only, never `public`)**
@@ -132,7 +124,7 @@ STRIPE_PRICE_SINGLE=
 STRIPE_PRICE_PACK=
 ```
 
-Local/CI can use dummy values; Playwright never calls Stripe.
+No in-code defaults. The Nitro process exits on startup if these are unset. Playwright and `start:e2e` load placeholders from `.env.test`.
 
 ---
 
@@ -143,7 +135,7 @@ Local/CI can use dummy values; Playwright never calls Stripe.
 | `POST /api/checkout` | Auth required. Body `{ sku: 'single' \| 'pack' }`. Create Checkout Session, return `{ url }`. |
 | `POST /api/stripe/webhook` | Raw body + `Stripe-Signature`. Verify, grant on `checkout.session.completed`. |
 | `POST /api/stripe/confirm` | Auth required. Body `{ session_id }`. Retrieve session from Stripe (or mocked), grant if paid. Same `grant_credits` as the webhook. Optional but recommended so return is snappy. |
-| `POST /api/valuate` | 402 when not allowed; consume after success. |
+| `POST /api/valuate` | 402 when the atomic claim fails; refund if the LLM/parse throws. |
 
 Install `stripe` on the **server** only.
 
@@ -214,19 +206,18 @@ No live Stripe client in test code. The `stripe` package in the test process is 
 
 Each step ships with Playwright before the next starts. Same rules as auth: do not stub `/api/*` in the browser; mock only Anthropic and (from step 5) `api.stripe.com`.
 
-### Step 4 — 3-free / paid-balance gate (no Stripe)
+### Step 4 — 3-free / paid-balance gate (no Stripe) — done
 
 - Form persist is already shipped (`spv_valuation_form` + VueUse).
-- Migration: `credit_balance`, consume/assert RPCs.
-- `/api/valuate` 402 `credits_required`; consume after success.
+- Migration `0007`: `credit_balance` + `stripe_events` + consume/refund/grant service-role SQL functions.
+- `/api/valuate` 402 `credits_required`; atomic claim before Anthropic, refund on failure.
 - Account dialog shows free remaining + paid credits.
-- Paywall dialog with the two price buttons **visible but not wired** (or wired to a “coming soon” no-op). Prefer visible-but-disabled until step 5 so snapshots are honest.
 - Tests: persist, 402 on fourth, paid balance works, 500 does not consume, accounts independent.
 
-### Step 5 — Stripe Checkout + webhook
+### Step 5 — Stripe Checkout + webhook — done
 
 - `stripe` server dependency, env, two Price IDs.
-- `POST /api/checkout`, webhook, optional confirm.
+- `POST /api/checkout`, webhook, confirm.
 - Wire the two buttons; redirect; success/cancel return.
 - Playwright: mock session create, signed webhooks, confirm, form still filled, grant then valuate.
 

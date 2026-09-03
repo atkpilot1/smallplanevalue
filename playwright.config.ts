@@ -1,5 +1,23 @@
+import { existsSync, readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { defineConfig, devices } from '@playwright/test'
 import type { BackendMocksWorkerOptions } from '@playwright-backend-mocks/playwright'
+
+function applyEnvFile(name: string) {
+  const file = resolve(process.cwd(), name)
+  if (!existsSync(file)) return
+  for (const line of readFileSync(file, 'utf8').split('\n')) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+    const eq = trimmed.indexOf('=')
+    if (eq === -1) continue
+    const key = trimmed.slice(0, eq).trim()
+    const value = trimmed.slice(eq + 1).trim()
+    if (process.env[key] === undefined) process.env[key] = value
+  }
+}
+
+applyEnvFile('.env.test')
 
 const PROXY_URL = 'http://127.0.0.1:4310'
 const BASE_URL = 'http://localhost:3100'

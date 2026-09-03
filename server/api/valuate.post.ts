@@ -2,11 +2,8 @@ import { z } from 'zod'
 import { generateText, stepCountIs, tool } from 'ai'
 import { findComparables, formatComparables } from '../data/aircraftDb'
 import {
-  countValuationsThisMonth,
-  incrementValuationCount,
   recordValuationUsage,
-  FREE_VALUATIONS_PER_MONTH,
-  VALUATION_LIMITS_ENABLED,
+  withValuationCredit,
 } from '../utils/valuationAccess'
 import { engineAdjustment } from '../utils/valuationEngine'
 import { engineLifeRemaining, lookupEngineTbo } from '../data/engineTbo'
@@ -328,17 +325,7 @@ export default defineEventHandler(async (event) => {
 
   const user = await requireAuthUser(event)
 
-  if (VALUATION_LIMITS_ENABLED && clientId) {
-    const used = await countValuationsThisMonth(clientId)
-    if (used >= FREE_VALUATIONS_PER_MONTH) {
-      throw createError({
-        statusCode: 402,
-        statusMessage: 'limit_reached',
-        data: { code: 'limit_reached', requiresEmail: !d.email },
-      })
-    }
-  }
-
+  return await withValuationCredit(user.id, async () => {
   let prompt =
     'You are an expert aircraft appraiser with current 2025-2026 market knowledge. Provide ACCURATE asking prices — not lowballed.\n\n'
   prompt +=
@@ -570,7 +557,6 @@ export default defineEventHandler(async (event) => {
   })
   out = applyEquippedF33AFloor(out, d)
 
-  await incrementValuationCount(user.id)
   if (clientId) {
     await recordValuationUsage(
       clientId,
@@ -585,6 +571,7 @@ export default defineEventHandler(async (event) => {
   }
 
   return out
+  })
 })
 
 // Flat deduction applied when the aircraft is out of annual (airworthiness

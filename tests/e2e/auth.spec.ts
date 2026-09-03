@@ -58,6 +58,10 @@ test('OTP sign-in, account popup, sign out, and session persist across reload', 
   await expect(account).toBeVisible()
   await expect(account).toContainText(email)
   await expect(account.getByLabel('Valuations run')).toHaveText('0')
+  await expect(account.getByLabel('Free remaining')).toHaveText('3')
+  await expect(account.getByLabel('Paid credits')).toHaveText('0')
+  await expect(account.getByRole('button', { name: '1 valuation — $24' })).toBeVisible()
+  await expect(account.getByRole('button', { name: '5 valuations — $75' })).toBeVisible()
 
   await account.getByRole('button', { name: 'Close' }).click()
   await expect(account).toBeHidden()

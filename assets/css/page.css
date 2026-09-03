@@ -815,8 +815,19 @@ word-break: break-all;
 border: 1px solid var(--card-border); border-radius: var(--radius);
 padding: 12px 14px; margin-bottom: 1rem;
 }
+.auth-credits-row + .auth-credits-row {
+margin-top: 10px; padding-top: 10px;
+border-top: 1px solid var(--card-border);
+}
 .auth-credits-label { font-size: 11px; letter-spacing: 0.04em; color: var(--muted); font-weight: 500; }
 .auth-credits-value { font-size: 15px; font-weight: 500; margin-top: 2px; }
+.auth-buy { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
+.val-checkout-note {
+font-size: 13px; color: var(--sky); text-align: center;
+margin: 0 0 10px; padding: 10px 12px;
+border: 1px solid var(--card-border); border-radius: var(--radius);
+background: rgba(11, 37, 69, 0.04);
+}
 .auth-close {
 position: absolute; top: 12px; right: 12px;
 width: 32px; height: 32px; border: none; border-radius: 8px;

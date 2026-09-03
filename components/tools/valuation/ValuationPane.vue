@@ -32,7 +32,8 @@
         :listing-ask="submittedAsk"
       />
     </div>
-    <p class="val-free-note" id="v-free-note">Free beta — unlimited valuations while we gather pilot feedback.</p>
+    <p v-if="checkoutNotice" class="val-checkout-note" role="status">{{ checkoutNotice }}</p>
+    <p class="val-free-note" id="v-free-note">3 free valuations per account, then $24 each or $75 for five.</p>
   </div>
 </template>
 
@@ -43,7 +44,7 @@ import { getOrCreateClientId, getValuationEmail } from '~/composables/useClientI
 import { trackEvent } from '~/composables/useAnalytics'
 
 const { activeTab } = useToolsTab()
-const { openLogin, getAccessToken } = useAuth()
+const { openLogin, openPaywall, getAccessToken, checkoutNotice } = useAuth()
 const val = useValuationForm()
 const notes = val.notes
 const loading = ref(false)
@@ -103,6 +104,7 @@ async function doValuation() {
   startPartnerTipRotation()
   result.value = null
   failMsg.value = ''
+  checkoutNotice.value = ''
   try {
     const v = await apiPost<ValuationResult>('/api/valuate', body, { accessToken })
     submittedMake.value = body.make
@@ -116,6 +118,8 @@ async function doValuation() {
     const err = e as Error & { status?: number }
     if (err.status === 401) {
       openLogin()
+    } else if (err.status === 402 || err.code === 'credits_required') {
+      openPaywall()
     } else {
       console.error('Valuation error:', e)
       failMsg.value = err.message || String(e)

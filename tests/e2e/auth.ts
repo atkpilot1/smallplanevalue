@@ -46,6 +46,10 @@ export function accountDialog(page: Page) {
   return page.getByRole('dialog', { name: /manage account/i })
 }
 
+export function paywallDialog(page: Page) {
+  return page.getByRole('dialog', { name: /out of free valuations/i })
+}
+
 export function signInButton(page: Page) {
   return page.getByRole('button', { name: 'Sign In' })
 }
@@ -159,7 +163,7 @@ export async function seedAdminSession(page: Page, email = uniqueTestEmail()) {
     },
     { key: AUTH_STORAGE_KEY, sess: session },
   )
-  return { email: used, userId }
+  return { email: used, userId, session }
 }
 
 /** Seed a session and wait for the nav to show Manage Account (reloads if already on a page). */

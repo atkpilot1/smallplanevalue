@@ -25,6 +25,12 @@ export default defineNuxtConfig({
       process.env.SUPABASE_SERVICE_KEY ||
       // Local Supabase demo key. Never expose this on `public`.
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU',
+    // Required at process start (see server/plugins/require-stripe.ts).
+    // No in-code defaults — missing values must fail closed.
+    stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+    stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+    stripePriceSingle: process.env.STRIPE_PRICE_SINGLE,
+    stripePricePack: process.env.STRIPE_PRICE_PACK,
     public: {
       supabaseUrl: process.env.SUPABASE_URL || 'http://127.0.0.1:54321',
       supabaseAnonKey:

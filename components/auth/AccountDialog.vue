@@ -17,16 +17,37 @@
       <p class="auth-dialog-lead">Signed in as</p>
       <p class="auth-email">{{ user?.email }}</p>
       <div class="auth-credits">
-        <div id="valuation-count-label" class="auth-credits-label">Valuations run</div>
-        <div class="auth-credits-value" aria-labelledby="valuation-count-label">{{ valuationCount }}</div>
+        <div class="auth-credits-row">
+          <div id="free-remaining-label" class="auth-credits-label">Free remaining</div>
+          <div class="auth-credits-value" aria-labelledby="free-remaining-label">{{ freeRemaining }}</div>
+        </div>
+        <div class="auth-credits-row">
+          <div id="paid-credits-label" class="auth-credits-label">Paid credits</div>
+          <div class="auth-credits-value" aria-labelledby="paid-credits-label">{{ creditBalance }}</div>
+        </div>
+        <div class="auth-credits-row">
+          <div id="valuation-count-label" class="auth-credits-label">Valuations run</div>
+          <div class="auth-credits-value" aria-labelledby="valuation-count-label">{{ valuationCount }}</div>
+        </div>
       </div>
+      <CheckoutBuyButtons />
+      <p v-if="checkoutError" class="auth-error" role="alert">{{ checkoutError }}</p>
       <button class="n-lookup-btn auth-submit" type="button" @click="signOut">Sign out</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const { dialog, user, valuationCount, closeDialog, signOut } = useAuth()
+const {
+  dialog,
+  user,
+  valuationCount,
+  creditBalance,
+  freeRemaining,
+  checkoutError,
+  closeDialog,
+  signOut,
+} = useAuth()
 
 function onKey(e: KeyboardEvent) {
   if (e.key === 'Escape' && dialog.value === 'account') closeDialog()
