@@ -1,4 +1,4 @@
-# SmallPlaneValue
+# SmallPlaneValue 
 
 Nuxt app for general-aviation aircraft valuations. Local development uses a Dockerized Supabase project — do not point `.env` at the hosted production database.
 
