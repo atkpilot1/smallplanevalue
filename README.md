@@ -41,6 +41,8 @@ Seeded N-numbers for lookup: `172SP`, `22T`, `182RG`, `58P`.
 | `npm run db:stop` | Stop local Supabase |
 | `npm run db:status` | Print local URLs and keys |
 | `npm run db:reset` | Wipe the local DB, replay migrations, re-seed |
+| `npm run db:push:staging` | Apply `supabase/migrations` to hosted staging (`wyggunstezdstrmblkhx`). Requires `npx supabase login` as an account on that project. Do **not** run `supabase config push` — it would reset Site URL to localhost. |
+| `npm run db:push:prod` | Apply migrations to hosted production (`ogfaqdmhqwlysavooroo`). Same login requirement. |
 | `npm run build` | Production Nitro build (required before E2E) |
 | `npm run start:e2e` | `node --env-file=.env.test .output/server/index.mjs` on :3100 (used by Playwright) |
 | `npm run test:e2e` | Playwright against the built app (needs `npm run build` and `npm run db:start`) |
