@@ -190,11 +190,9 @@ export function useAuth() {
       return
     }
     if (params.get('paid') !== '1') return
+    checkoutNotice.value = 'Credits added. Click Get honest valuation to continue.'
     const sessionId = params.get('session_id')
-    if (!sessionId) return
-    void confirmCheckout(sessionId).then((ok) => {
-      if (ok) checkoutNotice.value = 'Credits added. Click Get honest valuation to continue.'
-    })
+    if (sessionId) void confirmCheckout(sessionId)
   }
 
   async function signOut() {

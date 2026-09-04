@@ -517,7 +517,7 @@ test.describe('valuation form persist', () => {
     await expect(field(pane(page, 'val'), 'Engine SMOH (hrs)')).toHaveValue('1000')
     await expect(field(pane(page, 'val'), /^notes/i)).toHaveValue('Keep me after checkout')
     await expect(valuationResult(page)).not.toContainText('AIRCRAFT VALUATION')
-    await expect(page.getByRole('status')).toHaveCount(0)
+    await expect(page.getByRole('status')).toContainText(/credits added/i)
   })
 
   test('lookup prefill survives reload', async ({ page }) => {

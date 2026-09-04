@@ -74,7 +74,7 @@ Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000`
 - [x] Lookup `172SP` then value: engine TBO note + fresh-engine adj uses IO-360 overhaul ($18k)
 - [x] Engine life bar appears after entering SMOH (`GET /api/engine-tbo`)
 - [x] Valuation form persists to `spv_valuation_form`; reload restores fields, avionics, and lookup engine
-- [x] Simulated Checkout return (`/?paid=1` without a session) keeps the form, does not show a credits-added note, and does not auto-submit
+- [x] Simulated Checkout return (`/?paid=1` without a session) keeps the form, shows the credits-added note, and does not auto-submit
 
 ## Stripe Checkout (mocked `api.stripe.com` + signed webhooks)
 
