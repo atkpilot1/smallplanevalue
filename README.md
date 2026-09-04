@@ -65,10 +65,4 @@ On a snapshot failure:
 
 `db:start` on a fresh machine pulls Docker images and can take a few minutes.
 
-Hosted Auth settings are declared in git, not the dashboard:
-
-- `supabase/config.shared.toml` — OTP, confirmations off, magic-link template (all envs)
-- `supabase/config.local.toml` / `config.staging.toml` / `config.prod.toml` — Site URL, redirects, Resend SMTP
-- `supabase/config.toml` — generated for Docker; do not edit
-
-Set `RESEND_SMTP_PASSWORD` in the environment before `db:config:push:*`. Edit `admin_email` / production `site_url` in the overlay files if those values are wrong.
+Hosted Auth settings are declared in git. See [docs/supabase-config.md](docs/supabase-config.md).
