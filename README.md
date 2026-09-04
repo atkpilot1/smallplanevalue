@@ -65,4 +65,4 @@ On a snapshot failure:
 
 `db:start` on a fresh machine pulls Docker images and can take a few minutes.
 
-Hosted Auth settings are declared in git. See [docs/supabase-config.md](docs/supabase-config.md).
+Hosted Auth settings are declared in git. See [docs/supabase-config.md](docs/supabase-config.md). FAA registry ingest (GitHub `SUPABASE_PROJECTS`) is in [docs/faa-registry.md](docs/faa-registry.md).
