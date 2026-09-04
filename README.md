@@ -41,8 +41,12 @@ Seeded N-numbers for lookup: `172SP`, `22T`, `182RG`, `58P`.
 | `npm run db:stop` | Stop local Supabase |
 | `npm run db:status` | Print local URLs and keys |
 | `npm run db:reset` | Wipe the local DB, replay migrations, re-seed |
-| `npm run db:push:staging` | Apply `supabase/migrations` to hosted staging (`wyggunstezdstrmblkhx`). Requires `npx supabase login` as an account on that project. Do **not** run `supabase config push` — it would reset Site URL to localhost. |
+| `npm run db:push:staging` | Apply `supabase/migrations` to hosted staging (`wyggunstezdstrmblkhx`). Requires `npx supabase login` as an account on that project. |
 | `npm run db:push:prod` | Apply migrations to hosted production (`ogfaqdmhqwlysavooroo`). Same login requirement. |
+| `npm run db:config:sync` | Merge `config.shared.toml` + `config.local.toml` → `config.toml` (Docker). |
+| `npm run db:config:dump -- staging` | Print the merged staging config (does not push). |
+| `npm run db:config:push:staging` | Merge shared + `config.staging.toml` and `supabase config push` to staging. Review the CLI diff. |
+| `npm run db:config:push:prod` | Same for production (`config.prod.toml`). |
 | `npm run build` | Production Nitro build (required before E2E) |
 | `npm run start:e2e` | `node --env-file=.env.test .output/server/index.mjs` on :3100 (used by Playwright) |
 | `npm run test:e2e` | Playwright against the built app (needs `npm run build` and `npm run db:start`) |
@@ -60,3 +64,11 @@ On a snapshot failure:
 `SNAPSHOT_REVIEW=1 npm run test:e2e:snapshots -- --grep "marketing chrome"` forces a known hero-text mismatch so you can see what a diff looks like.
 
 `db:start` on a fresh machine pulls Docker images and can take a few minutes.
+
+Hosted Auth settings are declared in git, not the dashboard:
+
+- `supabase/config.shared.toml` — OTP, confirmations off, magic-link template (all envs)
+- `supabase/config.local.toml` / `config.staging.toml` / `config.prod.toml` — Site URL, redirects, Resend SMTP
+- `supabase/config.toml` — generated for Docker; do not edit
+
+Set `RESEND_SMTP_PASSWORD` in the environment before `db:config:push:*`. Edit `admin_email` / production `site_url` in the overlay files if those values are wrong.

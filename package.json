@@ -13,12 +13,16 @@
     "test:e2e:snapshots": "playwright test --grep @snapshot",
     "test:e2e:update-snapshots": "playwright test --grep @snapshot --update-snapshots",
     "test:e2e:review-snapshots": "node scripts/collect-snapshot-diffs.mjs",
-    "db:start": "supabase start",
+    "db:start": "node scripts/supabase-config.mjs sync && supabase start",
     "db:stop": "supabase stop",
     "db:status": "supabase status",
-    "db:reset": "supabase db reset",
+    "db:reset": "node scripts/supabase-config.mjs sync && supabase db reset",
     "db:push:staging": "supabase db push --project-ref wyggunstezdstrmblkhx",
-    "db:push:prod": "supabase db push --project-ref ogfaqdmhqwlysavooroo"
+    "db:push:prod": "supabase db push --project-ref ogfaqdmhqwlysavooroo",
+    "db:config:sync": "node scripts/supabase-config.mjs sync",
+    "db:config:dump": "node scripts/supabase-config.mjs dump",
+    "db:config:push:staging": "node scripts/supabase-config.mjs push staging",
+    "db:config:push:prod": "node scripts/supabase-config.mjs push prod"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.84",
@@ -37,6 +41,7 @@
     "@playwright-backend-mocks/protocol": "^0.1.6",
     "@playwright-backend-mocks/proxy": "^0.1.6",
     "@playwright/test": "1.62.1",
+    "smol-toml": "^1.8.0",
     "supabase": "^2.115.0"
   }
 }

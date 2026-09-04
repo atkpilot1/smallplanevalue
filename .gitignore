@@ -16,6 +16,7 @@ node_modules
 .output
 .vercel
 .supabase
+supabase/config.toml.push-bak
 .netlify
 dist
 
