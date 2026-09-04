@@ -24,5 +24,9 @@ dist
 test-results
 playwright-report
 
+# Python
+__pycache__/
+*.py[cod]
+
 # OS / editor cruft
 .DS_Store

@@ -6,6 +6,7 @@ Runs weekly via GitHub Actions.
 
 import os
 import io
+import json
 import re
 import csv
 import zipfile
@@ -13,9 +14,47 @@ import requests
 import time
 from datetime import datetime
 
-SUPABASE_URL = os.environ['SUPABASE_URL']
-SUPABASE_KEY = os.environ['SUPABASE_SERVICE_KEY']
 FAA_ZIP_URL = os.environ.get('FAA_ZIP_URL', 'https://registry.faa.gov/database/ReleasableAircraft.zip')
+
+
+def load_projects():
+    raw = os.environ.get('SUPABASE_PROJECTS', '').strip()
+    if raw:
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError as err:
+            raise SystemExit(f'SUPABASE_PROJECTS is not valid JSON: {err}') from err
+        if not isinstance(data, list) or not data:
+            raise SystemExit('SUPABASE_PROJECTS must be a non-empty JSON array')
+        projects = []
+        for i, item in enumerate(data):
+            if not isinstance(item, dict):
+                raise SystemExit(f'SUPABASE_PROJECTS[{i}] must be an object')
+            name = str(item.get('name') or '').strip()
+            url = str(item.get('url') or '').strip().rstrip('/')
+            key = str(item.get('service_key') or '').strip()
+            if not name or not url or not key:
+                raise SystemExit(f'SUPABASE_PROJECTS[{i}] needs name, url, and service_key')
+            projects.append({'name': name, 'url': url, 'service_key': key})
+        return projects
+
+    url = (os.environ.get('SUPABASE_URL') or '').strip().rstrip('/')
+    key = (os.environ.get('SUPABASE_SERVICE_KEY') or '').strip()
+    if url and key:
+        return [{'name': 'default', 'url': url, 'service_key': key}]
+    raise SystemExit('Set SUPABASE_PROJECTS or SUPABASE_URL + SUPABASE_SERVICE_KEY')
+
+
+def selected_projects():
+    projects = load_projects()
+    target = (os.environ.get('FAA_SYNC_TARGET') or 'both').strip().lower()
+    if target in ('', 'all', 'both', 'auto'):
+        return projects
+    matched = [p for p in projects if p['name'].lower() == target]
+    if not matched:
+        names = ', '.join(p['name'] for p in projects)
+        raise SystemExit(f'No project named {target!r} in SUPABASE_PROJECTS (have: {names})')
+    return matched
 
 AIRCRAFT_TYPES = {
     '1': 'Glider', '2': 'Balloon', '3': 'Blimp/Dirigible',
@@ -227,8 +266,9 @@ def parse_master_csv(zip_content):
                 nnumber = col('N-NUMBER').strip().upper()
                 if not nnumber:
                     continue
-                if not nnumber.startswith('N'):
-                    nnumber = f'N{nnumber}'
+                # /api/faa-lookup strips a leading N before querying.
+                if nnumber.startswith('N'):
+                    nnumber = nnumber[1:]
 
                 mfr_code = col('MFR MDL CODE')
                 eng_code = col('ENG MFR MDL')
@@ -275,11 +315,11 @@ def parse_master_csv(zip_content):
     print(f"Total records: {len(records):,}")
     return records
 
-def upsert_to_supabase(records):
-    print("Uploading to Supabase...")
+def upsert_to_supabase(records, url, key, name):
+    print(f"Uploading to {name} ({url})...")
     headers = {
-        'apikey': SUPABASE_KEY,
-        'Authorization': f'Bearer {SUPABASE_KEY}',
+        'apikey': key,
+        'Authorization': f'Bearer {key}',
         'Content-Type': 'application/json',
         'Prefer': 'resolution=merge-duplicates'
     }
@@ -294,7 +334,7 @@ def upsert_to_supabase(records):
         for attempt in range(3):
             try:
                 resp = requests.post(
-                    f'{SUPABASE_URL}/rest/v1/aircraft',
+                    f'{url}/rest/v1/aircraft',
                     headers=headers,
                     json=batch,
                     timeout=60
@@ -315,18 +355,29 @@ def upsert_to_supabase(records):
                     errors += len(batch)
                     print(f"  Batch exception: {str(e)[:100]}")
     
-    print(f"Done: {success:,} uploaded, {errors} errors")
-    return success
+    print(f"Done {name}: {success:,} uploaded, {errors} errors")
+    return errors == 0 and success > 0
 
 def main():
     start = datetime.now()
+    projects = selected_projects()
     print(f"FAA Registry Update started at {start.strftime('%Y-%m-%d %H:%M:%S')}")
+    print('Targets: ' + ', '.join(p['name'] for p in projects))
     zip_content = download_faa_zip()
     records = parse_master_csv(zip_content)
-    if records:
-        upsert_to_supabase(records)
+    if not records:
+        raise SystemExit('No FAA records parsed')
+    failed = []
+    for project in projects:
+        ok = upsert_to_supabase(
+            records, project['url'], project['service_key'], project['name']
+        )
+        if not ok:
+            failed.append(project['name'])
     elapsed = (datetime.now() - start).seconds
     print(f"Completed in {elapsed}s")
+    if failed:
+        raise SystemExit('Upload failed for: ' + ', '.join(failed))
 
 if __name__ == '__main__':
     main()

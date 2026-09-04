@@ -4,11 +4,20 @@ on:
   schedule:
     - cron: '0 7 * * 0'
   workflow_dispatch:
+    inputs:
+      target:
+        description: Which project name in SUPABASE_PROJECTS to update
+        type: choice
+        default: both
+        options:
+          - both
+          - staging
+          - production
 
 jobs:
   update-registry:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
 
     steps:
       - name: Checkout repository
@@ -22,9 +31,9 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Download and import FAA registry
+      - name: Download FAA registry and import
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          FAA_SYNC_TARGET: ${{ github.event.inputs.target || 'both' }}
+          SUPABASE_PROJECTS: ${{ secrets.SUPABASE_PROJECTS }}
           FAA_ZIP_URL: ${{ secrets.FAA_ZIP_URL }}
         run: python .github/scripts/update_faa_registry.py
