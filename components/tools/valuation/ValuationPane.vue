@@ -32,7 +32,6 @@
         :listing-ask="submittedAsk"
       />
     </div>
-    <p v-if="checkoutNotice" class="val-checkout-note" role="status">{{ checkoutNotice }}</p>
     <p class="val-free-note" id="v-free-note">3 free valuations per account, then $24 each or $75 for five.</p>
   </div>
 </template>
@@ -44,7 +43,7 @@ import { getOrCreateClientId, getValuationEmail } from '~/composables/useClientI
 import { trackEvent } from '~/composables/useAnalytics'
 
 const { activeTab } = useToolsTab()
-const { openLogin, openPaywall, getAccessToken, checkoutNotice } = useAuth()
+const { openLogin, openPaywall, getAccessToken } = useAuth()
 const val = useValuationForm()
 const notes = val.notes
 const loading = ref(false)
@@ -104,7 +103,6 @@ async function doValuation() {
   startPartnerTipRotation()
   result.value = null
   failMsg.value = ''
-  checkoutNotice.value = ''
   try {
     const v = await apiPost<ValuationResult>('/api/valuate', body, { accessToken })
     submittedMake.value = body.make

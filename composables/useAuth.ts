@@ -1,6 +1,7 @@
 import type { User } from '@supabase/supabase-js'
 import { FREE_VALUATIONS, freeRemaining as freeRemainingOf } from '~/utils/credits'
 import { STATE } from '~/utils/stateKeys'
+import { useToast } from '~/composables/useToast'
 
 export type AuthDialog = 'login' | 'account' | 'paywall' | null
 export type AuthStep = 'email' | 'code'
@@ -21,7 +22,6 @@ export function useAuth() {
   const step = useState<AuthStep>(STATE.authStep, () => 'email')
   const valuationCount = useState(STATE.authValuationCount, () => 0)
   const creditBalance = useState(STATE.authCreditBalance, () => 0)
-  const checkoutNotice = useState(STATE.authCheckoutNotice, () => '')
   const checkoutBusy = useState(STATE.authCheckoutBusy, () => false)
   const checkoutError = useState(STATE.authCheckoutError, () => '')
 
@@ -185,12 +185,13 @@ export function useAuth() {
   }
 
   function handleCheckoutReturn(params: URLSearchParams) {
+    const { toast } = useToast()
     if (params.get('paid') === '0') {
-      checkoutNotice.value = 'Checkout canceled. Your form is still here.'
+      toast('Checkout canceled. Your form is still here.')
       return
     }
     if (params.get('paid') !== '1') return
-    checkoutNotice.value = 'Credits added. Click Get honest valuation to continue.'
+    toast('Credits added. Click Get honest valuation to continue.', { variant: 'success' })
     const sessionId = params.get('session_id')
     if (sessionId) void confirmCheckout(sessionId)
   }
@@ -199,7 +200,6 @@ export function useAuth() {
     await useSupabase().auth.signOut()
     valuationCount.value = 0
     creditBalance.value = 0
-    checkoutNotice.value = ''
     closeDialog()
   }
 
@@ -216,7 +216,6 @@ export function useAuth() {
     creditBalance,
     freeRemaining,
     freeAllowance: FREE_VALUATIONS,
-    checkoutNotice,
     checkoutBusy,
     checkoutError,
     init,

@@ -112,7 +112,7 @@ A double-submit race is closed by the `UPDATE … WHERE`. Do not add a Playwrigh
 
 - `success_url`: `/?tab=val&paid=1&session_id={CHECKOUT_SESSION_ID}`
 - `cancel_url`: `/?tab=val&paid=0`
-- Cancel (`paid=0`) shows “Checkout canceled.” Success (`paid=1`) shows the credits-added note immediately. `?paid=1` alone does not grant credits; grant still goes through `POST /api/stripe/confirm` or the webhook.
+- Cancel (`paid=0`) and success (`paid=1`) show a top-right toast for 10 seconds. `?paid=1` alone does not grant credits; grant still goes through `POST /api/stripe/confirm` or the webhook.
 - Do not auto-valuate.
 
 **Env (server only, never `public`)**

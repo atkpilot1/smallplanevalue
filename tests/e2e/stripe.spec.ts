@@ -8,6 +8,7 @@ import {
   seedAdminSession,
 } from './auth'
 import {
+  appToast,
   fetchProfile,
   field,
   fillMidtimeValuation,
@@ -311,7 +312,7 @@ test.describe('confirm + return', () => {
     await expect(field(pane(page, 'val'), 'Engine SMOH (hrs)')).toHaveValue('1000')
     await expect(field(pane(page, 'val'), /^notes/i)).toHaveValue('Keep me after checkout')
     await expect(valuationResult(page)).not.toContainText('AIRCRAFT VALUATION')
-    await expect(page.getByRole('status')).toContainText(/credits added/i)
+    await expect(appToast(page)).toContainText(/credits added/i)
 
     await expect.poll(async () => (await fetchProfile(userId))?.credit_balance).toBe(5)
   })
@@ -330,7 +331,7 @@ test.describe('confirm + return', () => {
     await expect(field(pane(page, 'val'), 'Engine SMOH (hrs)')).toHaveValue('1000')
     await expect(field(pane(page, 'val'), /^notes/i)).toHaveValue('Keep me after cancel')
     await expect(valuationResult(page)).not.toContainText('AIRCRAFT VALUATION')
-    await expect(page.getByRole('status')).toContainText(/checkout canceled/i)
+    await expect(appToast(page)).toContainText(/checkout canceled/i)
     expect((await fetchProfile(userId))?.credit_balance ?? 0).toBe(0)
   })
 })

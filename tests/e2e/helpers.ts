@@ -89,6 +89,10 @@ export function feedbackResult(page: Page) {
   return page.getByTestId('feedback-result')
 }
 
+export function appToast(page: Page) {
+  return page.getByRole('status')
+}
+
 /** Case-insensitive exact label. Playwright's `{ exact: true }` is case-sensitive. */
 export function field(root: Page | Locator, name: string | RegExp) {
   if (typeof name !== 'string') return root.getByLabel(name)

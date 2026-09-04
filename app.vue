@@ -3,6 +3,7 @@
   <LoginDialog />
   <AccountDialog />
   <PaywallDialog />
+  <AppToast />
 </template>
 
 <script setup lang="ts">
