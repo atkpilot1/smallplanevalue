@@ -37,10 +37,10 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
-    "@playwright-backend-mocks/node": "^0.1.6",
-    "@playwright-backend-mocks/playwright": "^0.1.6",
-    "@playwright-backend-mocks/protocol": "^0.1.6",
-    "@playwright-backend-mocks/proxy": "^0.1.6",
+    "@playwright-backend-mocks/node": "^0.1.7",
+    "@playwright-backend-mocks/playwright": "^0.1.7",
+    "@playwright-backend-mocks/protocol": "^0.1.7",
+    "@playwright-backend-mocks/proxy": "^0.1.7",
     "@playwright/test": "1.62.1",
     "smol-toml": "^1.8.0",
     "supabase": "^2.115.0"
