@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright-backend-mocks/playwright'
+import { test, expect } from './fixtures'
 import { failAnthropic, mockAnthropic } from './anthropic'
 import { compsResult, expectAlert, field, lookupN, lookupResult, openApp, openTab, pane } from './helpers'
 
@@ -47,7 +47,8 @@ test('year-band select still returns listing ranges', async ({ page }) => {
   await expect(compsResult(page)).toContainText('$295,000', { timeout: 20_000 })
 })
 
-test('Anthropic 500 surfaces a comps failure', async ({ page }) => {
+test('Anthropic 500 surfaces a comps failure', async ({ page, consoleGuard }) => {
+  consoleGuard.allow(500)
   failAnthropic('comps')
   await openTab(page, 'comps')
   const form = pane(page, 'comps')

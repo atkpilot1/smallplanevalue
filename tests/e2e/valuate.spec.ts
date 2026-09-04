@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright-backend-mocks/playwright'
+import { test, expect } from './fixtures'
 import { failAnthropic, getAnthropicValuateHits, mockAnthropic } from './anthropic'
 import {
   accountDialog,
@@ -118,7 +118,8 @@ test('parse listing auto-fills identity, times, and G1000', async ({ page }) => 
   await expect(form.getByRole('checkbox', { name: 'G1000', exact: true })).toBeChecked()
 })
 
-test('parse listing failure alerts the user', async ({ page }) => {
+test('parse listing failure alerts the user', async ({ page, consoleGuard }) => {
+  consoleGuard.allow(500, /Parse failed/)
   failAnthropic('listing')
   await openTab(page, 'val')
   const form = pane(page, 'val')
@@ -281,7 +282,8 @@ test('empty make and model alerts the user', async ({ page }) => {
   )
 })
 
-test('Anthropic 500 surfaces a valuation failure', async ({ page }) => {
+test('Anthropic 500 surfaces a valuation failure', async ({ page, consoleGuard }) => {
+  consoleGuard.allow(502, /Valuation error/)
   failAnthropic('valuate')
   await fillMidtimeValuation(page)
   await pane(page, 'val').getByRole('button', { name: 'Get honest valuation' }).click()
@@ -340,7 +342,8 @@ test.describe('valuation counter', () => {
     await expect(accountDialog(page).getByLabel('Paid credits')).toHaveText('0')
   })
 
-  test('Anthropic 500 does not increment the account counter', async ({ page }) => {
+  test('Anthropic 500 does not increment the account counter', async ({ page, consoleGuard }) => {
+    consoleGuard.allow(502, /Valuation error/)
     const { userId } = await seedAdminSession(page)
     await openApp(page)
     await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
@@ -373,7 +376,8 @@ test.describe('valuation counter', () => {
 })
 
 test.describe('credit gate', () => {
-  test('three free valuations then the fourth is 402 and skips Anthropic', async ({ page }) => {
+  test('three free valuations then the fourth is 402 and skips Anthropic', async ({ page, consoleGuard }) => {
+    consoleGuard.allow(402)
     const { userId } = await seedAdminSession(page)
     await openApp(page)
     await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
@@ -398,7 +402,8 @@ test.describe('credit gate', () => {
     expect((await fetchProfile(userId))?.valuation_count).toBe(3)
   })
 
-  test('Anthropic 500 on the third free does not consume', async ({ page }) => {
+  test('Anthropic 500 on the third free does not consume', async ({ page, consoleGuard }) => {
+    consoleGuard.allow(502, /Valuation error/)
     const { userId } = await seedAdminSession(page)
     await setProfile(userId, { valuation_count: 2, credit_balance: 0 })
     await openApp(page)
@@ -425,7 +430,8 @@ test.describe('credit gate', () => {
     expect(profile?.credit_balance).toBe(0)
   })
 
-  test('no paid credits after the free three opens the paywall', async ({ page }) => {
+  test('no paid credits after the free three opens the paywall', async ({ page, consoleGuard }) => {
+    consoleGuard.allow(402)
     const { userId } = await seedAdminSession(page)
     await setProfile(userId, { valuation_count: 3, credit_balance: 0 })
     await openApp(page)

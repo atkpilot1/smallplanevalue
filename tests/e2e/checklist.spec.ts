@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright-backend-mocks/playwright'
+import { test, expect } from './fixtures'
 import type { Page } from '@playwright/test'
 import { failAnthropic, mockAnthropic } from './anthropic'
 import { checklistResult, expectAlert, field, lookupN, lookupResult, openApp, openTab, pane } from './helpers'
@@ -84,7 +84,8 @@ test('pass, flag, and fail update progress, stats, and verdict', async ({ page }
   )
 })
 
-test('Anthropic 500 still renders the static checklist', async ({ page }) => {
+test('Anthropic 500 still renders the static checklist', async ({ page, consoleGuard }) => {
+  consoleGuard.allow(500)
   failAnthropic('checklist')
   await openTab(page, 'checklist')
   const form = pane(page, 'checklist')

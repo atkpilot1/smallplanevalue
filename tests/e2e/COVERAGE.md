@@ -1,6 +1,6 @@
 # E2E coverage checklist
 
-**Philosophy:** Thoroughly test the entire shipped app. Mock only the outside world (Anthropic and Stripe HTTP). Drive the real Nuxt handlers, the real valuation/checklist/lookup logic, and the local Supabase instance. A test that stubs `/api/*` in the browser does not count. If a user-visible path is broken, write the failing test and leave the app alone (TDD).
+**Philosophy:** Thoroughly test the entire shipped app. Mock only the outside world (Anthropic and Stripe HTTP). Drive the real Nuxt handlers, the real valuation/checklist/lookup logic, and the local Supabase instance. A test that stubs `/api/*` in the browser does not count. If a user-visible path is broken, write the failing test and leave the app alone (TDD). Every spec fails on unexpected browser `console.error`, page exceptions, and Vue hydration mismatches. Tests that expect a failed fetch (401 / 402 / 403 / 502) call `consoleGuard.allow(...)`. Third-party pages (Stripe Checkout) are ignored.
 
 **Locators:** Prefer roles, labels, and button names over CSS ids. Use `data-testid` only on result regions (`lookup-result`, `valuation-result`, `comps-result`, `checklist-result`, `sold-result`, `sold-recent`, `feedback-result`) and pane wrappers. Keep those names when the UI moves to Nuxt components.
 
@@ -12,6 +12,7 @@ Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000`
 
 - [x] Page title and hero
 - [x] All six tabs activate their panes
+- [x] Unexpected browser console errors fail the test (`consoleGuard.allow` for expected 401 / 402 / 403 / 502)
 
 ## Auth (live local GoTrue + Mailpit OTP)
 

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright-backend-mocks/playwright'
+import { test, expect } from './fixtures'
 import { getAnthropicValuateHits, mockAnthropic } from './anthropic'
 import {
   accountDialog,
@@ -38,7 +38,8 @@ test.describe('checkout', () => {
     ])
   })
 
-  test('paywall buy pack sends the user toward Stripe Checkout', async ({ page }) => {
+  test('paywall buy pack sends the user toward Stripe Checkout', async ({ page, consoleGuard }) => {
+    consoleGuard.allow(402)
     const { userId } = await seedAdminSession(page)
     await setProfile(userId, { valuation_count: 3, credit_balance: 0 })
     await openApp(page)

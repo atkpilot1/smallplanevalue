@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright-backend-mocks/playwright'
+import { test, expect } from './fixtures'
 import { mockAnthropic } from './anthropic'
 import {
   accountDialog,
@@ -78,7 +78,8 @@ test('OTP sign-in, account popup, sign out, and session persist across reload', 
   await expect(manageAccountButton(page)).toHaveCount(0)
 })
 
-test('bad OTP stays logged out and shows an error', async ({ page }) => {
+test('bad OTP stays logged out and shows an error', async ({ page, consoleGuard }) => {
+  consoleGuard.allow(403)
   const email = uniqueTestEmail()
   await openLogin(page)
   await requestOtp(page, email)

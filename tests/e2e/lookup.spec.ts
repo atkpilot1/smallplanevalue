@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright-backend-mocks/playwright'
+import { test, expect } from './fixtures'
 import { mockAnthropic } from './anthropic'
 import { expectAlert, field, lookupN, lookupResult, openApp, openTab, pane, tab } from './helpers'
 
