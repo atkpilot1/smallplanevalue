@@ -15,6 +15,7 @@ node_modules
 .nuxt
 .output
 .vercel
+.supabase
 .netlify
 dist
 
