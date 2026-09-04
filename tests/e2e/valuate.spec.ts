@@ -1,5 +1,5 @@
 import { test, expect } from './fixtures'
-import { failAnthropic, getAnthropicValuateHits, mockAnthropic } from './anthropic'
+import { failAnthropic, getAnthropicValuateHits } from './anthropic'
 import {
   accountDialog,
   createAdminSession,
@@ -33,10 +33,6 @@ import {
   usd,
   valuationResult,
 } from './helpers'
-
-test.beforeEach(async ({ page, backendMocks }) => {
-  await mockAnthropic(backendMocks)
-})
 
 test.describe('login required', () => {
   test.beforeEach(async ({ page }) => {

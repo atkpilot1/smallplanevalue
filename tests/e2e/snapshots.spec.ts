@@ -1,5 +1,4 @@
 import { test, expect } from './fixtures'
-import { mockAnthropic } from './anthropic'
 import { signInWithAdminSession } from './auth'
 import {
   TABS,
@@ -30,8 +29,7 @@ import {
  * when the UI moves to Nuxt components.
  */
 test.describe('snapshots', { tag: '@snapshot' }, () => {
-  test.beforeEach(async ({ page, backendMocks }) => {
-    await mockAnthropic(backendMocks)
+  test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
       localStorage.removeItem('spv_sold')
       localStorage.removeItem('spv_feedback')

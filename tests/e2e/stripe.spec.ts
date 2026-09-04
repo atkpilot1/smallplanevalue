@@ -1,5 +1,5 @@
 import { test, expect } from './fixtures'
-import { getAnthropicValuateHits, mockAnthropic } from './anthropic'
+import { getAnthropicValuateHits } from './anthropic'
 import {
   accountDialog,
   createAdminSession,
@@ -22,7 +22,6 @@ import {
 import { checkoutCompletedPayload, leaveCheckoutUnpaid, mockStripe, signStripeWebhook } from './stripe'
 
 test.beforeEach(async ({ backendMocks }) => {
-  await mockAnthropic(backendMocks)
   await mockStripe(backendMocks)
 })
 

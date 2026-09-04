@@ -1,5 +1,4 @@
 import { test, expect } from './fixtures'
-import { mockAnthropic } from './anthropic'
 import {
   accountDialog,
   fetchOtp,
@@ -13,8 +12,7 @@ import {
 } from './auth'
 import { openApp } from './helpers'
 
-test.beforeEach(async ({ page, backendMocks }) => {
-  await mockAnthropic(backendMocks)
+test.beforeEach(async ({ page }) => {
   await openApp(page)
 })
 

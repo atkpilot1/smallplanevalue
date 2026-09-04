@@ -37,6 +37,8 @@ export default defineConfig<object, BackendMocksWorkerOptions>({
       animations: 'disabled',
       caret: 'hide',
       scale: 'css',
+      // GitHub ubuntu vs local Linux font rasterization (~1% on lookup-result).
+      maxDiffPixelRatio: 0.02,
     },
   },
   use: {

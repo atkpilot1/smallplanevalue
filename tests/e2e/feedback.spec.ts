@@ -1,10 +1,8 @@
 import { test, expect } from './fixtures'
-import { mockAnthropic } from './anthropic'
 import { signInWithAdminSession } from './auth'
 import { expectAlert, feedbackResult, field, fillMidtimeValuation, openApp, openTab, pane, submitValuation, valuationResult } from './helpers'
 
-test.beforeEach(async ({ page, backendMocks }) => {
-  await mockAnthropic(backendMocks)
+test.beforeEach(async ({ page }) => {
   await openApp(page)
 })
 

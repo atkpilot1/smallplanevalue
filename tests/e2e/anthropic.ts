@@ -123,6 +123,11 @@ export function failAnthropic(kind?: AnthropicFail) {
   anthropicFail = kind
 }
 
+export function resetAnthropicMock() {
+  failAnthropic(undefined)
+  anthropicValuateHits = 0
+}
+
 export function getAnthropicValuateHits() {
   return anthropicValuateHits
 }
@@ -140,8 +145,7 @@ function shouldFail(prompt: string): boolean {
 
 /** Mock Anthropic only. Local Supabase stays live. */
 export async function mockAnthropic(backendMocks: BackendMocks) {
-  failAnthropic(undefined)
-  anthropicValuateHits = 0
+  resetAnthropicMock()
   await backendMocks.route('https://api.anthropic.com/**', async (route, request) => {
     const prompt = promptText(request.postDataJSON())
     if (prompt.includes('expert aircraft appraiser')) anthropicValuateHits += 1

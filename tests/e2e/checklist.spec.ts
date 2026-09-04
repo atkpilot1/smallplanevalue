@@ -1,10 +1,9 @@
 import { test, expect } from './fixtures'
 import type { Page } from '@playwright/test'
-import { failAnthropic, mockAnthropic } from './anthropic'
+import { failAnthropic } from './anthropic'
 import { checklistResult, expectAlert, field, lookupN, lookupResult, openApp, openTab, pane } from './helpers'
 
-test.beforeEach(async ({ page, backendMocks }) => {
-  await mockAnthropic(backendMocks)
+test.beforeEach(async ({ page }) => {
   await openApp(page)
 })
 

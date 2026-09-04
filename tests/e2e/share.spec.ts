@@ -1,9 +1,7 @@
 import { test, expect } from './fixtures'
-import { mockAnthropic } from './anthropic'
 import { openApp, openTab, pane } from './helpers'
 
-test.beforeEach(async ({ page, backendMocks }) => {
-  await mockAnthropic(backendMocks)
+test.beforeEach(async ({ page }) => {
   await openApp(page)
 })
 

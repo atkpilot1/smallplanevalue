@@ -1,9 +1,8 @@
 import { test, expect } from './fixtures'
-import { failAnthropic, mockAnthropic } from './anthropic'
+import { failAnthropic } from './anthropic'
 import { compsResult, expectAlert, field, lookupN, lookupResult, openApp, openTab, pane } from './helpers'
 
-test.beforeEach(async ({ page, backendMocks }) => {
-  await mockAnthropic(backendMocks)
+test.beforeEach(async ({ page }) => {
   await openApp(page)
 })
 

@@ -1,4 +1,5 @@
-import { test as base, expect } from '@playwright-backend-mocks/playwright'
+import { createBackendMocks, sendAndWaitForAck, test as base, expect } from '@playwright-backend-mocks/playwright'
+import { mockAnthropic, resetAnthropicMock } from './anthropic'
 
 export type ConsoleGuard = {
   /** Ignore matching console errors for this test. Numbers match Chrome's "status of N". */
@@ -24,7 +25,45 @@ function isAppOrigin(url: string, appOrigin: string | null) {
   }
 }
 
-export const test = base.extend<{ consoleGuard: ConsoleGuard }>({
+export const test = base.extend<
+  { consoleGuard: ConsoleGuard; resetAnthropic: void },
+  { workerAnthropic: undefined }
+>({
+  // One Anthropic route for the worker so tests do not race register/unregister.
+  workerAnthropic: [
+    async ({ backendMocksConnection }, use, workerInfo) => {
+      const testId = `worker-anthropic-${workerInfo.workerIndex}`
+      const mocks = createBackendMocks({
+        connection: backendMocksConnection,
+        testId,
+      })
+      try {
+        await sendAndWaitForAck(
+          backendMocksConnection,
+          {
+            type: 'test:register',
+            testId,
+            title: 'worker Anthropic defaults',
+            file: 'tests/e2e/fixtures.ts',
+            workerId: String(workerInfo.workerIndex),
+          },
+          (message) => message.type === 'test:registered' && message.testId === testId,
+        )
+        await mockAnthropic(mocks)
+        await use(undefined)
+      } finally {
+        await mocks.dispose()
+      }
+    },
+    { scope: 'worker', auto: true },
+  ],
+  resetAnthropic: [
+    async ({}, use) => {
+      resetAnthropicMock()
+      await use()
+    },
+    { auto: true },
+  ],
   consoleGuard: [
     async ({ page, baseURL }, use) => {
       const appOrigin = baseURL ? new URL(baseURL).origin : null
