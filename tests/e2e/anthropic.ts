@@ -151,8 +151,11 @@ export async function mockAnthropic(backendMocks: BackendMocks) {
     if (prompt.includes('expert aircraft appraiser')) anthropicValuateHits += 1
 
     if (shouldFail(prompt)) {
+      // 400 is not retried by the AI SDK. A mocked 500 triggers three
+      // upstream attempts; on CI those retries can miss the mock and open a
+      // real keep-alive to api.anthropic.com that later tests reuse.
       await route.fulfill({
-        status: 500,
+        status: 400,
         contentType: 'application/json',
         json: { type: 'error', error: { type: 'api_error', message: 'mocked Anthropic failure' } },
       })

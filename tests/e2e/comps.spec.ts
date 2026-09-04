@@ -47,7 +47,7 @@ test('year-band select still returns listing ranges', async ({ page }) => {
 })
 
 test('Anthropic 500 surfaces a comps failure', async ({ page, consoleGuard }) => {
-  consoleGuard.allow(500)
+  consoleGuard.allow(400, 500)
   failAnthropic('comps')
   await openTab(page, 'comps')
   const form = pane(page, 'comps')

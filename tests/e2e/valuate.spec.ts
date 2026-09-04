@@ -2,8 +2,8 @@ import { test, expect } from './fixtures'
 import { failAnthropic, getAnthropicValuateHits } from './anthropic'
 import {
   accountDialog,
-  createAdminSession,
   fetchOtp,
+  signInWithAdminSession,
   loginDialog,
   manageAccountButton,
   paywallDialog,
@@ -116,7 +116,7 @@ test('parse listing auto-fills identity, times, and G1000', async ({ page }) => 
 })
 
 test('parse listing failure alerts the user', async ({ page, consoleGuard }) => {
-  consoleGuard.allow(500, /Parse failed/)
+  consoleGuard.allow(400, 500, /Parse failed/)
   failAnthropic('listing')
   await openTab(page, 'val')
   const form = pane(page, 'val')
@@ -352,21 +352,18 @@ test.describe('valuation counter', () => {
     expect((await fetchProfile(userId))?.valuation_count ?? 0).toBe(0)
   })
 
-  test('accounts have independent valuation counters', async ({ request }) => {
-    const a = await createAdminSession()
-    const b = await createAdminSession()
-    const body = { make: 'Cessna', model: '172S', year: '2004' }
+  test('accounts have independent valuation counters', async ({ page }) => {
+    const a = await seedAdminSession(page)
+    await openApp(page)
+    await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
+    await fillMidtimeValuation(page)
+    await submitValuation(page)
+    await submitValuation(page)
+    expect((await fetchProfile(a.userId))?.valuation_count).toBe(2)
 
-    const post = (token: string) =>
-      request.post('/api/valuate', {
-        headers: { Authorization: `Bearer ${token}` },
-        data: body,
-      })
-
-    expect((await post(a.session.access_token)).ok()).toBeTruthy()
-    expect((await post(a.session.access_token)).ok()).toBeTruthy()
-    expect((await post(b.session.access_token)).ok()).toBeTruthy()
-
+    const b = await signInWithAdminSession(page)
+    await fillMidtimeValuation(page)
+    await submitValuation(page)
     expect((await fetchProfile(a.userId))?.valuation_count).toBe(2)
     expect((await fetchProfile(b.userId))?.valuation_count).toBe(1)
   })
@@ -443,22 +440,21 @@ test.describe('credit gate', () => {
     expect((await fetchProfile(userId))?.valuation_count).toBe(3)
   })
 
-  test('accounts have independent free and paid balances', async ({ request }) => {
-    const a = await createAdminSession()
-    const b = await createAdminSession()
+  test('accounts have independent free and paid balances', async ({ page, consoleGuard }) => {
+    consoleGuard.allow(402)
+    const a = await seedAdminSession(page)
     await setProfile(a.userId, { valuation_count: 3, credit_balance: 1 })
+    await openApp(page)
+    await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
+    await fillMidtimeValuation(page)
+    await submitValuation(page)
+    expect(await fetchProfile(a.userId)).toMatchObject({ valuation_count: 4, credit_balance: 0 })
+
+    const b = await signInWithAdminSession(page)
     await setProfile(b.userId, { valuation_count: 3, credit_balance: 0 })
-    const body = { make: 'Cessna', model: '172S', year: '2004' }
-
-    const post = (token: string) =>
-      request.post('/api/valuate', {
-        headers: { Authorization: `Bearer ${token}` },
-        data: body,
-      })
-
-    expect((await post(a.session.access_token)).ok()).toBeTruthy()
-    expect((await post(b.session.access_token)).status()).toBe(402)
-
+    await fillMidtimeValuation(page)
+    await pane(page, 'val').getByRole('button', { name: 'Get honest valuation' }).click()
+    await expect(paywallDialog(page)).toBeVisible()
     expect(await fetchProfile(a.userId)).toMatchObject({ valuation_count: 4, credit_balance: 0 })
     expect(await fetchProfile(b.userId)).toMatchObject({ valuation_count: 3, credit_balance: 0 })
   })

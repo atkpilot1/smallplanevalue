@@ -84,7 +84,7 @@ test('pass, flag, and fail update progress, stats, and verdict', async ({ page }
 })
 
 test('Anthropic 500 still renders the static checklist', async ({ page, consoleGuard }) => {
-  consoleGuard.allow(500)
+  consoleGuard.allow(400, 500)
   failAnthropic('checklist')
   await openTab(page, 'checklist')
   const form = pane(page, 'checklist')
