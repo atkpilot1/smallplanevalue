@@ -15,7 +15,8 @@ export function useSupabase() {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
-        detectSessionInUrl: false,
+        // OTP uses verifyOtp. Also accept #access_token= from the email link.
+        detectSessionInUrl: true,
         storageKey: AUTH_STORAGE_KEY,
       },
     })
