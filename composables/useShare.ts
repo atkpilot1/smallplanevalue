@@ -1,3 +1,5 @@
+import { STATE } from '~/utils/stateKeys'
+
 function siteShareUrlFromOrigin(origin: string) {
   return (origin || 'https://smallplanevalue.com').replace(/\/$/, '')
 }
@@ -9,9 +11,13 @@ export function shareBlurbText(origin?: string) {
 
 export function useShare() {
   const req = useRequestURL()
-  const origin = computed(() => {
-    if (import.meta.client) return window.location.origin
-    return req.origin
+  // Pin the SSR origin through hydrate. Switching to window.location during
+  // setup mismatches footer/share hrefs when the request host differs.
+  const origin = useState(STATE.shareOrigin, () => req.origin)
+  onMounted(() => {
+    if (window.location.origin && window.location.origin !== origin.value) {
+      origin.value = window.location.origin
+    }
   })
   const facebookHref = computed(() => {
     const url = encodeURIComponent(siteShareUrlFromOrigin(origin.value))

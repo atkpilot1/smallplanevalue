@@ -1,4 +1,8 @@
-export default defineNuxtPlugin(() => {
+export default defineNuxtPlugin((nuxtApp) => {
   const { init } = useAuth()
-  return init()
+  // Nuxt waits for a returned plugin promise before hydrating. Restoring
+  // the session first would paint "Manage Account" against SSR "Sign In".
+  nuxtApp.hook('app:mounted', () => {
+    void init()
+  })
 })

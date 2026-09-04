@@ -34,4 +34,5 @@ export const STATE = {
   vFormPersistBound: 'v-form-persist-bound',
   vTboNote: 'v-tbo-note',
   vHasResult: 'v-has-result',
+  shareOrigin: 'share-origin',
 } as const
