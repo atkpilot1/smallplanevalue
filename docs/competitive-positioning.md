@@ -34,4 +34,6 @@ Partners complement SPV; they don’t replace valuation.
 ## Related docs
 
 - [Launch checklist](./launch-checklist.md) — channels and copy-paste posts
+- [YouTube and Instagram](./social-ads-story.md) — narrative and how to post for SmallPlaneValue
+- [Social shoot sheet](./social-shoot-sheet.md) — what to film in one afternoon
 - [Pricing tiers](./pricing-tiers.md) — monetization and trust rules
