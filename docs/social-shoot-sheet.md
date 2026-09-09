@@ -2,7 +2,7 @@
 
 One afternoon. One airplane. Three edits for **smallplanevalue.com**.
 
-Copy and captions: [social-ads-story.md](./social-ads-story.md)
+Copy and how to post: [social-ads-story.md](./social-ads-story.md)
 
 ---
 
