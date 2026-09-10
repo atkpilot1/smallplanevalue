@@ -603,7 +603,61 @@ transition: background .1s;
   font-size: 12px; font-weight: 600; color: var(--sky); letter-spacing: .04em;
   margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
 }
-.listing-narrative-body { font-size: 14px; color: var(--sky); line-height: 1.55; }
+.own-cost-card, .safety-links-card {
+  background: #fff;
+  border: 1px solid rgba(11,37,69,0.1);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  margin: 1rem 0 0;
+}
+.own-cost-card h3, .safety-links-card h3 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: var(--sky);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.own-cost-note { font-size: 12px; color: var(--muted); margin: 0 0 12px; line-height: 1.45; }
+.own-cost-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+.own-cost-grid .k { color: var(--muted); }
+.own-cost-grid .v { font-weight: 600; color: var(--sky); text-align: right; }
+.own-cost-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-top: 10px;
+  border-top: 2px solid var(--sky);
+  font-weight: 700;
+  color: var(--sky);
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+.peer-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.peer-table th {
+  text-align: left; font-size: 11px; font-weight: 600; color: var(--muted);
+  letter-spacing: .04em; padding: 6px 8px; border-bottom: 2px solid var(--sky);
+}
+.peer-table th.amt, .peer-table td.amt { text-align: right; }
+.peer-table td { padding: 7px 8px; border-bottom: 1px solid #e8edf2; color: var(--sky); }
+.peer-table tr.subject td { background: rgba(232,160,32,0.12); font-weight: 600; }
+.safety-link-list { list-style: none; margin: 0; padding: 0; }
+.safety-link-list li { margin: 0 0 10px; padding-bottom: 10px; border-bottom: 1px solid #e8edf2; }
+.safety-link-list li:last-child { margin: 0; padding: 0; border: 0; }
+.safety-link-list a { font-weight: 600; color: var(--sky-light); text-decoration: none; }
+.safety-link-list a:hover { text-decoration: underline; }
+.safety-link-list .d { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+@media (max-width: 640px) {
+  .own-cost-grid { grid-template-columns: 1fr; }
+}
 .val-accuracy-row {
   margin: 1.25rem 0; padding: 14px 16px; background: var(--offwhite);
   border-radius: var(--radius); border: 1px solid rgba(11,37,69,0.08);
@@ -1621,6 +1675,81 @@ if(!r.ok) {
 return data;
 }
 
+async function apiGet(path) {
+  const r = await fetch(path);
+  const data = await r.json().catch(function(){ return {}; });
+  if (!r.ok) {
+    var err = new Error((data && (data.statusMessage || data.message)) || 'Request failed');
+    err.status = r.status;
+    throw err;
+  }
+  return data;
+}
+
+function currentNNumber() {
+  var L = window._lastLookup;
+  if (!L || !L.nnumber) return '';
+  return String(L.nnumber);
+}
+
+function money(n) {
+  if (n == null || isNaN(n)) return '—';
+  return '$' + Math.round(n).toLocaleString();
+}
+
+function renderOwnershipHtml(own) {
+  if (!own || !own.totals) return '';
+  var t = own.totals;
+  var p = own.profile || {};
+  var peers = own.peers || [];
+  var peerRows = peers.map(function(row) {
+    var cls = row.isSubject ? ' class="subject"' : '';
+    var tag = row.isSubject ? ' <span style="color:var(--accent);font-size:11px">this airplane</span>' : '';
+    return '<tr' + cls + '><td>' + (row.label || '') + tag + '</td><td class="amt">' + money(row.hourlyAllIn) + '/hr</td><td class="amt">' + money(row.annualAt100Hrs) + '/yr</td></tr>';
+  }).join('');
+  var note = p.note ? '<div class="own-cost-note">' + p.note + '</div>' : '';
+  return '<div class="own-cost-card">' +
+    '<h3><i class="ti ti-gas-station"></i> TYPICAL COST OF OWNERSHIP — ' + (p.label || 'This type') + '</h3>' +
+    '<p class="own-cost-note">Ballpark U.S. figures for this make/model at ' + (own.hoursPerYear || 100) + ' hours/year and avgas ≈ $' + (own.fuelPerGal || 6.5).toFixed(2) + '/gal. Not a quote — your insurance, hangar, and shop will differ.</p>' +
+    note +
+    '<div class="own-cost-grid">' +
+    '<div class="k">Fuel (~' + (p.gph || '—') + ' gph)</div><div class="v">' + money(t.fuelPerHr) + '/hr</div>' +
+    '<div class="k">Engine overhaul reserve</div><div class="v">' + money(t.engineReservePerHr) + '/hr</div>' +
+    '<div class="k">Hull / liability insurance</div><div class="v">' + money(t.insuranceAnnual) + '/yr</div>' +
+    '<div class="k">Maintenance &amp; annual</div><div class="v">' + money(t.maintenanceAnnual) + '/yr</div>' +
+    '<div class="k">Hangar / tiedown (typical)</div><div class="v">' + money(t.hangarAnnual) + '/yr</div>' +
+    '</div>' +
+    '<div class="own-cost-total"><span>All-in at ' + (own.hoursPerYear || 100) + ' hrs</span><span>' + money(t.hourlyAllIn) + '/hr · ' + money(t.annualAt100Hrs) + '/yr</span></div>' +
+    (peerRows ? '<div class="own-cost-note" style="margin-bottom:6px;font-weight:600;color:var(--sky);letter-spacing:.04em;font-size:11px">COMPARED WITH SIMILAR TYPES</div><table class="peer-table"><thead><tr><th>Type</th><th class="amt">Hourly</th><th class="amt">100-hr year</th></tr></thead><tbody>' + peerRows + '</tbody></table>' : '') +
+    '</div>';
+}
+
+function renderSafetyHtml(own, heading) {
+  var links = (own && own.safety) ? own.safety : [];
+  if (!links.length) return '';
+  var items = links.map(function(l) {
+    return '<li><a href="' + l.href + '" target="_blank" rel="noopener noreferrer">' + l.label + ' <i class="ti ti-external-link" style="font-size:12px"></i></a><span class="d">' + (l.detail || '') + '</span></li>';
+  }).join('');
+  return '<div class="safety-links-card">' +
+    '<h3><i class="ti ti-shield-check"></i> ' + (heading || 'SAFETY DATA') + '</h3>' +
+    '<p class="own-cost-note">Official and public accident/incident records for this tail number and type. We link out — we do not scrape or score safety.</p>' +
+    '<ul class="safety-link-list">' + items + '</ul>' +
+    '</div>';
+}
+
+async function fetchOwnershipContext(make, model, nnumber) {
+  var qs = new URLSearchParams();
+  if (make) qs.set('make', make);
+  if (model) qs.set('model', model);
+  if (nnumber) qs.set('nnumber', nnumber);
+  if (!qs.toString()) return null;
+  try {
+    return await apiGet('/api/ownership-context?' + qs.toString());
+  } catch (e) {
+    return null;
+  }
+}
+
 function getOrCreateClientId() {
   var id = localStorage.getItem('spv_client_id');
   if (!id) {
@@ -1830,6 +1959,12 @@ ${d.adNotes ? `<div style="background:rgba(232,160,32,0.1);border-radius:var(--r
 <button class="action-btn" onclick="window.open('https://registry.faa.gov/aircraftinquiry/Search/NNumberInquiry?nNumberTxt=${d.nnumber.replace(/^N/,'')}','_blank')"><i class="ti ti-external-link" style="font-size:15px"></i> FAA website</button>
 </div>
 <div class="note-box" style="margin-top:.75rem">Data sourced from FAA aircraft registry (registry.faa.gov). Owner names are public FAA records.</div>`;
+fetchOwnershipContext(d.make, d.model, d.nnumber).then(function(own) {
+  if (!own) return;
+  var box = document.getElementById('nn-result');
+  if (!box) return;
+  box.insertAdjacentHTML('beforeend', renderOwnershipHtml(own) + renderSafetyHtml(own, 'SAFETY DATA FOR ' + (d.nnumber || 'THIS AIRPLANE')));
+});
 }
 
 function cleanPastedText(raw) {
@@ -2247,6 +2382,7 @@ setLoading('v-spin','v-btn',true);
 document.getElementById('v-result').innerHTML='';
 try {
 var askPrice=document.getElementById('v-asking')?document.getElementById('v-asking').value:'';
+var ownP = fetchOwnershipContext(make, model, currentNNumber());
 var v=await apiPost('/api/valuate', {
   make: make,
   model: model,
@@ -2274,7 +2410,9 @@ var v=await apiPost('/api/valuate', {
   isTwin: isTwin,
   engineConversion: (engConvEl && engConvEl.value.trim()) ? engConvEl.value.trim() : ''
 });
-renderVal(v,make,model,year);
+var own = null;
+try { own = await ownP; } catch (e) { own = null; }
+renderVal(v,make,model,year,own);
 trackEvent('valuation_completed', { make: make, model: model });
 } catch(e) {
     console.error('Valuation error:', e);
@@ -2423,7 +2561,7 @@ function buildListingNarrative(listingAsk, fmv, buyer, marketAsk, v) {
   return parts.join(' ');
 }
 
-function renderVal(v, make, model, year) {
+function renderVal(v, make, model, year, own) {
 // Support both old and new format
 var apEl=document.getElementById("v-asking");
 var listingAsk = (apEl && apEl.value) ? parseInt(apEl.value, 10) : 0;
@@ -2518,6 +2656,8 @@ ${engLifeHtml}
 <div style="font-size:13px;font-weight:500;color:var(--sky);margin-bottom:.75rem;padding:10px 14px;background:rgba(19,64,116,0.06);border-radius:var(--radius)">${v.keyFinding}</div>
 <div class="analysis-text">${v.analysis}</div>
 ${tips?`<div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(11,37,69,0.08)"><div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:.04em">NEGOTIATING GUIDANCE</div><div class="tip-list">${tips}</div></div>`:''}
+${own ? renderOwnershipHtml(own) : ''}
+${own ? renderSafetyHtml(own, 'SAFETY DATA') : ''}
 <div class="note-box" style="margin-top:1rem">AI-generated for research purposes only. Not a certified appraisal. Engage an ASA-certified appraiser for financing or insurance.</div>
 </div>`;
 }
