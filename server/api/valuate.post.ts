@@ -2,11 +2,10 @@ import { z } from 'zod'
 import { generateText, stepCountIs, tool } from 'ai'
 import { findComparables, formatComparables } from '../data/aircraftDb'
 import {
-  countValuationsThisMonth,
+  getValuationAccess,
   recordValuationUsage,
-  FREE_VALUATIONS_PER_MONTH,
-  VALUATION_LIMITS_ENABLED,
 } from '../utils/valuationAccess'
+import { consumeCredit } from '../utils/credits'
 import { engineAdjustment } from '../utils/valuationEngine'
 import { engineLifeRemaining, lookupEngineTbo } from '../data/engineTbo'
 
@@ -324,14 +323,23 @@ export default defineEventHandler(async (event) => {
   const avs = d.avionics
   const clientId = (d.clientId || '').trim()
 
-  if (VALUATION_LIMITS_ENABLED && clientId) {
-    const used = await countValuationsThisMonth(clientId)
-    if (used >= FREE_VALUATIONS_PER_MONTH) {
-      throw createError({
-        statusCode: 402,
-        statusMessage: 'limit_reached',
-        data: { code: 'limit_reached', requiresEmail: !d.email },
-      })
+  let usePaidCredit = false
+  if (clientId) {
+    const access = await getValuationAccess(clientId)
+    if (access.limitsEnabled && access.freeRemaining <= 0) {
+      if (access.credits < 1) {
+        throw createError({
+          statusCode: 402,
+          statusMessage: 'payment_required',
+          data: {
+            code: 'payment_required',
+            remaining: 0,
+            credits: 0,
+            stripeConfigured: access.stripeConfigured,
+          },
+        })
+      }
+      usePaidCredit = true
     }
   }
 
@@ -567,10 +575,17 @@ export default defineEventHandler(async (event) => {
   out = applyEquippedF33AFloor(out, d)
 
   if (clientId) {
+    if (usePaidCredit) {
+      const consumed = await consumeCredit(clientId)
+      if (!consumed) {
+        console.error('Valuation finished but credit consume failed for', clientId)
+      }
+    }
     await recordValuationUsage(clientId, d.email, {
       make: d.make,
       model: d.model,
       year: d.year || null,
+      paid: usePaidCredit,
     })
   }
 
