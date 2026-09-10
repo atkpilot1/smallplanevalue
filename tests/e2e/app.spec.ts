@@ -171,6 +171,10 @@ test('N-number lookup renders the FAA record', async ({ page }) => {
   await expect(result).toContainText('172S')
   await expect(result).toContainText('Skyhawk LLC')
   await expect(result).toContainText('Lycoming')
+  await expect(result).toContainText(/SAFETY DATA FOR N172SP/i)
+  await expect(result).toContainText(/Typical cost of ownership/i)
+  await expect(result.locator('a[href*="aviation-safety.net"]')).toBeVisible()
+  await expect(result.locator('a[href*="ntsb.gov"]')).toBeVisible()
 })
 
 test('example N-number buttons trigger a lookup', async ({ page }) => {
@@ -197,6 +201,9 @@ test('valuation renders the appraisal result', async ({ page }) => {
   await expect(result).toContainText('$295,000')
   await expect(result).toContainText('$320,000')
   await expect(result).toContainText('$280,000')
+  await expect(result).toContainText(/Typical cost of ownership/i)
+  await expect(result).toContainText(/Compared with similar types/i)
+  await expect(result.locator('a[href*="aopa.org"]')).toBeVisible()
 })
 
 test('market comps renders listing ranges', async ({ page }) => {
