@@ -136,13 +136,33 @@ async function mockApis(page: Page) {
           limit: 1,
           used: 0,
           remaining: 999,
+          freeRemaining: 999,
+          credits: 0,
           betaFreeAccess: true,
+          limitsEnabled: false,
+          stripeConfigured: true,
           periodStart: '2026-07-01T00:00:00.000Z',
         },
       })
     }
     return route.fulfill({ json: { ok: true } })
   })
+
+  await page.route('**/api/checkout', (route) => {
+    const origin = new URL(route.request().url()).origin
+    return route.fulfill({
+      json: {
+        url: `${origin}/?checkout=success&session_id=cs_test_123#app`,
+        sessionId: 'cs_test_123',
+      },
+    })
+  })
+
+  await page.route('**/api/checkout/status**', (route) =>
+    route.fulfill({
+      json: { ok: true, credits: 1, balance: 1, product: 'single', duplicate: false },
+    })
+  )
 }
 
 test.beforeEach(async ({ page }) => {
@@ -254,6 +274,47 @@ test('report a sale stores submission in localStorage and renders recent sales',
   expect(stored).toBeTruthy()
   const arr = JSON.parse(stored as string)
   expect(arr[0]).toMatchObject({ make: 'Cessna', model: '172S', year: 2004, price: 135000 })
+})
+
+test('pricing section shows both report packs', async ({ page }) => {
+  await expect(page.locator('#pricing')).toContainText('$24')
+  await expect(page.locator('#pricing')).toContainText('$79')
+  await expect(page.locator('#buy-single')).toBeEnabled()
+  await expect(page.locator('#buy-fivepack')).toBeEnabled()
+})
+
+test('buy this report starts checkout and returns with credits', async ({ page }) => {
+  await expect(page.locator('#buy-single')).toBeEnabled()
+  const checkoutPromise = page.waitForRequest((req) => req.url().includes('/api/checkout') && req.method() === 'POST')
+  await page.locator('#buy-single').click()
+  const checkoutReq = await checkoutPromise
+  const body = checkoutReq.postDataJSON() as { product: string; clientId: string }
+  expect(body.product).toBe('single')
+  expect(body.clientId.length).toBeGreaterThanOrEqual(8)
+  await expect(page.locator('#checkout-banner')).toBeVisible()
+  await expect(page.locator('#checkout-banner')).toContainText(/Payment received/i)
+  await expect(page.locator('#pane-val')).toHaveClass(/active/)
+})
+
+test('valuation paywall offers Stripe checkout after a 402', async ({ page }) => {
+  await page.route('**/api/valuate', (route) =>
+    route.fulfill({
+      status: 402,
+      json: {
+        statusCode: 402,
+        statusMessage: 'payment_required',
+        data: { code: 'payment_required', remaining: 0, credits: 0, stripeConfigured: true },
+      },
+    })
+  )
+  await page.locator('#tab-btn-val').click()
+  await page.locator('#v-make').fill('Cessna')
+  await page.locator('#v-model').fill('172S')
+  await page.locator('#v-year').fill('2004')
+  await page.locator('#v-btn').click()
+  const result = page.locator('#v-result')
+  await expect(result).toContainText('Unlock the next full report')
+  await expect(result).toContainText('$24')
 })
 
 test('feedback submit shows thank-you and backs up to localStorage', async ({ page }) => {

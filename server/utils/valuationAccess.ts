@@ -1,8 +1,7 @@
 import { supabaseGet, supabaseInsert } from './supabase'
-
-/** Public beta: unlimited valuations. Set true before paid launch. */
-export const VALUATION_LIMITS_ENABLED = false
-
+import { getCreditBalance, valuationLimitsEnabled } from './credits'
+import { stripeConfigured } from './stripe'
+import { PRODUCTS } from './products'
 export const FREE_VALUATIONS_PER_MONTH = 1
 
 function monthStartIso(): string {
@@ -19,24 +18,27 @@ export async function countValuationsThisMonth(clientId: string): Promise<number
 }
 
 export async function getValuationAccess(clientId: string) {
-  if (!VALUATION_LIMITS_ENABLED) {
-    return {
-      limit: FREE_VALUATIONS_PER_MONTH,
-      used: 0,
-      remaining: 999,
-      betaFreeAccess: true,
-      periodStart: monthStartIso(),
-    }
-  }
-
-  const used = clientId ? await countValuationsThisMonth(clientId) : 0
+  const limitsEnabled = valuationLimitsEnabled()
+  const credits = clientId ? await getCreditBalance(clientId) : 0
+  const used = limitsEnabled && clientId ? await countValuationsThisMonth(clientId) : 0
   const limit = FREE_VALUATIONS_PER_MONTH
+  const freeRemaining = limitsEnabled ? Math.max(0, limit - used) : 999
+  const remaining = freeRemaining + credits
+
   return {
     limit,
-    used,
-    remaining: Math.max(0, limit - used),
-    betaFreeAccess: false,
+    used: limitsEnabled ? used : 0,
+    remaining,
+    freeRemaining,
+    credits,
+    betaFreeAccess: !limitsEnabled,
+    limitsEnabled,
+    stripeConfigured: stripeConfigured(),
     periodStart: monthStartIso(),
+    products: [
+      { id: PRODUCTS.single.id, name: PRODUCTS.single.name, credits: PRODUCTS.single.credits, amountCents: PRODUCTS.single.amountCents },
+      { id: PRODUCTS.fivepack.id, name: PRODUCTS.fivepack.name, credits: PRODUCTS.fivepack.credits, amountCents: PRODUCTS.fivepack.amountCents },
+    ],
   }
 }
 

@@ -189,9 +189,10 @@ Recommend server-side truncation so API cannot be scraped for full reports.
 
 ### Payments
 
-- **Stripe Checkout** for one-time packs and subscriptions
-- Webhook: `checkout.session.completed` → add credits or activate subscription
-- Store: `subscriptions (user_id, stripe_customer_id, plan, status, period_end)`
+- **Stripe Checkout** for one-time packs (`/api/checkout`) — $24 single, $79 five-pack
+- Onboarding copy (industry + description box): [stripe-onboarding.md](./stripe-onboarding.md)
+- Webhook: `checkout.session.completed` → add credits (`/api/stripe/webhook`)
+- Store: `user_credits` + `purchases` (see `supabase/migrations/0005_create_credits.sql`)
 
 ---
 
