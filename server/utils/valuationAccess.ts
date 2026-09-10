@@ -2,8 +2,6 @@ import { supabaseGet, supabaseInsert } from './supabase'
 import { getCreditBalance, valuationLimitsEnabled } from './credits'
 import { stripeConfigured } from './stripe'
 import { PRODUCTS } from './products'
-
-export { valuationLimitsEnabled }
 export const FREE_VALUATIONS_PER_MONTH = 1
 
 function monthStartIso(): string {

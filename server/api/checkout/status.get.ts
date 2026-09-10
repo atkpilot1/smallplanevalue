@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { fulfillPaidSession } from '../utils/fulfillCheckout'
+import { fulfillPaidSession } from '../../utils/fulfillCheckout'
 
 const querySchema = z.object({
   session_id: z.string().min(8),

@@ -1,5 +1,5 @@
-import { getStripe, stripeConfigured } from '../utils/stripe'
-import { fulfillCheckoutSession } from '../utils/fulfillCheckout'
+import { getStripe, stripeConfigured } from '../../utils/stripe'
+import { fulfillCheckoutSession } from '../../utils/fulfillCheckout'
 import type Stripe from 'stripe'
 
 export default defineEventHandler(async (event) => {
