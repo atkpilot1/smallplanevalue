@@ -1,6 +1,6 @@
 # Production overlay (ogfaqdmhqwlysavooroo).
-# Declared only — do not apply until `npm run db:config:push:prod`.
-# Other Auth keys below are still the captured hosted defaults.
+# Push: npm run db:config:push:prod
+# Shared file supplies 6-digit OTP, confirmations off, and the code email.
 
 [auth]
 site_url = "https://www.smallplanevalue.com"
@@ -11,15 +11,14 @@ additional_redirect_urls = [
   "https://smallplanevalue.com/**",
 ]
 
-[auth.mfa.totp]
-enroll_enabled = true
-verify_enabled = true
+[auth.rate_limit]
+email_sent = 30
 
-[auth.email]
-enable_confirmations = true
-max_frequency = "1m0s"
-otp_length = 8
-
-[auth.email.template.magic_link]
-subject = "Your Magic Link"
-content_path = "./supabase/templates/magic_link.prod.html"
+[auth.email.smtp]
+enabled = true
+host = "smtp.resend.com"
+port = 465
+user = "resend"
+pass = "env(RESEND_SMTP_PASSWORD)"
+admin_email = "noreply@smallplanevalue.com"
+sender_name = "SmallPlaneValue"
