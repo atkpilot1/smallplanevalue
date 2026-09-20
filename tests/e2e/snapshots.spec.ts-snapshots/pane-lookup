@@ -1,0 +1,11 @@
+- tabpanel "N-number lookup":
+  - text: N-NUMBER N
+  - textbox "N-NUMBER":
+    - /placeholder: 12345 or SR22T
+  - button " Look up"
+  - text: "Try:"
+  - button "172SP"
+  - button "RV10"
+  - button "SR22T"
+  - button "PA28"
+  - button "C182"

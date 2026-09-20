@@ -1,0 +1,5 @@
+- text: "/\\d+ CESSNA 172S N172SP · S\\/N 172S10000  Valid Fixed wing single engine Engine LYCOMING IO-\\d+-L2A Seats 4 Airworthiness Standard · — Reg\\. expiry Jun \\d+, \\d+ Registrant LOCAL DEV Location AUSTIN, TX  Registration current Status: Valid through \\d+  Ownership history · 1 owner LOCAL DEV — → present AUSTIN, TX/"
+- button " Get valuation"
+- button " Pre-buy checklist"
+- button " FAA website"
+- text: Data sourced from FAA aircraft registry (registry.faa.gov). Owner names are public FAA records.

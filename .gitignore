@@ -2,6 +2,8 @@
 .env
 .env.local
 .env*
+!.env.example
+!.env.test
 
 # Archives / data dumps
 ReleasableAircraft.zip
@@ -13,12 +15,18 @@ node_modules
 .nuxt
 .output
 .vercel
+.supabase
+supabase/config.toml.push-bak
 .netlify
 dist
 
 # Test output
 test-results
 playwright-report
+
+# Python
+__pycache__/
+*.py[cod]
 
 # OS / editor cruft
 .DS_Store

@@ -1,0 +1,258 @@
+- text: 
+- strong: This is a starting point for your pre-buy inspection.
+- text: More in-depth checklists can be obtained from your A&P mechanic and your aircraft's respective type club or pilot owners association (
+- link "ABS":
+  - /url: https://www.bonanza.org
+- text: ","
+- link "COPA":
+  - /url: https://www.cirruspilots.org
+- text: ","
+- link "Cessna Owner Organization":
+  - /url: https://cessnaowner.org
+- text: ","
+- link "MMOPA":
+  - /url: https://www.mmopa.com
+- text: ","
+- link "POA":
+  - /url: https://www.piperowner.org
+- text: /\)\. \d+ Cessna 172S/
+- button " Print"
+- text: / 0  0  0 \d+ left/
+- progressbar "Checklist progress"
+- text: / Documents and Records \d+ items  Airworthiness certificate ▶ critical Must be original, displayed in aircraft\. Verify it matches registration and aircraft serial number\./
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Registration ▶ critical Must be in aircraft, match N-number markings and serial number. Confirm name and current address of registered owner.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: POH / Flight Manual ▶ critical Must be appropriate to this specific aircraft model and serial number. Check for all supplements for installed equipment.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Weight and balance ▶ critical Must be current with all modifications reflected. Calculate several typical loading scenarios to verify within limits.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Airframe logbooks since manufacture ▶ critical Verify continuous entries with no unexplained gaps. Compare total airframe time to advertised and to tachometer/Hobbs meter.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Latest annual inspection ▶ critical Confirm date and proper sign-off. Check who performed it and if any discrepancies were noted.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: /\d+-month pitot-static and transponder checks ▶ critical Confirm currency and expiration dates for both inspections\. Required for IFR flight\./
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: ELT battery Check current ELT battery and confirm replacement date is within limits.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: /STCs, \d+[hmsp]+, and yellow tags ▶ critical Confirm all Forms \d+, STCs, and yellow tags match logbook entries for all installed equipment and modifications\./
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Damage history ▶ critical Verify any damage history with documentation of repair. Cross-check NTSB records for accident history.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Aircraft title search ▶ critical Conduct title search to verify clear title, no liens, and ownership history matches logbooks.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text:  Engine Logbook and History 7 items  Engine time and calendar since overhaul ▶ critical Compare total engine time, calendar years since overhaul, and time since top overhaul to advertised and to tach/Hobbs.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Compression test history ▶ critical Review trends in cylinder differential compression checks over the last several annuals. Look for declining trends in any cylinder.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: "Oil analysis history ▶ critical If oil analysis was performed, check frequency, results and trends. Look for elevated metals indicating wear: iron, copper, aluminum."
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: /Engine STCs and \d+[hmsp]+ Check all Forms \d+, yellow tags and logbook entries for engine equipment and modifications\./
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Overhaul shop and specs ▶ critical Verify who performed the overhaul, whether it was to new limits, and if a factory reman or field overhaul.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: /Alternator bearing age For engines with gear-driven alternators, check whether alternator has been rebuilt with bearing change within last \d+ operating hours\./
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: /Vacuum\/pneumatic pump age Check whether dry pneumatic pump has been overhauled or replaced within last \d+ operating hours\./
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text:  Engine Compartment Inspection 9 items  Cylinder condition ▶ critical Check cylinders for leaks or cracks, especially around injector nozzles (fuel injected) and spark plug holes. Look for evidence of overheating.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Crankcase inspection ▶ critical Check for cracks on top of the crankcase and at cylinder base bolts. Check rear case for leaks that may indicate a crankcase crack.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Engine mounts ▶ critical Check rubber engine mounts for sagging, cracking, or deterioration. Check heat deflectors for wear and cutting into mount legs.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Baffles Check condition of all baffles, especially hard, cracked, or missing pieces. Proper baffling is critical for cooling.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Hoses, clamps and brackets ▶ critical Check all hoses for cracks, kinks, age, or bulging. Check clamps and brackets for broken, loose or missing items. Check fuel injector line grommets.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Exhaust system ▶ critical Check for cracks, leaks, or dents. Check for missing mounting nuts or studs. Look for loose, bent, or collapsed clamps. Check for corrosion throughout.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Muffler condition ▶ critical Check exterior for dents, heat warp, holes or cracks. Check for missing or distorted flame cones. Inspect tailpipe hangers at firewall.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Oil leaks and stains Check for any unexplained fuel or oil leaks or stains. Look for evidence of oil from alternator vent tube.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Magnetos and ignition Visually inspect magnetos, ignition harness, and spark plug leads for condition and security.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text:  Propeller 5 items  Propeller time since overhaul ▶ critical Compare propeller time and years since overhaul to advertised and tach/Hobbs. Check for overhaul or re-lube within last six years.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Blade condition ▶ critical Check propeller blades for nicks, cracks, erosion, corrosion, or other damage. Check blade security.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Spinner and bulkhead Check spinner for cracks, dents or damage. Check spinner bulkhead/backplate for cracks, dents or damage.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Governor Verify governor operation and check for leaks. Confirm governor has been overhauled at or before propeller overhaul.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Prop strike cross-check ▶ critical Cross-check any prop strike history against engine logs for teardown evidence, and airframe logs for gear collapse or gear-up landing.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text:  Landing Gear 4 items  Tires ▶ critical Check for cupping, sidewall cracks, excessively worn tread, flat spots, or cord showing. Check tire pressures.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Brakes ▶ critical Check for grooves in brake discs and condition of brake pads. Look for hard, stiff, kinked or leaking brake hoses.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Struts and hardware ▶ critical Check for leaks, visible corrosion or rust on struts. Check for pitting or corrosion on chromed surfaces. Check for looseness in mountings.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Nose gear Check shimmy damper for security, bends or leaks. Check tow pin area for damage. Check steering mechanism.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text:  Wings and Tail 6 items  Wing surface inspection ▶ critical Sight across top and bottom of wing checking for dents, wrinkles, or paint blistering (may indicate corrosion of internal structure).
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Wing attach fittings ▶ critical Check wing attach bolt fittings for corrosion, standing water, or evidence of past water. Check bathtub fitting covers and drain holes.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Control surfaces ▶ critical Inspect ailerons, elevator, and rudder for dents, wrinkles, corrosion. Check that control surfaces were properly balanced after any paint.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Fuel system ▶ critical Check for evidence of fuel leaks on top and bottom of wing. Check fuel caps, vents, and fuel selector valve operation through all positions including off.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Tail surfaces Check fuselage tail area for wrinkles, dents, loose rivets, corrosion. Check trim tabs flush with surfaces when indicators at neutral.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Rivet condition Check for ground-down rivet heads which may indicate damage from sanding if airplane was not stripped before repainting.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text:  Cabin and Interior 5 items  Windows and doors Check for crazed or cracked windows. Check forward door fit and hinge condition. Look for signs of interior leaks around door and window seals.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Corrosion check ▶ critical Check cabin sidewalls for corrosion under windows, doors, and pilot storm window. This is a common hidden problem area.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Seats and restraints ▶ critical Check proper installation and operation of seat belts, shoulder harnesses, seats and adjustment mechanisms.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Emergency exits ▶ critical Check proper operation of all emergency exits.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Fuel selector ▶ critical Verify fuel selector valve moves easily between all positions. Check proper operation of off-position safety stops.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text:  Warm Engine Checks 3 items  Borescope all cylinders ▶ critical Conduct borescope inspection of all cylinders. Look for scoring, corrosion, deposits, cracked valves, and cam lobe wear indicators.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: /Differential compression ▶ critical Conduct differential compression check on all cylinders\. Record specific numbers\. Minimum \d+\/\d+ with no more than 5 PSI variance between cylinders\./
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Oil filter and screen ▶ critical Cut open oil filter and inspect oil screen for metal contamination. Any metal requires further investigation.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text:  Flight Check 7 items  Manifold pressure before start Check manifold pressure gauge reads ambient pressure before engine start.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Instrument check ▶ critical Check all instruments against tolerance for IFR flight after start and during taxi.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Takeoff performance ▶ critical Confirm expected manifold pressure and RPM at full throttle takeoff. Check fuel flow is at or above redline.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Cruise performance ▶ critical Compute true airspeed at cruise and compare to POH expectations for altitude and power setting.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Avionics operational check ▶ critical Systematically check all instruments, avionics and indicators. Check magnetic compass for proper fluid and operation.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: Autopilot check Functionally check the autopilot system and all methods of disconnect per POH supplement procedures.
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: /VOR accuracy Conduct VOR check and compare to \d+-day VOR check log entry\./
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text:  Cessna 172S Specific Items 2 items  Firewall SB05-1 inspection ▶ critical Check for cracking per Cessna SB
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text: /Seat rail AD \d+-\d+-\d+ ▶ critical Inspect seat rails and locking pins/
+- button "Pass"
+- button "Flag"
+- button "Fail"
+- text:  Inspection in progress... 0 Passed 0 Flagged 0 Failed 0% Complete This checklist is a buyer guide, not a substitute for a certified pre-buy inspection by an independent A&P mechanic.

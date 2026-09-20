@@ -1,6 +1,6 @@
 // Deterministic avionics value engine.
 //
-// Mirrors files/avionics_adjustments.xlsx. No AI guesses a price here — every
+// No AI guesses a price here — every
 // figure traces to the coefficients below, which you control.
 //
 //   value_add = installedCost

@@ -2,24 +2,47 @@
   "name": "smallplanevalue",
   "private": true,
   "type": "module",
+  "packageManager": "npm@11.19.0",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "test:e2e": "playwright test"
+    "start:e2e": "node --env-file=.env.test .output/server/index.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:snapshots": "playwright test --grep @snapshot",
+    "test:e2e:update-snapshots": "playwright test --grep @snapshot --update-snapshots",
+    "test:e2e:review-snapshots": "node scripts/collect-snapshot-diffs.mjs",
+    "db:start": "node scripts/supabase-config.mjs sync && supabase start",
+    "db:stop": "supabase stop",
+    "db:status": "supabase status",
+    "db:reset": "node scripts/supabase-config.mjs sync && supabase db reset",
+    "db:push:staging": "supabase db push --project-ref wyggunstezdstrmblkhx",
+    "db:push:prod": "supabase db push --project-ref ogfaqdmhqwlysavooroo",
+    "db:config:sync": "node scripts/supabase-config.mjs sync",
+    "db:config:dump": "node scripts/supabase-config.mjs dump",
+    "db:config:push:staging": "node scripts/supabase-config.mjs push staging",
+    "db:config:push:prod": "node scripts/supabase-config.mjs push prod"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.84",
+    "@supabase/supabase-js": "^2.112.4",
+    "@vueuse/nuxt": "^14.4.0",
     "ai": "^6.0.205",
     "fuse.js": "^7.4.2",
     "nuxt": "^4.0.0",
+    "stripe": "^22.6.0",
     "vue": "^3.5.0",
-    "vue-router": "^4.4.0",
     "zod": "^3.24.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.49.0"
+    "@playwright-backend-mocks/node": "^0.1.7",
+    "@playwright-backend-mocks/playwright": "^0.1.7",
+    "@playwright-backend-mocks/protocol": "^0.1.7",
+    "@playwright-backend-mocks/proxy": "^0.1.7",
+    "@playwright/test": "1.62.1",
+    "smol-toml": "^1.8.0",
+    "supabase": "^2.115.0"
   }
 }

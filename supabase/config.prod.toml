@@ -1,0 +1,24 @@
+# Production overlay (ogfaqdmhqwlysavooroo).
+# Push: npm run db:config:push:prod
+# Shared file supplies 6-digit OTP, confirmations off, and the code email.
+
+[auth]
+site_url = "https://www.smallplanevalue.com"
+additional_redirect_urls = [
+  "https://www.smallplanevalue.com",
+  "https://www.smallplanevalue.com/**",
+  "https://smallplanevalue.com",
+  "https://smallplanevalue.com/**",
+]
+
+[auth.rate_limit]
+email_sent = 30
+
+[auth.email.smtp]
+enabled = true
+host = "smtp.resend.com"
+port = 465
+user = "resend"
+pass = "env(RESEND_SMTP_PASSWORD)"
+admin_email = "noreply@smallplanevalue.com"
+sender_name = "SmallPlaneValue"

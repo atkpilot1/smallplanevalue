@@ -1,0 +1,21 @@
+# Overlay for hosted staging (wyggunstezdstrmblkhx).
+# Push: npm run db:config:push:staging
+
+[auth]
+site_url = "https://smallplanevalue-git-staging-john-wallace-s-projects.vercel.app"
+additional_redirect_urls = [
+  "https://smallplanevalue-git-staging-john-wallace-s-projects.vercel.app",
+  "https://smallplanevalue-git-staging-john-wallace-s-projects.vercel.app/**",
+]
+
+[auth.rate_limit]
+email_sent = 30
+
+[auth.email.smtp]
+enabled = true
+host = "smtp.resend.com"
+port = 465
+user = "resend"
+pass = "env(RESEND_SMTP_PASSWORD)"
+admin_email = "noreply@smallplanevalue.com"
+sender_name = "SmallPlaneValue"

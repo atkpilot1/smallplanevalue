@@ -1,0 +1,11 @@
+# Overlay for local Docker (`supabase start`). Merged on top of config.shared.toml.
+
+[auth]
+site_url = "http://127.0.0.1:3000"
+additional_redirect_urls = [
+  "https://127.0.0.1:3000",
+  "http://127.0.0.1:3000",
+  "http://localhost:3000",
+  "http://127.0.0.1:3100",
+  "http://localhost:3100",
+]

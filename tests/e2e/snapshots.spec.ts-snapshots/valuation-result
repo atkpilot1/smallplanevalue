@@ -1,0 +1,13 @@
+- text: /AIRCRAFT VALUATION \$\d+,\d+ \d+ Cessna 172S · fair market value  High confidence/
+- strong: "Listing ask:"
+- text: "/\\$\\d+,\\d+ — \\d+% above our fair market value · Typical market list for comps: \\$\\d+,\\d+  LISTING VS MARKET This listing is priced toward the high end of the market\\. The ask of \\$\\d+,\\d+ is \\$\\d+,\\d+ \\(\\d+%\\) above our \\$\\d+,\\d+ fair market value\\. Even so, above-average avionics supports paying toward the top of the range — consider opening near \\$\\d+,\\d+ and negotiating toward \\$\\d+,\\d+ rather than the full ask\\. Typical comparable listings ask around \\$\\d+,\\d+\\. BUYER TARGET \\$\\d+,\\d+ negotiate to this FAIR MARKET VALUE \\$\\d+,\\d+ realistic price TYPICAL MARKET ASK \\$\\d+,\\d+ from comps, not your listing \\$\\d+,\\d+ valuation range \\$\\d+,\\d+ \\$\\d+,\\d+/"
+- strong: "How this works:"
+- text: Fair Market Value is what the aircraft is realistically worth today. Buyer Target is a strong negotiating position. Typical Market Ask is what similar listings ask — if you entered a listing price, it is shown separately above. Above average Condition +2% vs avg Modern glass premium Avionics +5% vs avg Mid-time engine Engine -3% vs avg  ENGINE LIFE — SMOH vs TBO
+- strong: Engine
+- text: /\d+,\d+ \/ \d+,\d+ SMOH/
+- strong: /\d+%/
+- text: /life remaining \(\d+,\d+ hrs\) How was this valuation\?/
+- button "Too low"
+- button "About right"
+- button "Too high"
+- text: Priced slightly above market This aircraft is well equipped and fairly priced for the market. NEGOTIATING GUIDANCE  Ask for recent annual  Verify SMOH logs AI-generated for research purposes only. Not a certified appraisal. Engage an ASA-certified appraiser for financing or insurance.

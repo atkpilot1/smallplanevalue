@@ -2,13 +2,12 @@ import { z } from 'zod'
 import { generateText, stepCountIs, tool } from 'ai'
 import { findComparables, formatComparables } from '../data/aircraftDb'
 import {
-  countValuationsThisMonth,
   recordValuationUsage,
-  FREE_VALUATIONS_PER_MONTH,
-  VALUATION_LIMITS_ENABLED,
+  withValuationCredit,
 } from '../utils/valuationAccess'
 import { engineAdjustment } from '../utils/valuationEngine'
 import { engineLifeRemaining, lookupEngineTbo } from '../data/engineTbo'
+import { requireAuthUser } from '../utils/supabase'
 
 const bodySchema = z.object({
   make: z.string().min(1),
@@ -324,17 +323,9 @@ export default defineEventHandler(async (event) => {
   const avs = d.avionics
   const clientId = (d.clientId || '').trim()
 
-  if (VALUATION_LIMITS_ENABLED && clientId) {
-    const used = await countValuationsThisMonth(clientId)
-    if (used >= FREE_VALUATIONS_PER_MONTH) {
-      throw createError({
-        statusCode: 402,
-        statusMessage: 'limit_reached',
-        data: { code: 'limit_reached', requiresEmail: !d.email },
-      })
-    }
-  }
+  const user = await requireAuthUser(event)
 
+  return await withValuationCredit(user.id, async () => {
   let prompt =
     'You are an expert aircraft appraiser with current 2025-2026 market knowledge. Provide ACCURATE asking prices — not lowballed.\n\n'
   prompt +=
@@ -567,14 +558,20 @@ export default defineEventHandler(async (event) => {
   out = applyEquippedF33AFloor(out, d)
 
   if (clientId) {
-    await recordValuationUsage(clientId, d.email, {
-      make: d.make,
-      model: d.model,
-      year: d.year || null,
-    })
+    await recordValuationUsage(
+      clientId,
+      d.email,
+      {
+        make: d.make,
+        model: d.model,
+        year: d.year || null,
+      },
+      user.id,
+    )
   }
 
   return out
+  })
 })
 
 // Flat deduction applied when the aircraft is out of annual (airworthiness

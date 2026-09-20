@@ -1,0 +1,37 @@
+- text: /Cessna 172S — active listings \$\d+,\d+ Low ask \$\d+,\d+ Median ask \$\d+,\d+ High ask 45d Avg listed/
+- paragraph: Active listings show steady demand for the 172S.
+- text: Most sell within 5% of asking.
+- table:
+  - rowgroup:
+    - row "YEAR TTAF SMOH COND. ASKING PRICE LISTED":
+      - columnheader "YEAR"
+      - columnheader "TTAF"
+      - columnheader "SMOH"
+      - columnheader "COND."
+      - columnheader "ASKING PRICE"
+      - columnheader "LISTED"
+  - rowgroup:
+    - row /\d+ \d+,\d+ h \d+ h Good \$\d+,\d+ 30d/:
+      - cell /\d+/
+      - cell /\d+,\d+ h/
+      - cell /\d+ h/
+      - cell "Good"
+      - cell /\$\d+,\d+/
+      - cell "30d"
+    - row /\d+ \d+,\d+ h \d+ h Excellent \$\d+,\d+ 21d/:
+      - cell /\d+/
+      - cell /\d+,\d+ h/
+      - cell /\d+ h/
+      - cell "Excellent"
+      - cell /\$\d+,\d+/
+      - cell "21d"
+- text: Asking prices only — no sale prices, as GA transactions are not publicly recorded. Verify at
+- link "Trade-A-Plane":
+  - /url: https://www.trade-a-plane.com
+- text: ","
+- link "Controller.com":
+  - /url: https://www.controller.com
+- text: ","
+- link "Barnstormers":
+  - /url: https://www.barnstormers.com
+- text: .

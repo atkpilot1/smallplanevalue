@@ -1,0 +1,3025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SmallPlaneValue.com — Honest GA Aircraft Valuations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+<style>
+/* ── reset & tokens ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+--sky: #0B2545;
+--sky-mid: #134074;
+--sky-light: #1a5fa8;
+--accent: #E8A020;
+--accent-light: #f5c355;
+--white: #F7F5F0;
+--offwhite: #EEE9E0;
+--muted: #7A8A9A;
+--danger: #C0392B;
+--success: #1a7a4a;
+--warn: #b07a10;
+--card-bg: #ffffff;
+--card-border: rgba(0,0,0,0.08);
+--body: 'DM Sans', sans-serif;
+--display: 'Bebas Neue', sans-serif;
+--mono: 'DM Mono', monospace;
+--radius: 10px;
+--radius-lg: 16px;
+}
+html { scroll-behavior: smooth; }
+body {
+font-family: var(--body);
+background: var(--white);
+color: var(--sky);
+font-size: 16px;
+line-height: 1.6;
+overflow-x: hidden;
+}
+
+/* ── nav ─────────────────────────────────────────────── */
+nav {
+position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+display: flex; align-items: center; justify-content: space-between;
+padding: 0 2.5rem;
+height: 60px;
+background: rgba(11,37,69,0.96);
+backdrop-filter: blur(12px);
+border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.nav-logo {
+font-family: var(--display);
+font-size: 22px;
+letter-spacing: 0.04em;
+color: var(--white);
+display: flex; align-items: center; gap: 10px;
+text-decoration: none;
+}
+.nav-logo .accent { color: var(--accent); }
+.nav-logo-icon {
+width: 32px; height: 32px;
+background: var(--accent);
+border-radius: 6px;
+display: flex; align-items: center; justify-content: center;
+}
+.nav-logo-icon i { font-size: 18px; color: var(--sky); }
+.nav-links { display: flex; gap: 2rem; align-items: center; }
+.nav-links a {
+font-size: 14px; color: rgba(255,255,255,0.7);
+text-decoration: none; transition: color .15s;
+letter-spacing: 0.01em;
+}
+.nav-links a:hover { color: var(--white); }
+.nav-cta {
+background: var(--accent); color: var(--sky);
+border: none; border-radius: var(--radius);
+padding: 7px 16px; font-size: 13px; font-weight: 500;
+cursor: pointer; font-family: var(--body);
+transition: background .15s;
+}
+.nav-cta:hover { background: var(--accent-light); }
+
+/* ── hero ────────────────────────────────────────────── */
+.hero {
+position: relative;
+min-height: 100vh;
+display: flex; flex-direction: column;
+overflow: hidden;
+background: var(--sky);
+}
+.hero-bg {
+position: absolute; inset: 0;
+background:
+radial-gradient(ellipse 80% 60% at 60% 40%, rgba(19,64,116,0.6) 0%, transparent 70%),
+radial-gradient(ellipse 50% 40% at 20% 80%, rgba(232,160,32,0.08) 0%, transparent 60%);
+}
+/* subtle grid texture */
+.hero-bg::after {
+content: '';
+position: absolute; inset: 0;
+background-image:
+linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+background-size: 48px 48px;
+}
+.hero-content {
+position: relative; z-index: 2;
+padding: 140px 5vw 60px;
+max-width: 1200px;
+margin: 0 auto;
+width: 100%;
+}
+.hero-kicker {
+display: inline-flex; align-items: center; gap: 8px;
+font-size: 12px; font-weight: 500; letter-spacing: 0.12em;
+color: var(--accent);
+text-transform: uppercase;
+margin-bottom: 1.5rem;
+border: 1px solid rgba(232,160,32,0.3);
+padding: 5px 12px; border-radius: 99px;
+animation: fadeUp .6s ease both;
+}
+.hero-h1 {
+font-family: var(--display);
+font-size: clamp(56px, 8vw, 110px);
+line-height: 0.95;
+color: var(--white);
+letter-spacing: 0.02em;
+margin-bottom: 1.5rem;
+animation: fadeUp .6s .1s ease both;
+}
+.hero-h1 .line2 { color: var(--accent); display: block; }
+.hero-sub {
+font-size: clamp(16px, 2vw, 20px);
+color: rgba(247,245,240,0.65);
+max-width: 520px;
+line-height: 1.6;
+font-weight: 300;
+margin-bottom: 1rem;
+animation: fadeUp .6s .2s ease both;
+}
+.hero-compare {
+font-size: 14px;
+color: rgba(232,160,32,0.85);
+max-width: 520px;
+line-height: 1.5;
+margin-bottom: 2.5rem;
+animation: fadeUp .6s .25s ease both;
+}
+.hero-actions {
+display: flex; gap: 12px; flex-wrap: wrap;
+animation: fadeUp .6s .3s ease both;
+}
+.btn-primary {
+background: var(--accent); color: var(--sky);
+border: none; border-radius: var(--radius);
+padding: 14px 28px; font-size: 15px; font-weight: 500;
+cursor: pointer; font-family: var(--body);
+display: inline-flex; align-items: center; gap: 8px;
+transition: background .15s, transform .1s;
+text-decoration: none;
+}
+.btn-primary:hover { background: var(--accent-light); transform: translateY(-1px); }
+.btn-ghost {
+background: none; color: var(--white);
+border: 1px solid rgba(255,255,255,0.25);
+border-radius: var(--radius);
+padding: 14px 28px; font-size: 15px;
+cursor: pointer; font-family: var(--body);
+display: inline-flex; align-items: center; gap: 8px;
+transition: border-color .15s, background .15s;
+text-decoration: none;
+}
+.btn-ghost:hover { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.06); }
+
+/* hero stats strip */
+.hero-stats {
+display: flex; gap: 3rem; flex-wrap: wrap;
+margin-top: 4rem;
+padding-top: 2rem;
+border-top: 1px solid rgba(255,255,255,0.1);
+animation: fadeUp .6s .4s ease both;
+}
+.hero-stat-val {
+font-family: var(--display);
+font-size: 40px;
+color: var(--accent);
+line-height: 1;
+}
+.hero-stat-lbl {
+font-size: 13px;
+color: rgba(255,255,255,0.5);
+margin-top: 4px;
+}
+
+/* ── aircraft showcase ───────────────────────────────── */
+.showcase {
+position: relative; z-index: 2;
+padding: 0 5vw 80px;
+max-width: 1200px;
+margin: 0 auto;
+width: 100%;
+}
+.showcase-grid {
+display: grid;
+grid-template-columns: 1fr 1fr 1fr;
+gap: 20px;
+animation: fadeUp .7s .5s ease both;
+}
+.aircraft-card {
+position: relative;
+border-radius: var(--radius-lg);
+overflow: hidden;
+aspect-ratio: 4/3;
+cursor: pointer;
+group: true;
+}
+.aircraft-card img {
+width: 100%; height: 100%;
+object-fit: cover;
+transition: transform .5s ease;
+}
+.aircraft-card:hover img { transform: scale(1.04); }
+.aircraft-card-overlay {
+position: absolute; inset: 0;
+background: linear-gradient(to top, rgba(11,37,69,0.9) 0%, rgba(11,37,69,0.2) 50%, transparent 100%);
+display: flex; flex-direction: column;
+justify-content: flex-end;
+padding: 20px 22px;
+}
+.aircraft-tag {
+display: inline-flex; align-items: center; gap: 6px;
+background: var(--accent);
+color: var(--sky);
+font-size: 11px; font-weight: 500;
+padding: 3px 10px; border-radius: 99px;
+margin-bottom: 8px;
+width: fit-content;
+letter-spacing: 0.04em;
+}
+.aircraft-name {
+font-family: var(--display);
+font-size: 30px;
+color: var(--white);
+line-height: 1;
+letter-spacing: 0.03em;
+}
+.aircraft-desc {
+font-size: 13px;
+color: rgba(255,255,255,0.65);
+margin-top: 4px;
+}
+.aircraft-val-badge {
+position: absolute; top: 14px; right: 14px;
+background: rgba(11,37,69,0.85);
+border: 1px solid rgba(255,255,255,0.15);
+border-radius: var(--radius);
+padding: 6px 12px;
+font-size: 12px; font-weight: 500;
+color: var(--white);
+backdrop-filter: blur(8px);
+}
+.aircraft-val-badge span { color: var(--accent); }
+
+/* ── section: why us ─────────────────────────────────── */
+.section { padding: 80px 5vw; max-width: 1200px; margin: 0 auto; }
+.section-bg-alt { background: var(--offwhite); }
+.section-bg-dark { background: var(--sky); }
+
+.section-kicker {
+font-size: 11px; font-weight: 500; letter-spacing: 0.14em;
+text-transform: uppercase;
+color: var(--sky-light);
+margin-bottom: .75rem;
+}
+.section-kicker-dark { color: var(--accent); }
+.section-h2 {
+font-family: var(--display);
+font-size: clamp(36px, 5vw, 58px);
+line-height: 1.0;
+letter-spacing: 0.02em;
+color: var(--sky);
+margin-bottom: 1rem;
+}
+.section-h2-dark { color: var(--white); }
+.section-body {
+font-size: 17px; color: rgba(11,37,69,0.6);
+max-width: 560px; line-height: 1.7; font-weight: 300;
+}
+.section-body-dark { color: rgba(247,245,240,0.6); }
+
+.why-grid {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 20px;
+margin-top: 3rem;
+}
+.why-card {
+background: var(--card-bg);
+border: 1px solid var(--card-border);
+border-radius: var(--radius-lg);
+padding: 28px 24px;
+transition: transform .2s, border-color .2s;
+}
+.why-card:hover { transform: translateY(-3px); border-color: rgba(11,37,69,0.15); }
+.why-icon {
+width: 44px; height: 44px;
+background: rgba(19,64,116,0.08);
+border-radius: var(--radius);
+display: flex; align-items: center; justify-content: center;
+margin-bottom: 1rem;
+}
+.why-icon i { font-size: 22px; color: var(--sky-light); }
+.why-title { font-size: 16px; font-weight: 500; margin-bottom: .5rem; color: var(--sky); }
+.why-text { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+/* ── tools section ───────────────────────────────────── */
+.tools-section {
+background: var(--sky);
+padding: 80px 0;
+}
+.tools-inner {
+max-width: 1200px;
+margin: 0 auto;
+padding: 0 5vw;
+}
+.tools-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 16px;
+margin-top: 3rem;
+}
+.tool-card {
+background: rgba(255,255,255,0.05);
+border: 1px solid rgba(255,255,255,0.1);
+border-radius: var(--radius-lg);
+padding: 28px 24px;
+cursor: pointer;
+transition: background .2s, border-color .2s, transform .2s;
+text-decoration: none;
+display: block;
+}
+.tool-card:hover {
+background: rgba(255,255,255,0.09);
+border-color: rgba(232,160,32,0.4);
+transform: translateY(-2px);
+}
+.tool-card-header { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.tool-icon {
+width: 46px; height: 46px;
+background: var(--accent);
+border-radius: var(--radius);
+display: flex; align-items: center; justify-content: center;
+flex-shrink: 0;
+}
+.tool-icon i { font-size: 22px; color: var(--sky); }
+.tool-name { font-size: 17px; font-weight: 500; color: var(--white); }
+.tool-tag {
+font-size: 11px; font-weight: 500;
+color: var(--accent);
+letter-spacing: 0.06em;
+text-transform: uppercase;
+}
+.tool-desc { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+.tool-arrow {
+display: flex; align-items: center; justify-content: flex-end;
+margin-top: 18px;
+}
+.tool-arrow i { font-size: 18px; color: rgba(255,255,255,0.25); transition: color .2s, transform .2s; }
+.tool-card:hover .tool-arrow i { color: var(--accent); transform: translateX(4px); }
+
+/* ── how it works ────────────────────────────────────── */
+.steps { display: flex; gap: 0; margin-top: 3rem; position: relative; }
+.steps::before {
+content: '';
+position: absolute;
+top: 22px; left: 22px; right: 22px; height: 1px;
+background: rgba(11,37,69,0.12);
+}
+.step { flex: 1; position: relative; padding-top: 60px; padding-right: 24px; }
+.step-num {
+position: absolute; top: 0; left: 0;
+width: 44px; height: 44px;
+background: var(--sky);
+color: var(--white);
+border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+font-family: var(--mono);
+font-size: 14px; font-weight: 500;
+z-index: 1;
+}
+.step-title { font-size: 16px; font-weight: 500; margin-bottom: .4rem; color: var(--sky); }
+.step-text { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+/* ── aircraft type pills ─────────────────────────────── */
+.types-grid {
+display: flex; flex-wrap: wrap; gap: 10px;
+margin-top: 2rem;
+}
+.type-pill {
+display: inline-flex; align-items: center; gap: 8px;
+background: var(--white);
+border: 1px solid rgba(11,37,69,0.12);
+border-radius: 99px;
+padding: 8px 16px;
+font-size: 14px; color: var(--sky);
+transition: border-color .15s, background .15s;
+cursor: default;
+}
+.type-pill i { font-size: 16px; color: var(--sky-light); }
+.type-pill:hover { border-color: var(--sky-light); background: rgba(19,64,116,0.05); }
+
+/* ── disclaimer banner ───────────────────────────────── */
+.disclaimer {
+background: rgba(232,160,32,0.1);
+border-top: 1px solid rgba(232,160,32,0.2);
+padding: 24px 5vw;
+text-align: center;
+font-size: 15px;
+line-height: 1.7;
+color: rgba(11,37,69,0.75);
+}
+.disclaimer strong { color: var(--sky); font-weight: 600; }
+
+/* ── footer ──────────────────────────────────────────── */
+footer {
+background: #070f1c;
+padding: 48px 5vw 32px;
+}
+.footer-inner {
+max-width: 1200px; margin: 0 auto;
+display: flex; justify-content: space-between;
+flex-wrap: wrap; gap: 2rem;
+padding-bottom: 32px;
+border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.footer-logo {
+font-family: var(--display);
+font-size: 26px;
+color: var(--white);
+letter-spacing: 0.04em;
+}
+.footer-logo span { color: var(--accent); }
+.footer-tagline {
+font-size: 13px; color: rgba(255,255,255,0.35);
+margin-top: 6px; font-weight: 300;
+}
+.footer-links { display: flex; gap: 2rem; }
+.footer-links a { font-size: 13px; color: rgba(255,255,255,0.4); text-decoration: none; transition: color .15s; }
+.footer-links a:hover { color: var(--white); }
+.footer-bottom {
+max-width: 1200px; margin: 0 auto;
+display: flex; justify-content: space-between; align-items: center;
+padding-top: 20px;
+font-size: 12px; color: rgba(255,255,255,0.2);
+flex-wrap: wrap; gap: 8px;
+}
+
+/* ── app section ─────────────────────────────────────── */
+.app-section { background: var(--white); padding: 80px 5vw; }
+.app-inner { max-width: 960px; margin: 0 auto; }
+.tab-bar {
+display: flex; border-bottom: 1px solid rgba(11,37,69,0.1);
+margin-bottom: 2rem; gap: 0; overflow-x: auto;
+}
+.tab-btn {
+background: none; border: none; cursor: pointer;
+padding: 12px 20px; font-size: 14px; font-weight: 400;
+color: var(--muted);
+border-bottom: 2px solid transparent;
+margin-bottom: -1px;
+white-space: nowrap;
+font-family: var(--body);
+display: flex; align-items: center; gap: 7px;
+transition: color .15s;
+}
+.tab-btn.active {
+color: var(--sky); font-weight: 500;
+border-bottom-color: var(--accent);
+}
+.tab-btn i { font-size: 16px; }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* ── form styles ─────────────────────────────────────── */
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.form-group label {
+display: block; font-size: 12px; font-weight: 500;
+color: var(--muted); margin-bottom: 5px; letter-spacing: .03em;
+}
+.form-group input, .form-group select, .form-group textarea {
+width: 100%; padding: 9px 12px; border-radius: var(--radius);
+border: 1px solid rgba(11,37,69,0.15); font-size: 14px;
+background: var(--white); color: var(--sky);
+font-family: var(--body); transition: border-color .15s;
+outline: none;
+}
+.form-group input:focus, .form-group select:focus { border-color: var(--sky-light); }
+.form-group select { -webkit-appearance: menulist; appearance: menulist; min-height: 38px; }
+.form-group textarea { resize: vertical; min-height: 72px; }
+.chk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.chk-label {
+display: flex; align-items: center; gap: 8px;
+font-size: 13px; color: var(--sky); cursor: pointer;
+padding: 7px 11px; border-radius: var(--radius);
+border: 1px solid rgba(11,37,69,0.12);
+transition: background .1s;
+}
+.chk-label:hover { background: rgba(19,64,116,0.05); }
+.av-hdr { display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 0;user-select:none; }
+.av-hdr:hover { opacity:0.8; }
+.tab-btn.highlight { color:var(--accent);font-weight:600;border-bottom:2px solid var(--accent); }
+.av-hdr .arrow { transition:transform 0.2s;font-size:10px; }
+.av-hdr.open .arrow { transform:rotate(90deg); }
+.av-body { display:none;flex-direction:column;gap:3px;margin-bottom:12px; }
+.av-hdr.open + .av-body { display:flex; }
+.chk-label input { width: auto; }
+.out-of-annual-label {
+  margin-top: 8px;
+  background: rgba(192, 57, 43, 0.1);
+  border: 2px solid rgba(192, 57, 43, 0.45);
+  color: var(--danger);
+  font-weight: 600;
+}
+.out-of-annual-label:hover { background: rgba(192, 57, 43, 0.14); }
+.out-of-annual-label:has(input:checked) {
+  background: rgba(192, 57, 43, 0.2);
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.18);
+}
+.out-of-annual-label input { width: 16px; height: 16px; accent-color: var(--danger); }
+.val-free-note { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.share-pilot-box {
+  background: rgba(19,64,116,0.05); border: 1px solid rgba(19,64,116,0.12);
+  border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 1.25rem;
+}
+.share-btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.share-btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px;
+  font-size: 13px; font-weight: 500; border-radius: 6px; border: 1px solid rgba(19,64,116,0.2);
+  background: #fff; color: var(--sky); cursor: pointer; text-decoration: none; font-family: var(--body);
+}
+.share-btn:hover { background: rgba(19,64,116,0.06); }
+.share-copy-msg { font-size: 12px; color: var(--success); margin-top: 8px; min-height: 16px; }
+.equip-prominent {
+  border: 1.5px solid rgba(19,64,116,0.18); border-radius: var(--radius-lg);
+  margin: 0 0 16px; padding: 14px 16px; background: rgba(19,64,116,0.04);
+}
+.equip-prominent-hdr {
+  font-size: 11px; font-weight: 600; color: var(--sky); letter-spacing: .04em;
+  margin: 12px 0 6px;
+}
+.equip-prominent-hdr:first-child { margin-top: 0; }
+.equip-prominent-note { font-size: 12px; color: var(--muted); margin: 0 0 10px; line-height: 1.45; }
+.adv-section { border:1px solid rgba(19,64,116,0.12);border-radius:var(--radius);margin:14px 0;background:rgba(19,64,116,0.02); }
+.adv-section > summary { cursor:pointer;list-style:none;padding:11px 14px;font-size:12px;font-weight:600;color:var(--sky);letter-spacing:.03em;display:flex;align-items:center;gap:8px;user-select:none; }
+.adv-section > summary::-webkit-details-marker { display:none; }
+.adv-section > summary::before { content:'\25B6';font-size:9px;transition:transform .2s; }
+.adv-section[open] > summary::before { transform:rotate(90deg); }
+.adv-section > summary:hover { opacity:.8; }
+.adv-section > summary .adv-hint { font-weight:400;color:var(--muted);letter-spacing:0;margin-left:auto; }
+.engine-section {
+  border: 1.5px solid rgba(19,64,116,0.18); border-radius: var(--radius-lg);
+  margin: 16px 0; background: rgba(19,64,116,0.04); overflow: hidden;
+}
+.engine-section-hdr {
+  padding: 12px 16px; font-size: 12px; font-weight: 600; color: var(--sky);
+  letter-spacing: .04em; border-bottom: 1px solid rgba(19,64,116,0.1);
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.engine-section-hdr .engine-hint { font-weight: 400; color: var(--muted); letter-spacing: 0; font-size: 11px; }
+.engine-section-body { padding: 14px 16px 16px; }
+.engine-life-wrap { margin-top: 10px; }
+.engine-life-label {
+  display: flex; justify-content: space-between; font-size: 11px; color: var(--muted);
+  margin-bottom: 5px; gap: 8px; flex-wrap: wrap;
+}
+.engine-life-label strong { color: var(--sky); font-weight: 600; }
+.engine-life-track {
+  height: 12px; background: var(--offwhite); border-radius: 99px; overflow: hidden;
+  border: 1px solid rgba(11,37,69,0.08);
+}
+.engine-life-fill {
+  height: 100%; border-radius: 99px; transition: width .25s ease, background .25s ease;
+  background: linear-gradient(90deg, var(--success) 0%, #27ae60 100%);
+}
+.engine-life-fill.mid { background: linear-gradient(90deg, #f39c12 0%, #e67e22 100%); }
+.engine-life-fill.high { background: linear-gradient(90deg, #e67e22 0%, var(--danger) 100%); }
+.engine-life-fill.runout { background: var(--danger); }
+.engine-tbo-note { font-size: 11px; color: var(--muted); margin-top: 6px; }
+.tbo-reset-btn { font-size: 11px; padding: 2px 8px; border: 1px solid rgba(19,64,116,0.2); background: transparent; border-radius: 4px; cursor: pointer; color: var(--sky); font-family: var(--body); }
+.tbo-reset-btn:hover { background: rgba(19,64,116,0.06); }
+.listing-narrative {
+  background: linear-gradient(135deg, rgba(19,64,116,0.06) 0%, rgba(19,64,116,0.02) 100%);
+  border: 1px solid rgba(19,64,116,0.12); border-radius: var(--radius-lg);
+  padding: 16px 18px; margin-bottom: 1rem;
+}
+.listing-narrative-hdr {
+  font-size: 12px; font-weight: 600; color: var(--sky); letter-spacing: .04em;
+  margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+.listing-narrative-body { font-size: 14px; color: var(--sky); line-height: 1.55; }
+.val-accuracy-row {
+  margin: 1.25rem 0; padding: 14px 16px; background: var(--offwhite);
+  border-radius: var(--radius); border: 1px solid rgba(11,37,69,0.08);
+}
+.val-accuracy-label { font-size: 13px; font-weight: 500; color: var(--sky); margin-bottom: 10px; }
+.val-accuracy-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.val-acc-btn {
+  flex: 1; min-width: 90px; padding: 9px 12px; border: 1px solid rgba(19,64,116,0.2);
+  border-radius: var(--radius); background: #fff; color: var(--sky); font-size: 13px;
+  font-weight: 500; cursor: pointer; font-family: var(--body); transition: background .15s, border-color .15s;
+}
+.val-acc-btn:hover { background: rgba(19,64,116,0.06); border-color: var(--sky-mid); }
+.val-acc-btn:disabled { opacity: 0.6; cursor: default; }
+.val-acc-btn.selected { background: var(--sky); color: #fff; border-color: var(--sky); }
+.val-accuracy-msg { font-size: 13px; margin-top: 10px; min-height: 18px; }
+.adv-body { padding:4px 14px 14px; }
+.submit-btn {
+background: var(--sky); color: var(--white);
+border: none; border-radius: var(--radius);
+padding: 12px 24px; font-size: 15px; font-weight: 500;
+cursor: pointer; width: 100%; margin-top: 1rem;
+font-family: var(--body);
+display: flex; align-items: center; justify-content: center; gap: 8px;
+transition: background .15s;
+}
+.submit-btn:hover { background: var(--sky-mid); }
+.submit-btn:disabled { opacity: .5; cursor: not-allowed; }
+.submit-btn.accent-btn { background: var(--accent); color: var(--sky); }
+.submit-btn.accent-btn:hover { background: var(--accent-light); }
+
+/* ── result card ─────────────────────────────────────── */
+.result-card {
+background: var(--white);
+border: 1px solid rgba(11,37,69,0.1);
+border-radius: var(--radius-lg);
+padding: 24px;
+margin-top: 1.5rem;
+}
+.result-main-val { font-family: var(--display); font-size: 52px; letter-spacing: .02em; color: var(--sky); line-height: 1; }
+.result-range { font-size: 14px; color: var(--muted); margin-top: 4px; }
+.metric-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 1.25rem 0; }
+.metric { background: var(--offwhite); border-radius: var(--radius); padding: 12px; text-align: center; }
+.metric-val { font-size: 16px; font-weight: 500; color: var(--sky); }
+.metric-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.metric-note { font-size: 11px; font-weight: 500; margin-top: 2px; }
+.up { color: var(--success); }
+.down { color: var(--danger); }
+.neu { color: var(--muted); }
+.analysis-text { font-size: 14px; line-height: 1.7; color: rgba(11,37,69,0.75); margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(11,37,69,0.08); }
+.tip-list { margin-top: .75rem; }
+.tip-item { display: flex; gap: 8px; font-size: 13px; padding: 5px 0; color: rgba(11,37,69,0.75); }
+.tip-item i { font-size: 15px; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+.price-bar-wrap { margin: 1.25rem 0; }
+.pbar-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+.pbar-track { height: 10px; background: var(--offwhite); border-radius: 99px; position: relative; }
+.pbar-range { position: absolute; height: 100%; background: rgba(19,64,116,0.2); border-radius: 99px; left: 0; width: 100%; }
+.pbar-likely { position: absolute; height: 100%; background: var(--sky-mid); border-radius: 99px; }
+.pbar-markers { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 4px; }
+.pbar-pin { position: absolute; top: -3px; width: 2px; height: 16px; background: var(--sky); }
+.pbar-pin-lbl { position: absolute; top: -18px; font-size: 11px; font-weight: 500; color: var(--sky); white-space: nowrap; transform: translateX(-50%); }
+
+.note-box { font-size: 12px; color: var(--muted); line-height: 1.55; margin-top: .75rem; padding: 10px 12px; background: var(--offwhite); border-radius: var(--radius); }
+
+/* spinner */
+.spin { display: none; text-align: center; padding: 2rem 0; font-size: 14px; color: var(--muted); }
+.spin.on { display: block; }
+.spin-i { font-size: 24px; animation: rot 1.1s linear infinite; display: inline-block; margin-bottom: 6px; color: var(--sky-light); }
+@keyframes rot { to { transform: rotate(360deg); } }
+/* flying-plane loader (valuation) */
+.fly-track { position: relative; height: 34px; width: 100%; max-width: 320px; margin: 0 auto 8px; overflow: hidden; }
+.fly-track::after { content: ''; position: absolute; left: 0; right: 0; bottom: 6px; border-bottom: 1px dashed rgba(19,64,116,0.18); }
+.fly-plane { position: absolute; top: 4px; font-size: 22px; color: var(--sky-light); animation: fly-rl 2.4s linear infinite; will-change: transform; }
+.fly-plane i.ti { display: inline-block; transform: rotate(-135deg) !important; }
+@keyframes fly-rl { from { transform: translateX(320px); } to { transform: translateX(-40px); } }
+.partner-tip {
+  font-size: 12px; color: var(--muted); line-height: 1.5;
+  max-width: 420px; margin: 12px auto 0; padding: 0 12px;
+}
+.partner-tip a { color: var(--sky-light); text-decoration: underline; text-underline-offset: 2px; }
+.partner-tip a:hover { color: var(--sky); }
+
+/* badge */
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 99px; }
+.bg-green { background: rgba(26,122,74,0.1); color: var(--success); }
+.bg-amber { background: rgba(232,160,32,0.15); color: var(--warn); }
+.bg-red { background: rgba(192,57,43,0.1); color: var(--danger); }
+.bg-blue { background: rgba(19,64,116,0.1); color: var(--sky-light); }
+
+/* checklist */
+.cl-section { border: 1px solid rgba(11,37,69,0.1); border-radius: var(--radius-lg); margin-bottom: 10px; overflow: hidden; }
+.cl-sec-hdr { display: flex; align-items: center; gap: 10px; padding: 12px 16px; cursor: pointer; transition: background .1s; }
+.cl-sec-hdr:hover { background: rgba(11,37,69,0.03); }
+.cl-sec-name { font-size: 14px; font-weight: 500; color: var(--sky); flex: 1; }
+.cl-sec-count { font-size: 12px; color: var(--muted); }
+.cl-chev { font-size: 16px; color: var(--muted); transition: transform .2s; }
+.cl-chev.open { transform: rotate(180deg); }
+.cl-body { border-top: 1px solid rgba(11,37,69,0.08); }
+.cl-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 16px; border-bottom: 1px solid rgba(11,37,69,0.06); }
+.cl-item:last-child { border-bottom: none; }
+.cl-item-text { flex: 1; }
+.cl-item-name { font-size: 13px; font-weight: 500; color: var(--sky); margin-bottom: 2px; }
+.cl-item-note { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.cl-item-crit { font-size: 11px; font-weight: 500; color: var(--danger); margin-top: 3px; display: flex; align-items: center; gap: 4px; }
+.btn-grp { display: flex; gap: 4px; flex-shrink: 0; }
+.s-btn { background: none; border: 1px solid rgba(11,37,69,0.12); border-radius: var(--radius); padding: 4px 8px; font-size: 11px; font-weight: 500; cursor: pointer; color: var(--muted); transition: all .1s; }
+.s-btn.s-pass { background: rgba(26,122,74,0.1); color: var(--success); border-color: rgba(26,122,74,0.3); }
+.s-btn.s-flag { background: rgba(232,160,32,0.12); color: var(--warn); border-color: rgba(232,160,32,0.3); }
+.s-btn.s-fail { background: rgba(192,57,43,0.08); color: var(--danger); border-color: rgba(192,57,43,0.25); }
+.progress-bar { height: 4px; background: var(--offwhite); border-radius: 99px; margin-bottom: 1.5rem; overflow: hidden; }
+.prog-fill { height: 100%; background: var(--success); border-radius: 99px; transition: width .3s; }
+.cl-stats { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+.stat-pill { font-size: 12px; font-weight: 500; padding: 4px 11px; border-radius: 99px; }
+
+/* N-number lookup */
+.n-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 1rem; }
+.n-prefix { background: var(--offwhite); border: 1px solid rgba(11,37,69,0.15); border-right: none; border-radius: var(--radius) 0 0 var(--radius); padding: 0 12px; height: 38px; display: flex; align-items: center; font-size: 16px; font-weight: 500; color: var(--muted); font-family: var(--mono); }
+.n-input { border-radius: 0 var(--radius) var(--radius) 0 !important; font-family: var(--mono) !important; font-size: 16px !important; font-weight: 500 !important; letter-spacing: .06em !important; flex: 1; }
+.n-lookup-btn { background: var(--sky); color: var(--white); border: none; border-radius: var(--radius); padding: 0 20px; height: 38px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: var(--body); display: flex; align-items: center; gap: 7px; transition: background .15s; white-space: nowrap; flex-shrink: 0; }
+.n-lookup-btn:hover { background: var(--sky-mid); }
+.n-lookup-btn:disabled { opacity: .5; cursor: not-allowed; }
+.ex-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem; align-items: center; }
+.ex-lbl { font-size: 12px; color: var(--muted); }
+.ex-btn { background: none; border: 1px solid rgba(11,37,69,0.12); border-radius: var(--radius); padding: 3px 10px; font-size: 12px; cursor: pointer; color: var(--muted); font-family: var(--mono); transition: all .1s; }
+.ex-btn:hover { border-color: var(--sky-light); color: var(--sky); }
+.reg-card { background: var(--white); border: 1px solid rgba(11,37,69,0.1); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 1rem; }
+.reg-hdr { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid rgba(11,37,69,0.08); }
+.reg-aircraft-name { font-size: 18px; font-weight: 500; color: var(--sky); }
+.reg-n-tag { font-size: 13px; color: var(--muted); margin-top: 2px; font-family: var(--mono); }
+.reg-grid { display: grid; grid-template-columns: 1fr 1fr; }
+.reg-cell { padding: 12px 18px; border-bottom: 1px solid rgba(11,37,69,0.06); border-right: 1px solid rgba(11,37,69,0.06); }
+.reg-cell:nth-child(even) { border-right: none; }
+.reg-cell:nth-last-child(-n+2) { border-bottom: none; }
+.reg-lbl { font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: .04em; margin-bottom: 3px; text-transform: uppercase; }
+.reg-val { font-size: 14px; color: var(--sky); }
+.owner-row { display: flex; align-items: center; gap: 12px; padding: 10px 18px; border-bottom: 1px solid rgba(11,37,69,0.06); }
+.owner-row:last-child { border-bottom: none; }
+.owner-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(11,37,69,0.2); flex-shrink: 0; }
+.owner-dot.cur { background: var(--success); }
+.owner-name { font-size: 13px; font-weight: 500; color: var(--sky); }
+.owner-dates { font-size: 12px; color: var(--muted); }
+.flag-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 18px; border-bottom: 1px solid rgba(11,37,69,0.06); }
+.flag-row:last-child { border-bottom: none; }
+.flag-row-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.flag-txt { font-size: 13px; color: var(--sky); }
+.flag-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.sec-label { font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; margin-bottom: 8px; margin-top: 1.25rem; }
+.action-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 1rem; }
+.action-btn { background: none; border: 1px solid rgba(11,37,69,0.12); border-radius: var(--radius); padding: 10px 8px; font-size: 13px; cursor: pointer; color: var(--sky); display: flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--body); transition: background .1s; }
+.action-btn:hover { background: rgba(11,37,69,0.05); }
+
+/* ── animations ──────────────────────────────────────── */
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── responsive ──────────────────────────────────────── */
+@media (max-width: 768px) {
+.showcase-grid, .why-grid, .tools-grid, .form-grid-2, .form-grid-3, .action-row-3 { grid-template-columns: 1fr; }
+.aircraft-val-badge { font-size: 11px; padding: 4px 8px; }
+.steps { flex-direction: column; gap: 2rem; }
+.steps::before { display: none; }
+.step { padding-top: 0; padding-left: 60px; }
+.step-num { top: 0; }
+nav { padding: 0 1.5rem; }
+.nav-links { display: none; }
+.hero-content, .showcase { padding-left: 1.5rem; padding-right: 1.5rem; }
+.footer-links { display: none; }
+}
+</style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9ET7HJRJWC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  var GA_ID = 'G-9ET7HJRJWC';
+  var GA_DEBUG = new URLSearchParams(location.search).has('ga_debug');
+  gtag('config', GA_ID, GA_DEBUG ? { debug_mode: true } : {});
+  function trackEvent(name, params) {
+    if (typeof gtag !== 'function') return;
+    gtag('event', name, params || {});
+  }
+</script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+<a class="nav-logo" href="#">
+<div class="nav-logo-icon"><i class="ti ti-plane"></i></div>
+SmallPlane<span class="accent">Value</span>
+</a>
+<div class="nav-links">
+<a href="#tools">Tools</a>
+<a href="#how-it-works">How it works</a>
+<a href="#aircraft-types">Aircraft types</a>
+<a href="#app">Get a valuation</a>
+</div>
+<button class="nav-cta" onclick="document.getElementById('app').scrollIntoView({behavior:'smooth'})">
+Look up my plane
+</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+<div class="hero-bg"></div>
+<div class="hero-content">
+<div class="hero-kicker">
+<i class="ti ti-sparkles" style="font-size:13px"></i>
+The Honest GA Valuation Tool
+</div>
+<h1 class="hero-h1">
+Know What Your<br>
+<span class="line2">Plane Is Worth.</span>
+</h1>
+<p class="hero-sub">
+Real asking price ranges for piston singles, twins, LSA, and experimental aircraft — with transparent discount bands, not fabricated sale prices.
+</p>
+<p class="hero-compare">Unlike index tools or 20-page reports — built for the listing you're looking at right now.</p>
+<div class="hero-actions">
+<a href="#app" class="btn-primary">
+<i class="ti ti-calculator"></i> Get a free valuation
+</a>
+<a href="#how-it-works" class="btn-ghost">
+<i class="ti ti-info-circle"></i> How it works
+</a>
+</div>
+<div class="hero-stats">
+<div>
+<div class="hero-stat-val">6</div>
+<div class="hero-stat-lbl">Aircraft categories</div>
+</div>
+<div>
+<div class="hero-stat-val">AI</div>
+<div class="hero-stat-lbl">Powered estimates</div>
+</div>
+<div>
+<div class="hero-stat-val">100%</div>
+<div class="hero-stat-lbl">Free to use</div>
+</div>
+<div>
+<div class="hero-stat-val">0</div>
+<div class="hero-stat-lbl">Fabricated sale prices</div>
+</div>
+</div>
+</div>
+
+<!-- Aircraft photo showcase -->
+<div class="showcase">
+<div class="showcase-grid">
+<!--SHOWCASE_CARDS-->
+</div>
+</div>
+</section>
+
+<!-- WHY SECTION -->
+<section id="why" style="background:var(--white); padding:80px 5vw;">
+<div style="max-width:1200px; margin:0 auto;">
+<div class="reveal">
+<div class="section-kicker">Why SmallPlaneValue</div>
+<h2 class="section-h2">Built for GA, not<br>jet brokers.</h2>
+<p class="section-body">Vref and Aircraft Bluebook focus on larger turbine aircraft. We built the tool that actually works for piston singles, twins, LSA, and experimental aircraft — the planes most pilots actually fly.</p>
+</div>
+<div class="why-grid reveal" style="transition-delay:.1s">
+<div class="why-card">
+<div class="why-icon"><i class="ti ti-eye-off"></i></div>
+<div class="why-title">No fabricated sale prices</div>
+<div class="why-text">Unlike real estate, GA aircraft sale prices aren't publicly recorded. We're honest about that — we show asking price ranges with transparent negotiation bands instead of making numbers up.</div>
+</div>
+<div class="why-card">
+<div class="why-icon"><i class="ti ti-plane"></i></div>
+<div class="why-title">Aircraft-specific intelligence</div>
+<div class="why-text">Our AI knows the difference between a 1979 Cherokee 180 and a 2007 SR22T. Model-specific ADs, known issues, and avionics premiums are all factored in.</div>
+</div>
+<div class="why-card">
+<div class="why-icon"><i class="ti ti-clipboard-check"></i></div>
+<div class="why-title">The full buyer workflow</div>
+<div class="why-text">Look up the N-number, get the valuation, run the pre-buy checklist, then use flagged issues to negotiate. One site, the complete process.</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works" style="background:var(--offwhite); padding:80px 5vw;">
+<div style="max-width:1200px; margin:0 auto;">
+<div class="reveal">
+<div class="section-kicker">How it works</div>
+<h2 class="section-h2">From N-number to<br>negotiating position.</h2>
+</div>
+<div class="steps reveal" style="transition-delay:.1s">
+<div class="step">
+<div class="step-num">01</div>
+<div class="step-title">Look up the N-number</div>
+<div class="step-text">Enter any US registration and pull the full FAA record — make, model, year, engine, and ownership history in seconds.</div>
+</div>
+<div class="step">
+<div class="step-num">02</div>
+<div class="step-title">Get the valuation</div>
+<div class="step-text">See the typical asking price range for that aircraft, the likely negotiated price, and what's driving value up or down.</div>
+</div>
+<div class="step">
+<div class="step-num">03</div>
+<div class="step-title">Run the pre-buy checklist</div>
+<div class="step-text">Get an AI-generated inspection checklist specific to that make and model. Mark items pass, flag, or fail.</div>
+</div>
+<div class="step">
+<div class="step-num">04</div>
+<div class="step-title">Negotiate with confidence</div>
+<div class="step-text">Flagged issues feed back into a price adjustment analysis, so you walk in knowing exactly what to ask for.</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- TOOLS SECTION -->
+<section id="tools" class="tools-section">
+<div class="tools-inner">
+<div class="reveal">
+<div class="section-kicker section-kicker-dark">The toolkit</div>
+<h2 class="section-h2 section-h2-dark">Everything in one place.</h2>
+<p class="section-body section-body-dark">Five integrated tools that cover the entire aircraft buying and selling process.</p>
+</div>
+<div class="tools-grid reveal" style="transition-delay:.1s">
+<a href="#app" class="tool-card" onclick="switchTab('val')">
+<div class="tool-card-header">
+<div class="tool-icon"><i class="ti ti-calculator"></i></div>
+<div>
+<div class="tool-tag">Step 2</div>
+<div class="tool-name">AI valuation</div>
+</div>
+</div>
+<div class="tool-desc">Enter make, model, year, time, condition, and avionics. Get asking price range, likely sale range, and factor-by-factor analysis.</div>
+<div class="tool-arrow"><i class="ti ti-arrow-right"></i></div>
+</a>
+<a href="#app" class="tool-card" onclick="switchTab('lookup')">
+<div class="tool-card-header">
+<div class="tool-icon"><i class="ti ti-id"></i></div>
+<div>
+<div class="tool-tag">Step 1</div>
+<div class="tool-name">N-number lookup</div>
+</div>
+</div>
+<div class="tool-desc">One N-number pulls the full FAA record — make, model, ownership history, ADs, registration expiry, and buyer flags.</div>
+<div class="tool-arrow"><i class="ti ti-arrow-right"></i></div>
+</a>
+<a href="#app" class="tool-card" onclick="switchTab('checklist')">
+<div class="tool-card-header">
+<div class="tool-icon"><i class="ti ti-clipboard-check"></i></div>
+<div>
+<div class="tool-tag">Step 3</div>
+<div class="tool-name">Pre-buy checklist</div>
+</div>
+</div>
+<div class="tool-desc">AI-generated inspection checklist specific to your aircraft type. Track pass, flag, and fail items. Get price adjustment guidance.</div>
+<div class="tool-arrow"><i class="ti ti-arrow-right"></i></div>
+</a>
+<a href="#app" class="tool-card" onclick="switchTab('comps')">
+<div class="tool-card-header">
+<div class="tool-icon"><i class="ti ti-search"></i></div>
+<div>
+<div class="tool-tag">Reference</div>
+<div class="tool-name">Market listings</div>
+</div>
+</div>
+<div class="tool-desc">See current asking price ranges for any model — low, median, and high — plus days on market and negotiation context.</div>
+<div class="tool-arrow"><i class="ti ti-arrow-right"></i></div>
+</a>
+<a href="#app" class="tool-card" onclick="switchTab('sold')">
+<div class="tool-card-header">
+<div class="tool-icon" style="background:rgba(232,160,32,0.12)"><i class="ti ti-currency-dollar" style="color:var(--accent)"></i></div>
+<div>
+<div class="tool-tag" style="color:var(--accent)">Community</div>
+<div class="tool-name">Report a sale</div>
+</div>
+</div>
+<div class="tool-desc">Submit what you actually paid (or sold for). Anonymous crowd-sourced data that builds the transaction database nobody else has.</div>
+<div class="tool-arrow"><i class="ti ti-arrow-right"></i></div>
+</a>
+</div>
+</div>
+</section>
+
+<!-- AIRCRAFT TYPES -->
+<section id="aircraft-types" style="background:var(--white); padding:80px 5vw;">
+<div style="max-width:1200px; margin:0 auto;">
+<div class="reveal">
+<div class="section-kicker">Coverage</div>
+<h2 class="section-h2">Built for the planes<br>people actually fly.</h2>
+<p class="section-body">We cover the full spectrum of general aviation — from first trainers to high-performance experimentals.</p>
+</div>
+<div class="types-grid reveal" style="transition-delay:.1s">
+<div class="type-pill"><i class="ti ti-plane"></i> Piston singles</div>
+<div class="type-pill"><i class="ti ti-plane-tilt"></i> Piston twins</div>
+<div class="type-pill"><i class="ti ti-tool"></i> Experimental / Homebuilt</div>
+<div class="type-pill"><i class="ti ti-feather"></i> Light Sport (LSA)</div>
+<div class="type-pill"><i class="ti ti-wind"></i> Turboprop singles</div>
+<div class="type-pill"><i class="ti ti-clock"></i> Vintage / Warbird</div>
+</div>
+<div style="margin-top:2.5rem; padding:20px 24px; background:var(--offwhite); border-radius:var(--radius-lg); display:flex; align-items:flex-start; gap:14px;" class="reveal" style="transition-delay:.2s">
+<i class="ti ti-alert-circle" style="font-size:20px; color:var(--sky-light); flex-shrink:0; margin-top:2px;"></i>
+<div>
+<div style="font-size:14px; font-weight:500; color:var(--sky); margin-bottom:4px;">A note on GA aircraft valuations</div>
+<div style="font-size:13px; color:var(--muted); line-height:1.6;">Unlike real estate, GA aircraft sale prices are not publicly recorded anywhere. SmallPlaneValue.com shows asking price ranges pulled from active listings (Trade-A-Plane, Controller, Barnstormers) paired with category-specific discount bands that represent typical negotiated outcomes — based on broker experience, not verified transactions. We believe being honest about this is more useful than showing made-up "sale prices."</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- APP SECTION -->
+<section id="app" class="app-section">
+<div class="app-inner">
+<div class="reveal" style="margin-bottom:2rem">
+<div class="section-kicker">The tools</div>
+<h2 class="section-h2">Start your research.</h2>
+</div>
+<div class="tab-bar" role="tablist" aria-label="Tools">
+<button class="tab-btn active" role="tab" id="tab-btn-lookup" aria-selected="true" aria-controls="pane-lookup" onclick="switchTab('lookup')">
+<i class="ti ti-id" aria-hidden="true"></i> N-number lookup
+</button>
+<button class="tab-btn highlight" role="tab" id="tab-btn-val" aria-selected="false" aria-controls="pane-val" onclick="if(window._lastLookup){prefillVal(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.aircraftType||'',window._lastLookup.numEngines||'',window._lastLookup.engineMake||'',window._lastLookup.engineModel||'');}switchTab('val');">
+<i class="ti ti-calculator" aria-hidden="true"></i> Get valuation
+</button>
+<button class="tab-btn" role="tab" id="tab-btn-comps" aria-selected="false" aria-controls="pane-comps" onclick="if(window._lastLookup){var ci=document.getElementById('c-model');if(ci)ci.value=window._lastLookup.make+' '+window._lastLookup.model;}switchTab('comps')">
+<i class="ti ti-search" aria-hidden="true"></i> Market listings
+</button>
+<button class="tab-btn" role="tab" id="tab-btn-checklist" aria-selected="false" aria-controls="pane-checklist" onclick="if(window._lastLookup){prefillCl(window._lastLookup.make,window._lastLookup.model,window._lastLookup.year,window._lastLookup.engineMake||'',window._lastLookup.engineModel||'',window._lastLookup.aircraftType||'',window._lastLookup.numEngines||'');}switchTab('checklist')">
+<i class="ti ti-clipboard-check" aria-hidden="true"></i> Pre-buy checklist
+</button>
+<button class="tab-btn highlight" role="tab" id="tab-btn-sold" aria-selected="false" aria-controls="pane-sold" onclick="switchTab('sold')">
+<i class="ti ti-currency-dollar" aria-hidden="true"></i> Report a sale
+</button>
+<button class="tab-btn" role="tab" id="tab-btn-feedback" aria-selected="false" aria-controls="pane-feedback" onclick="switchTab('feedback')" style="font-weight:600">
+<i class="ti ti-message-circle" aria-hidden="true"></i> Feedback
+</button>
+</div>
+
+<!-- N-NUMBER LOOKUP -->
+<div class="tab-pane active" role="tabpanel" id="pane-lookup" data-testid="pane-lookup" aria-labelledby="tab-btn-lookup">
+<div class="n-row">
+<div style="flex:1">
+<label for="nn" style="display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px;letter-spacing:.03em">N-NUMBER</label>
+<div style="display:flex">
+<div class="n-prefix">N</div>
+<input type="text" id="nn" class="n-input form-group" placeholder="12345 or SR22T"
+style="border-radius:0 var(--radius) var(--radius) 0;font-family:var(--mono);font-size:16px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(11,37,69,0.15);padding:9px 12px;background:var(--white);color:var(--sky);outline:none;flex:1"
+oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"
+onkeydown="if(event.key==='Enter')doLookup()" />
+</div>
+</div>
+<button class="n-lookup-btn" id="nn-btn" onclick="doLookup()">
+<i class="ti ti-search"></i> Look up
+</button>
+</div>
+<div class="ex-btns">
+<span class="ex-lbl">Try:</span>
+<button class="ex-btn" onclick="tryN('172SP')">172SP</button>
+<button class="ex-btn" onclick="tryN('RV10')">RV10</button>
+<button class="ex-btn" onclick="tryN('SR22T')">SR22T</button>
+<button class="ex-btn" onclick="tryN('PA28')">PA28</button>
+<button class="ex-btn" onclick="tryN('C182')">C182</button>
+</div>
+<div class="spin" id="nn-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Querying FAA registry...</div></div>
+<div id="nn-result" data-testid="lookup-result"></div>
+</div>
+
+<!-- VALUATION -->
+<div class="tab-pane" role="tabpanel" id="pane-val" data-testid="pane-val" aria-labelledby="tab-btn-val">
+
+<div style="margin-bottom:16px;padding:14px;background:rgba(19,64,116,0.04);border:1px dashed var(--sky);border-radius:var(--radius)">
+<div style="font-size:12px;font-weight:500;color:var(--sky);margin-bottom:8px;letter-spacing:.03em">PASTE A LISTING (optional)</div>
+<textarea id="v-paste" rows="4" style="width:100%;font-size:13px;margin-bottom:8px" aria-label="Paste a listing" placeholder="Paste an aircraft listing from Controller, Trade-A-Plane, Barnstormers, etc. We will auto-fill all fields and avionics for you..."></textarea>
+<button class="n-lookup-btn" id="paste-btn" onclick="parseListing()" style="width:auto;padding:8px 20px">Auto-fill from listing</button>
+<div class="spin" id="paste-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Parsing listing...</div></div>
+</div>
+
+<div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:12px">or enter details manually</div>
+
+<div class="form-grid-2">
+<div class="form-group"><label for="v-make">MAKE</label><input type="text" id="v-make" placeholder="Cessna, Piper, Beech, Cirrus..." oninput="toggleCirrusGen()" /></div>
+<div class="form-group"><label for="v-model">MODEL</label><input type="text" id="v-model" placeholder="172S, Baron D55, SR22, RV-10..." oninput="toggleCirrusGen()" /></div>
+</div>
+<div class="form-grid-3">
+<div class="form-group"><label for="v-year">YEAR</label><input type="number" id="v-year" placeholder="e.g. 1969" min="1930" max="2026" oninput="toggleCirrusGen()" /></div>
+<div class="form-group"><label>LAST ANNUAL</label><div style="display:flex;gap:6px;width:100%"><select id="v-annual-month" style="flex:1"><option value="">Month</option><option value="01">January</option><option value="02">February</option><option value="03">March</option><option value="04">April</option><option value="05">May</option><option value="06">June</option><option value="07">July</option><option value="08">August</option><option value="09">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select><select id="v-annual-year" style="flex:1"><option value="">Year</option></select></div><label class="chk-label out-of-annual-label"><input type="checkbox" id="v-out-of-annual" /> <i class="ti ti-alert-triangle" style="font-size:15px"></i> Out of annual</label></div>
+<div class="form-group"><label for="v-engine-display">ENGINE</label><input type="text" id="v-engine-display" placeholder="From N-number lookup" readonly style="background:var(--offwhite);color:var(--muted)" /></div>
+<div class="form-group"><label for="v-asking">ASKING PRICE ($)</label><input type="number" id="v-asking" placeholder="e.g. 299000" /></div>
+<div class="form-group"><label for="v-ttaf">TOTAL TIME (TTAF HRS)</label><input type="number" id="v-ttaf" placeholder="e.g. 3200" /></div>
+<div class="form-group"><label for="v-engines">ENGINES</label>
+<select id="v-engines" onchange="toggleEngineFields()">
+<option value="1">Single engine</option>
+<option value="2">Twin engine</option>
+</select>
+</div>
+<div class="form-group" id="v-cirrusgen-group" style="display:none">
+<label for="v-cirrusgen">CIRRUS GENERATION</label>
+<select id="v-cirrusgen" onchange="this.dataset.touched='1'">
+<option value="">Auto-detect from year</option>
+<option value="G1">G1 (2001–2003)</option>
+<option value="G2">G2 (2004–2006)</option>
+<option value="G3">G3 (2007–2012)</option>
+<option value="G5">G5 (2013–2016)</option>
+<option value="G6">G6 (2017–2023)</option>
+<option value="G7">G7 (2024+)</option>
+<option value="SF50 G1">SF50 Vision Jet — G1 (2016–2018)</option>
+<option value="SF50 G2">SF50 Vision Jet — G2 (2019–2022)</option>
+<option value="SF50 G2+">SF50 Vision Jet — G2+ (2023+)</option>
+</select>
+</div>
+</div>
+<div class="engine-section" id="eng-times-section">
+<div class="engine-section-hdr">
+<i class="ti ti-engine" style="font-size:16px"></i>
+ENGINE TIMES
+<span class="engine-hint">SMOH &amp; TBO drive value as much as avionics — enter times from the logs</span>
+</div>
+<div class="engine-section-body">
+<div class="form-grid-2" style="margin-bottom:10px">
+<div class="form-group"><label style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span>RECOMMENDED TBO (HRS)</span><button type="button" id="v-tbo-reset" class="tbo-reset-btn" onclick="resetTboAuto()" style="display:none">Use auto</button></label><select id="v-tbo" onchange="onTboOverride()"><option value="1500">1,500 hrs</option><option value="1600">1,600 hrs</option><option value="1700">1,700 hrs</option><option value="1800">1,800 hrs</option><option value="1900">1,900 hrs</option><option value="2000" selected>2,000 hrs</option><option value="2100">2,100 hrs</option><option value="2200">2,200 hrs</option></select></div>
+<div class="form-group"><label for="v-eng-conv">ENGINE CONVERSION / STC</label><input type="text" id="v-eng-conv" placeholder="e.g. IO-550 conversion, RAM, tip tanks..." oninput="refreshEngineLife()" /></div>
+</div>
+
+<!-- Single engine fields -->
+<div id="single-eng-fields">
+<div class="form-grid-2">
+<div class="form-group"><label for="v-smoh">ENGINE SMOH (HRS)</label><input type="number" id="v-smoh" placeholder="e.g. 800" oninput="refreshEngineLife()" /></div>
+<div class="form-group"><label>PROP TSOH (HRS)</label><input type="number" id="v-prop1" placeholder="e.g. 400" /></div>
+</div>
+<div id="engine-life-single" class="engine-life-wrap" data-testid="engine-life"></div>
+</div>
+
+<!-- Twin engine fields -->
+<div id="twin-eng-fields" style="display:none">
+<div class="form-grid-2" style="margin-bottom:10px">
+<div class="form-group"><label for="v-smoh-l">LEFT ENGINE SMOH (HRS)</label><input type="number" id="v-smoh-l" placeholder="e.g. 800" oninput="refreshEngineLife()" /></div>
+<div class="form-group"><label for="v-smoh-r">RIGHT ENGINE SMOH (HRS)</label><input type="number" id="v-smoh-r" placeholder="e.g. 900" oninput="refreshEngineLife()" /></div>
+</div>
+<div class="form-grid-2">
+<div class="form-group"><label>LEFT PROP TSOH (HRS)</label><input type="number" id="v-prop-l" placeholder="e.g. 400" /></div>
+<div class="form-group"><label>RIGHT PROP TSOH (HRS)</label><input type="number" id="v-prop-r" placeholder="e.g. 450" /></div>
+</div>
+<div id="engine-life-twin" class="engine-life-wrap"></div>
+</div>
+<div class="engine-tbo-note" id="engine-tbo-note" data-testid="engine-tbo-note"></div>
+</div>
+</div>
+
+<div class="form-grid-2">
+<div class="form-group"><label>OVERALL CONDITION</label>
+<select id="v-cond">
+<option>Excellent — like new</option>
+<option selected>Good — minor wear</option>
+<option>Fair — visible wear</option>
+<option>Poor — needs work</option>
+</select>
+</div>
+<div class="form-group"><label>PAINT &amp; INTERIOR</label>
+<select id="v-cosm">
+<option>Fresh paint &amp; new interior</option>
+<option selected>Good condition</option>
+<option>Fair / dated</option>
+<option>Needs refurbishment</option>
+</select>
+</div>
+</div>
+
+<div class="form-grid-2">
+<div class="form-group"><label for="v-logbooks">LOGBOOKS</label>
+<select id="v-logbooks">
+<option value="">Unknown</option>
+<option value="Complete since new">Complete since new (+value)</option>
+<option value="Complete, no gaps">Complete, no unexplained gaps</option>
+<option value="Minor gaps">Minor gaps</option>
+<option value="Missing / incomplete">Missing / incomplete (−value)</option>
+</select>
+</div>
+<div class="form-group"><label for="v-damage">DAMAGE HISTORY</label>
+<select id="v-damage">
+<option value="">Unknown</option>
+<option value="None (clean, verified)">None — clean, verified</option>
+<option value="Repaired, minor (documented)">Repaired — minor, documented</option>
+<option value="Repaired, major (documented)">Repaired — major (spar/firewall/prop strike)</option>
+</select>
+</div>
+</div>
+
+<div class="form-group">
+<label for="v-avionics-package">AVIONICS PANEL</label>
+<select id="v-avionics-package">
+<option value="">Select a panel type…</option>
+<option value="Steam / round-gauge (basic)">Steam / round-gauge (basic)</option>
+<option value="Basic IFR (GPS + ADS-B)">Basic IFR — WAAS GPS + ADS-B</option>
+<option value="Single glass upgrade (Aspen / G5 / GI 275)">Single glass upgrade — Aspen / G5 / GI 275</option>
+<option value="Modern Garmin suite (GTN + glass + GFC autopilot)">Modern Garmin suite — GTN + glass + GFC autopilot</option>
+<option value="Full glass + autopilot (latest Garmin suite)">Full glass + autopilot — latest Garmin suite</option>
+</select>
+</div>
+
+<div class="equip-prominent">
+<p class="equip-prominent-note">Comfort and safety options — always counted in your valuation when checked.</p>
+<div class="equip-prominent-hdr">COMFORT &amp; ENVIRONMENT</div>
+<label class="chk-label"><input type="checkbox" id="av-ac" /> Air conditioning (factory or STC)</label>
+<div class="equip-prominent-hdr">SAFETY &amp; AWARENESS</div>
+<label class="chk-label"><input type="checkbox" id="av-aoa" /> Angle of attack (AOA) indicator</label>
+<label class="chk-label"><input type="checkbox" id="av-fiki" /> FIKI certified (flight into known ice)</label>
+<label class="chk-label"><input type="checkbox" id="av-known-ice" /> Known ice / inadvertent TKS (not FIKI — exit icing only)</label>
+<label class="chk-label"><input type="checkbox" id="av-taws" /> TAWS (terrain awareness / avoidance)</label>
+<label class="chk-label"><input type="checkbox" id="av-svt" /> Synthetic vision (add-on or retrofit — skip if G1000 NXi / Perspective+)</label>
+<div class="equip-prominent-hdr">PEDIGREE &amp; AWARDS</div>
+<label class="chk-label"><input type="checkbox" id="av-oshkosh" /> Oshkosh / EAA AirVenture award winner (strongest on experimental/homebuilt)</label>
+</div>
+
+<details class="adv-section">
+<summary>AVIONICS — itemize for precision <span class="adv-hint">optional — overrides panel above</span></summary>
+<div class="adv-body">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 24px">
+<div>
+<div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> BASIC / LEGACY</div>
+<div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-sixpack" /> Standard six pack (steam gauges)</label>
+<label class="chk-label"><input type="checkbox" id="av-nav1" /> Single NAV/COM</label>
+<label class="chk-label"><input type="checkbox" id="av-nav2" /> Dual NAV/COM</label>
+<label class="chk-label"><input type="checkbox" id="av-adf" /> ADF</label>
+<label class="chk-label"><input type="checkbox" id="av-dme" /> DME</label>
+<label class="chk-label"><input type="checkbox" id="av-kx155" /> King KX-155/165</label>
+</div>
+<div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> GARMIN</div>
+<div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-g5" /> G5 (single or dual) <select id="av-g5-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gi275" /> GI 275 <select id="av-gi275-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
+<label class="chk-label"><input type="checkbox" id="av-g500" /> G500</label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-g500txi" /> G500 TXi <select id="av-g500txi-size" style="width:62px;padding:1px 2px;font-size:11px;border:1px solid #aab;border-radius:3px;background:#f0f4f8;color:#1a2332"><option value='10.6"'>10.6"</option><option value='7"'>7"</option><option value='dual 10.6"'>2x 10.6"</option><option value='dual 7"'>2x 7"</option><option value='10.6&quot; + 7&quot;'>10.6"+7"</option></select></label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-g600txi" /> G600 TXi <select id="av-g600txi-size" style="width:62px;padding:1px 2px;font-size:11px;border:1px solid #aab;border-radius:3px;background:#f0f4f8;color:#1a2332"><option value='10.6"'>10.6"</option><option value='7"'>7"</option><option value='dual 10.6"'>2x 10.6"</option><option value='dual 7"'>2x 7"</option><option value='10.6&quot; + 7&quot;'>10.6"+7"</option></select></label>
+<label class="chk-label"><input type="checkbox" id="av-g1000" /> G1000</label>
+<label class="chk-label"><input type="checkbox" id="av-g1000nxi" /> G1000 NXi</label>
+<label class="chk-label"><input type="checkbox" id="av-g3x" /> G3X Touch</label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gns430" /> GNS 430(non WAAS) <select id="av-gns430-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gns430w" /> GNS 430W (WAAS) <select id="av-gns430w-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gns530" /> GNS 530 (non-WAAS) <select id="av-gns530-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gns530w" /> GNS 530W (WAAS) <select id="av-gns530w-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
+<label class="chk-label"><input type="checkbox" id="av-gns480" /> GNS 480 (WAAS)</label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gtn650" /> GTN 650 <select id="av-gtn650-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gtn750" /> GTN 750 <select id="av-gtn750-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gtn650xi" /> GTN 650Xi <select id="av-gtn650xi-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gtn750xi" /> GTN 750Xi <select id="av-gtn750xi-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
+<label class="chk-label"><input type="checkbox" id="av-gps175" /> GPS 175</label>
+<label class="chk-label"><input type="checkbox" id="av-gnx375" /> GNX 375</label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gnc255" /> GNC 255 (NAV/COM) <select id="av-gnc255-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-gtr205" /> GTR 205 (COM radio) <select id="av-gtr205-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option></select></label>
+<label class="chk-label"><input type="checkbox" id="av-gfc500" /> GFC 500 autopilot</label>
+<label class="chk-label"><input type="checkbox" id="av-gfc600" /> GFC 600 autopilot</label>
+<label class="chk-label"><input type="checkbox" id="av-gfc700" /> GFC 700 autopilot</label>
+<label class="chk-label"><input type="checkbox" id="av-autoland" /> Garmin Autoland (HALO/Safe Return/HomeSafe)</label>
+<label class="chk-label"><input type="checkbox" id="av-gad43" /> GAD 43e autopilot adapter</label>
+<label class="chk-label"><input type="checkbox" id="av-mx20" /> Garmin MX20 MFD</label>
+<label class="chk-label"><input type="checkbox" id="av-gmx200" /> Garmin GMX 200 MFD</label>
+<label class="chk-label"><input type="checkbox" id="av-gdl88" /> GDL 88 (ADS-B transceiver)</label>
+<label class="chk-label"><input type="checkbox" id="av-gma345" /> GMA 345 (Bluetooth) audio panel</label>
+<label class="chk-label"><input type="checkbox" id="av-gma350" /> GMA 350/35c audio panel</label>
+<label class="chk-label"><input type="checkbox" id="av-gi275-standby" /> GI 275 standby instrument</label>
+<label class="chk-label"><input type="checkbox" id="av-gtx345" /> GTX 345 (ADS-B In/Out transponder)</label>
+<label class="chk-label"><input type="checkbox" id="av-radar-garmin" /> GWX 68/70/75/80 weather radar</label>
+<label class="chk-label"><input type="checkbox" id="av-garmin-eis" /> GI 275 EIS / TXi EIS engine monitor</label>
+</div>
+<div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> ASPEN AVIONICS</div>
+<div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-aspen-e5" /> Evolution E5</label>
+<label class="chk-label"><input type="checkbox" id="av-aspen-pro" /> Evolution Pro 1000 MAX PFD</label>
+<label class="chk-label"><input type="checkbox" id="av-aspen-mfd" /> Evolution MFD 500/1000</label>
+<label class="chk-label"><input type="checkbox" id="av-aspen-2500" /> Evolution 2500 MAX (full panel)</label>
+</div>
+</div>
+<div>
+<div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> AVIDYNE</div>
+<div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-avr9" /> Entegra PFD/MFD (R9)</label>
+<label class="chk-label"><input type="checkbox" id="av-ex500" /> EX500/600 MFD</label>
+<label class="chk-label"><input type="checkbox" id="av-ifd440" /> IFD 440</label>
+<label class="chk-label"><input type="checkbox" id="av-ifd550" /> IFD 540/550</label>
+<label class="chk-label"><input type="checkbox" id="av-dfc90" /> DFC 90 autopilot</label>
+<label class="chk-label"><input type="checkbox" id="av-dfc100" /> DFC 100 autopilot</label>
+</div>
+<div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> DYNON</div>
+<div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-dynon-hdx" /> SkyView HDX (PFD/MFD)</label>
+<label class="chk-label"><input type="checkbox" id="av-dynon-se" /> SkyView SE</label>
+<label class="chk-label"><input type="checkbox" id="av-dynon-d10" /> D10A/D100 (EFIS)</label>
+<label class="chk-label"><input type="checkbox" id="av-dynon-ap" /> SV-AP autopilot</label>
+<label class="chk-label"><input type="checkbox" id="av-dynon-gps" /> SkyView GPS navigator</label>
+</div>
+
+<div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> OTHER AUTOPILOTS</div>
+<div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-stec55" /> S-TEC 55X</label>
+<label class="chk-label"><input type="checkbox" id="av-stec65" /> S-TEC (other)</label>
+<label class="chk-label"><input type="checkbox" id="av-stec3100" /> S-TEC 3100</label>
+<label class="chk-label"><input type="checkbox" id="av-kfc200" /> King KFC 150/200/225</label>
+<label class="chk-label"><input type="checkbox" id="av-trutrak" /> TruTrak / BendixKing</label>
+</div>
+<div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> PS ENGINEERING</div>
+<div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-pma8000" /> PMA 8000 series audio panel</label>
+<label class="chk-label"><input type="checkbox" id="av-pma450" /> PMA 450B audio panel</label>
+<label class="chk-label"><input type="checkbox" id="av-pma6000" /> PMA 6000/7000 audio panel</label>
+</div>
+<div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> L3 / L3HARRIS</div>
+<div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-esi500" /> ESI-500 electronic standby</label>
+</div>
+<div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> UAVIONIX (mostly experimental)</div>
+<div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-uav-skybeacon" /> skyBeacon (wingtip ADS-B Out)</label>
+<label class="chk-label"><input type="checkbox" id="av-uav-tailbeacon" /> tailBeacon (tail ADS-B Out)</label>
+<label class="chk-label"><input type="checkbox" id="av-uav-echouat" /> echoUAT (ADS-B In/Out)</label>
+<label class="chk-label"><input type="checkbox" id="av-uav-tailbeaconx" /> tailBeaconX (transponder + ADS-B)</label>
+<label class="chk-label"><input type="checkbox" id="av-uav-avipro" /> AV-30-C / AV-30-E (EFIS)</label>
+<label class="chk-label"><input type="checkbox" id="av-uav-avlink" /> AvLink (Wi-Fi gateway)</label>
+<label class="chk-label"><input type="checkbox" id="av-uav-beaconx" /> BeaconX series</label>
+</div>
+<div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> TRANSPONDER / ADS-B</div>
+<div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-adsb" /> ADS-B Out (other)</label>
+<label class="chk-label"><input type="checkbox" id="av-tcas" /> Traffic (TAS/TCAD)</label>
+<label class="chk-label"><input type="checkbox" id="av-wx500" /> Stormscope WX-500</label>
+<label class="chk-label"><input type="checkbox" id="av-radar-bk" /> BendixKing RDR 2000/2100 radar</label>
+<label class="chk-label"><input type="checkbox" id="av-radar-legacy" /> Legacy radar (RDS-81/82, other)</label>
+</div>
+<div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> ENGINE MONITORS</div>
+<div class="av-body" style="flex-direction:column;gap:5px;margin-bottom:12px">
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-ei-cgr" /> EI CGR-30P <select id="av-ei-cgr-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option><option value="3">x3</option></select></label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-ei-other" /> EI (other) <select id="av-ei-other-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option><option value="3">x3</option></select></label>
+<label class="chk-label" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="av-jpi" /> JPI EDM 700/800/900 <select id="av-jpi-qty" style="width:42px;padding:1px 2px;font-size:11px;border:1px solid #555;border-radius:3px;background:#f0f4f8;color:#1a2332;border-color:#aab"><option value="1">x1</option><option value="2">x2</option><option value="3">x3</option></select></label>
+</div>
+<div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> OTHER</div>
+<div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-wx" /> XM/SiriusXM weather</label>
+</div>
+<div class="av-hdr open" onclick="this.classList.toggle('open')" style="font-size:11px;font-weight:600;color:var(--sky);letter-spacing:.04em"><span class="arrow">&#9654;</span> UPGRADES &amp; MODIFICATIONS</div>
+<div class="av-body" style="flex-direction:column;gap:3px;margin-bottom:12px">
+<label class="chk-label"><input type="checkbox" id="av-stc" /> Engine STC / conversion</label>
+<label class="chk-label"><input type="checkbox" id="av-3blade" /> 3-blade prop upgrade</label>
+<label class="chk-label"><input type="checkbox" id="av-cies" /> CiES fuel senders</label>
+<label class="chk-label"><input type="checkbox" id="av-led" /> LED lighting upgrade</label>
+<label class="chk-label"><input type="checkbox" id="av-annual" /> Fresh annual inspection</label>
+<label class="chk-label"><input type="checkbox" id="av-oxy" /> Built-in oxygen system</label>
+</div>
+</div>
+</div>
+</div>
+</details>
+
+<div class="form-group" style="margin-bottom:0">
+<label for="v-notes">NOTES (damage history, engine OH type, storage, special equipment)</label>
+<textarea id="v-notes" placeholder="No damage history, all logs since new, hangared, factory reman engines at 200 SMOH, RAM conversion..."></textarea>
+</div>
+<button class="submit-btn accent-btn" id="v-btn" onclick="doValuation()">
+<i class="ti ti-calculator"></i> Get honest valuation
+</button>
+<div class="spin" id="v-spin">
+<div class="fly-track"><span class="fly-plane"><i class="ti ti-plane"></i></span></div>
+<div>Searching live listings &amp; recent sales...</div>
+<p class="partner-tip" id="v-partner-tip"></p>
+</div>
+<div id="v-result" data-testid="valuation-result"></div>
+<p class="val-free-note" id="v-free-note">Free beta — unlimited valuations while we gather pilot feedback.</p>
+</div>
+
+<!-- MARKET COMPS -->
+<div class="tab-pane" role="tabpanel" id="pane-comps" data-testid="pane-comps" aria-labelledby="tab-btn-comps">
+<p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:1rem">Enter a make/model to see typical asking price ranges. No fabricated sale prices — just what sellers are asking, plus negotiation guidance.</p>
+<div class="form-grid-2">
+<div class="form-group"><label for="c-model">MAKE &amp; MODEL</label><input type="text" id="c-model" placeholder="e.g. Cessna 172S, Van's RV-10" /></div>
+<div class="form-group"><label for="c-years">YEAR RANGE</label>
+<select id="c-years">
+<option>All years</option><option>2015 – present</option><option>2005 – 2014</option>
+<option>1995 – 2004</option><option>1985 – 1994</option><option>Pre-1985</option>
+</select>
+</div>
+</div>
+<button class="submit-btn" id="c-btn" onclick="doComps()">
+<i class="ti ti-search"></i> Search asking prices
+</button>
+<div class="spin" id="c-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Pulling active listing ranges...</div></div>
+<div id="c-result" data-testid="comps-result"></div>
+</div>
+
+<!-- FEEDBACK -->
+<div class="tab-pane" role="tabpanel" id="pane-feedback" data-testid="pane-feedback" aria-labelledby="tab-btn-feedback">
+<p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:1rem">Help us improve SmallPlaneValue — we're in free beta and want your honest take.</p>
+<div class="share-pilot-box">
+<div style="font-size:14px;font-weight:600;color:var(--sky);margin-bottom:6px">Spread the word</div>
+<p style="font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:12px">Share with BeechTalk, Facebook groups, Instagram, or X — every pilot who tries it makes valuations better for everyone.</p>
+<div class="share-btn-row">
+<a class="share-btn" id="share-fb" href="#" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="ti ti-brand-facebook" aria-hidden="true"></i> Facebook</a>
+<a class="share-btn" id="share-x" href="#" target="_blank" rel="noopener noreferrer" aria-label="X"><i class="ti ti-brand-x" aria-hidden="true"></i> X</a>
+<button type="button" class="share-btn" id="share-copy" onclick="copyShareBlurb()"><i class="ti ti-copy"></i> Copy for BeechTalk / FB</button>
+</div>
+<p class="share-copy-msg" id="share-copy-msg"></p>
+</div>
+<div class="form-group"><label>YOUR EMAIL (optional)</label><input type="text" id="fb-email" placeholder="pilot@email.com" /></div>
+<div class="form-group"><label for="fb-aircraft">AIRCRAFT</label><input type="text" id="fb-aircraft" placeholder="e.g. 1981 Beech B58 Baron" /></div>
+<div class="form-group"><label for="fb-accuracy">VALUATION ACCURACY</label><select id="fb-accuracy"><option value="">N/A</option><option value="low">Too low</option><option value="right">About right</option><option value="high">Too high</option></select></div>
+<div class="form-group"><label for="fb-message">YOUR FEEDBACK</label><textarea id="fb-message" rows="4" placeholder="What did we get wrong? What features do you want?"></textarea></div>
+<button class="submit-btn" id="fb-btn" onclick="submitFeedback()"><i class="ti ti-send"></i> Send feedback</button>
+<div id="fb-result" data-testid="feedback-result"></div>
+</div>
+
+<!-- PRE-BUY CHECKLIST -->
+<div class="tab-pane" role="tabpanel" id="pane-checklist" data-testid="pane-checklist" aria-labelledby="tab-btn-checklist">
+<div class="form-grid-2">
+<div class="form-group"><label for="cl-make">MAKE</label><input type="text" id="cl-make" placeholder="Cessna, Piper, Van's..." /></div>
+<div class="form-group"><label for="cl-model">MODEL</label><input type="text" id="cl-model" placeholder="172S, RV-10, SR22..." /></div>
+</div>
+<div class="form-grid-3">
+<div class="form-group"><label for="cl-year">YEAR</label><input type="number" id="cl-year" placeholder="e.g. 2003" /></div>
+<div class="form-group"><label>ENGINE TYPE</label>
+<select id="cl-eng">
+<option>Lycoming</option><option>Continental</option>
+<option>Rotax (LSA)</option><option>Turboprop</option><option>Other / unknown</option>
+</select>
+</div>
+<div class="form-group"><label>BUYER EXPERIENCE</label>
+<select id="cl-exp">
+<option>First-time buyer</option>
+<option>Some experience</option>
+<option>Experienced buyer</option>
+</select>
+</div>
+</div>
+<div class="form-grid-2">
+<div class="form-group"><label>KNOWN CONCERNS (optional)</label><input type="text" id="cl-concerns" placeholder="damage history, high time engine..." /></div>
+<div class="form-group"><label>PURPOSE</label>
+<select id="cl-purpose">
+<option>Personal flying / training</option>
+<option>IFR / instrument flying</option>
+<option>Commercial / charter use</option>
+<option>Financing / lender required</option>
+</select>
+</div>
+</div>
+<button class="submit-btn" id="cl-btn" onclick="doChecklist()">
+<i class="ti ti-clipboard-list"></i> Generate inspection checklist
+</button>
+<div class="spin" id="cl-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Building your aircraft-specific checklist...</div></div>
+<div id="cl-result" data-testid="checklist-result"></div>
+</div>
+
+<!-- REPORT A SALE -->
+<div class="tab-pane" role="tabpanel" id="pane-sold" data-testid="pane-sold" aria-labelledby="tab-btn-sold">
+<div style="background:rgba(232,160,32,0.08);border:1px solid rgba(232,160,32,0.2);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:1.5rem;display:flex;gap:14px;align-items:flex-start">
+<i class="ti ti-lock" style="font-size:20px;color:var(--accent);flex-shrink:0;margin-top:2px"></i>
+<div>
+<div style="font-size:14px;font-weight:500;color:var(--sky);margin-bottom:3px">Help build the database no one else has</div>
+<div style="font-size:13px;color:var(--muted);line-height:1.6">GA aircraft sale prices aren't recorded anywhere publicly. Every submission here — fully anonymous — helps build real transaction data that makes valuations more accurate for every buyer and seller.</div>
+</div>
+</div>
+
+<div style="font-size:12px;font-weight:500;color:var(--sky);margin-bottom:8px;letter-spacing:.03em">PASTE A SALE POST (optional)</div>
+<textarea id="sd-paste" rows="4" style="width:100%;font-size:13px;margin-bottom:8px" aria-label="Paste a sale post" placeholder="Paste a BeechTalk sold thread, forum recap, or listing text — we'll auto-fill the fields below..."></textarea>
+<button class="n-lookup-btn" id="sd-paste-btn" onclick="parseSalePost()" style="width:auto;padding:8px 20px;margin-bottom:1.25rem">Auto-fill from post</button>
+<div class="spin" id="sd-paste-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Parsing sale post...</div></div>
+
+<div class="form-grid-2">
+<div class="form-group"><label for="sd-make">AIRCRAFT MAKE</label><input type="text" id="sd-make" placeholder="Cessna, Piper, Beechcraft, Cirrus..." /></div>
+<div class="form-group"><label for="sd-model">MODEL</label><input type="text" id="sd-model" placeholder="172S, Cherokee 180, Bonanza A36..." /></div>
+</div>
+<div class="form-grid-3">
+<div class="form-group"><label for="sd-year">YEAR</label><input type="number" id="sd-year" placeholder="e.g. 1998" /></div>
+<div class="form-group"><label for="sd-price">SALE PRICE ($)</label><input type="number" id="sd-price" placeholder="e.g. 135000" /></div>
+<div class="form-group"><label for="sd-ask">ORIGINAL ASKING PRICE ($)</label><input type="number" id="sd-ask" placeholder="e.g. 159000" /></div>
+</div>
+<div class="form-grid-3">
+<div class="form-group"><label>TOTAL TIME (TTAF)</label><input type="number" id="sd-ttaf" placeholder="e.g. 3200" /></div>
+<div class="form-group"><label>ENGINE TIME (SMOH)</label><input type="number" id="sd-smoh" placeholder="e.g. 850" /></div>
+<div class="form-group"><label>SALE DATE (approx)</label><input type="month" id="sd-date" /></div>
+</div>
+<div class="form-grid-2">
+<div class="form-group"><label>REGION</label>
+<select id="sd-region">
+<option value="">Select region...</option>
+<option>Northeast US</option><option>Southeast US</option><option>Midwest US</option>
+<option>Southwest US</option><option>Northwest US</option><option>West Coast US</option>
+<option>Canada</option><option>Other / International</option>
+</select>
+</div>
+<div class="form-group"><label>AVIONICS TIER</label>
+<select id="sd-avionics">
+<option value="">Select tier...</option>
+<option>Steam gauges / basic VFR</option>
+<option>Basic IFR (one nav/com, no GPS)</option>
+<option>Mid panel (430/530 or equivalent)</option>
+<option>Modern IFR (GTN/Avidyne + ADS-B)</option>
+<option>Full glass (G1000, Avidyne Entegra)</option>
+</select>
+</div>
+</div>
+<div class="form-group" style="margin-bottom:12px"><label>CONDITION / NOTES (optional)</label>
+<textarea id="sd-notes" placeholder="Paint/interior condition, damage history, recent upgrades, engine type, prop info, anything that affected the price..."></textarea>
+</div>
+<div class="form-grid-2">
+<div class="form-group"><label>YOUR ROLE</label>
+<select id="sd-role">
+<option>Buyer</option><option>Seller</option><option>Broker</option><option>Other / prefer not to say</option>
+</select>
+</div>
+<div class="form-group"><label>HOW LONG TO SELL?</label>
+<select id="sd-dom">
+<option value="">Select...</option>
+<option>Under 30 days</option><option>1-3 months</option><option>3-6 months</option>
+<option>6-12 months</option><option>Over a year</option><option>Don't know</option>
+</select>
+</div>
+</div>
+
+<div style="margin:16px 0;display:flex;align-items:flex-start;gap:10px">
+<input type="checkbox" id="sd-agree" style="margin-top:3px;cursor:pointer" />
+<label for="sd-agree" style="font-size:13px;color:var(--muted);cursor:pointer;line-height:1.5">
+I confirm this is a real transaction I was involved in. I understand this data is anonymous and will be used to improve aircraft valuations for the GA community.
+</label>
+</div>
+
+<button class="submit-btn" id="sd-btn" onclick="doSoldSubmit()" style="background:var(--accent);border-color:var(--accent)">
+<i class="ti ti-send"></i> Submit sale data
+</button>
+<div class="spin" id="sd-spin"><div class="spin-i"><i class="ti ti-loader"></i></div><div>Submitting...</div></div>
+<div id="sd-result" data-testid="sold-result"></div>
+
+<div id="sd-recent" data-testid="sold-recent" style="margin-top:2rem"></div>
+</div>
+</div>
+</section>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer">
+<strong>SmallPlaneValue.com</strong> provides AI-generated estimates for research and educational purposes only. Not a certified appraisal. For financing, insurance, or legal transactions, engage an ASA-certified aircraft appraiser. GA sale prices are not publicly recorded — our valuations are based on asking price analysis, category discount bands, and anonymous crowd-sourced transaction data.
+</div>
+
+<!-- FOOTER -->
+<footer>
+<div class="footer-inner">
+<div>
+<div class="footer-logo">SmallPlane<span>Value</span>.com</div>
+<div class="footer-tagline">Honest GA aircraft valuations · Built for pilots, by pilots.</div>
+</div>
+<div class="footer-links">
+<a href="#tools">Tools</a>
+<a href="#how-it-works">How it works</a>
+<a href="#aircraft-types">Aircraft types</a>
+<a href="#" id="footer-share-fb" target="_blank" rel="noopener noreferrer">Share on Facebook</a>
+<a href="#" id="footer-share-x" target="_blank" rel="noopener noreferrer">Share on X</a>
+</div>
+</div>
+<div class="footer-bottom">
+<div>© 2025 SmallPlaneValue.com · All rights reserved</div>
+<div>Not affiliated with FAA, Vref, or Aircraft Bluebook</div>
+</div>
+</footer>
+
+<script>
+/* ── tab switching ── */
+function switchTab(id) {
+document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+document.querySelectorAll('.tab-btn').forEach(b => {
+  b.classList.remove('active');
+  b.setAttribute('aria-selected', 'false');
+});
+document.getElementById('pane-'+id).classList.add('active');
+var tab = document.getElementById('tab-btn-'+id);
+tab.classList.add('active');
+tab.setAttribute('aria-selected', 'true');
+document.getElementById('app').scrollIntoView({behavior:'smooth'});
+}
+
+/* ── scroll reveal ── */
+const observer = new IntersectionObserver(entries => {
+entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+(function initAnnualYearSelect() {
+  var sel = document.getElementById('v-annual-year');
+  if (!sel) return;
+  var now = new Date().getFullYear();
+  for (var y = now; y >= 2020; y--) {
+    var opt = document.createElement('option');
+    opt.value = String(y);
+    opt.textContent = String(y);
+    sel.appendChild(opt);
+  }
+})();
+
+/* ── helpers ── */
+const fmt = n => '$' + Math.round(n).toLocaleString();
+
+async function apiPost(path, body) {
+const r = await fetch(path, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify(body)
+});
+const data = await r.json().catch(function(){ return {}; });
+if(!r.ok) {
+  var err = new Error((data && (data.statusMessage || data.message)) || 'Request failed - try again');
+  err.status = r.status;
+  err.code = (data && data.data && data.data.code) || (data && data.statusMessage) || '';
+  err.payload = data;
+  throw err;
+}
+return data;
+}
+
+function getOrCreateClientId() {
+  var id = localStorage.getItem('spv_client_id');
+  if (!id) {
+    id = (typeof crypto !== 'undefined' && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : 'spv-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+    localStorage.setItem('spv_client_id', id);
+  }
+  return id;
+}
+
+function getValuationEmail() {
+  return (localStorage.getItem('spv_email') || '').trim();
+}
+
+function siteShareUrl() {
+  return (window.location.origin || 'https://smallplanevalue.com').replace(/\/$/, '');
+}
+
+function shareBlurbText() {
+  return 'Free GA aircraft valuations at ' + siteShareUrl() + ' — honest asking ranges and fair-market estimates, no fabricated sale prices. Paste a listing or enter your aircraft. Looking for feedback from pilots — especially BeechTalk and type-club folks. Try it and tell us what we got right or wrong.';
+}
+
+function initShareLinks() {
+  var url = encodeURIComponent(siteShareUrl());
+  var text = encodeURIComponent(shareBlurbText());
+  var fb = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
+  var x = 'https://twitter.com/intent/tweet?text=' + text;
+  ['share-fb', 'footer-share-fb'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.href = fb;
+  });
+  ['share-x', 'footer-share-x'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.href = x;
+  });
+}
+
+function copyShareBlurb() {
+  var msg = document.getElementById('share-copy-msg');
+  var blurb = shareBlurbText();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(blurb).then(function() {
+      if (msg) msg.textContent = 'Copied — paste into BeechTalk, Facebook groups, or Instagram.';
+    }).catch(function() { fallbackCopy(blurb, msg); });
+  } else {
+    fallbackCopy(blurb, msg);
+  }
+}
+
+function fallbackCopy(text, msgEl) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    if (msgEl) msgEl.textContent = 'Copied — paste into BeechTalk, Facebook groups, or Instagram.';
+  } catch (e) {
+    if (msgEl) msgEl.textContent = 'Copy failed — select and copy manually from the address bar.';
+  }
+  document.body.removeChild(ta);
+}
+
+initShareLinks();
+
+/** Trusted partners — add an object to show another tip during valuation search. */
+var TRUSTED_PARTNERS = [
+  {
+    name: 'AirLogbooks',
+    url: 'https://airlogbooks.com/?utm_source=smallplanevalue&utm_medium=partner&utm_campaign=valuation_loader',
+    tip: 'Did you know? Digitized logbooks often make aircraft easier to sell — and protect value.'
+  }
+];
+
+var _partnerTipTimer = null;
+var _partnerTipIndex = 0;
+
+function partnerTipHtml(p) {
+  if (!p) return '';
+  return p.tip + ' Trusted partner: <a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + p.name + '</a>.';
+}
+
+function renderPartnerTip() {
+  var el = document.getElementById('v-partner-tip');
+  if (!el || !TRUSTED_PARTNERS.length) return;
+  _partnerTipIndex = _partnerTipIndex % TRUSTED_PARTNERS.length;
+  el.innerHTML = partnerTipHtml(TRUSTED_PARTNERS[_partnerTipIndex]);
+}
+
+function startPartnerTipRotation() {
+  stopPartnerTipRotation();
+  if (!TRUSTED_PARTNERS.length) return;
+  _partnerTipIndex = 0;
+  renderPartnerTip();
+  if (TRUSTED_PARTNERS.length < 2) return;
+  _partnerTipTimer = setInterval(function() {
+    _partnerTipIndex = (_partnerTipIndex + 1) % TRUSTED_PARTNERS.length;
+    renderPartnerTip();
+  }, 4000);
+}
+
+function stopPartnerTipRotation() {
+  if (_partnerTipTimer) {
+    clearInterval(_partnerTipTimer);
+    _partnerTipTimer = null;
+  }
+}
+
+function setLoading(spinId, btnId, on) {
+document.getElementById(spinId).classList.toggle('on', on);
+document.getElementById(btnId).disabled = on;
+if (spinId === 'v-spin') {
+  if (on) startPartnerTipRotation();
+  else stopPartnerTipRotation();
+}
+}
+
+/* ── N-NUMBER ── */
+function tryN(v) { document.getElementById('nn').value = v; doLookup(); }
+
+async function doLookup() {
+document.getElementById('cl-result').innerHTML='';
+window._engModel='';
+window._acType='';
+window._numEng='';
+var raw = document.getElementById('nn').value.trim().toUpperCase();
+if (!raw) { alert('Enter an N-number.'); return; }
+var nnumber = 'N' + raw;
+setLoading('nn-spin','nn-btn',true);
+document.getElementById('nn-result').innerHTML = '';
+resetForm();
+document.getElementById('v-paste').value = '';
+
+try {
+var d = await apiPost('/api/faa-lookup', { nnumber: raw });
+if (!d.found) { document.getElementById('nn-result').innerHTML = '<div class="note-box" style="border-color:var(--warn);background:rgba(230,160,0,0.06);margin-top:1rem"><i class="ti ti-plane-off" style="color:var(--warn);font-size:14px"></i> No aircraft found for N' + raw + '. Check the number and try again, or <a href="https://registry.faa.gov/AircraftInquiry/Search/NNumberResult?nNumberTxt=' + raw + '" target="_blank" style="color:var(--sky-light)">search FAA directly</a>.</div>'; setLoading('nn-spin','nn-btn',false); return; }
+d.ownerHistory = [{ name: d.registrantName || 'Unknown', city: d.city || '', state: d.state || '', from: d.certDate || '', to: null, current: true }];
+d.flags = [];
+if (d.status === 'Valid') d.flags.push({ type: 'info', title: 'Registration current', detail: 'Status: Valid through ' + (d.registrationExpiry || 'N/A') });
+if (d.status !== 'Valid') d.flags.push({ type: 'warn', title: 'Registration: ' + d.status, detail: 'Status code: ' + (d.statusCode || 'N/A') });
+
+if (d.error) throw new Error(d.error);
+window._lastLookup = d;
+window._lastLookup = d;
+renderLookup(d);
+trackEvent('lookup_success', { source: 'spv' });
+if (d.aircraftType && d.aircraftType.toLowerCase().indexOf('multi') >= 0) {
+  var engSel = document.getElementById('v-engines');
+  if (engSel) { engSel.value = '2'; toggleEngineFields(); }
+}
+} catch(e) {
+console.log('N-number lookup failed:', e);
+document.getElementById('nn-result').innerHTML = '<div class="note-box" style="border-color:var(--danger);background:rgba(192,57,43,0.06);margin-top:1rem"><i class="ti ti-alert-circle" style="color:var(--danger);font-size:14px"></i> Could not retrieve FAA data for N' + raw + '. <a href="https://registry.faa.gov/AircraftInquiry/Search/NNumberResult?nNumberTxt=' + raw + '" target="_blank" style="color:var(--sky-light)">Check FAA directly \u2192</a></div>';
+}
+setLoading('nn-spin','nn-btn',false);
+}
+
+function fmtDate(d) { if (!d) return '—'; if (/^\d{8}$/.test(d)) { d = d.slice(0,4)+'-'+d.slice(4,6)+'-'+d.slice(6,8); } try { var dt = new Date(d); if (isNaN(dt)) return d; return dt.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}); } catch(e){return d;} }
+
+function renderLookup(d) {
+const owners = (d.ownerHistory||[]).map(o => `
+<div class="owner-row">
+<div class="owner-dot ${o.current?'cur':''}"></div>
+<div style="flex:1"><div class="owner-name">${o.name}</div><div class="owner-dates">${fmtDate(o.from)} → ${o.current?'present':fmtDate(o.to)}</div></div>
+<div style="text-align:right;font-size:12px;color:var(--muted)">${o.city}, ${o.state}</div>
+</div>`).join('');
+
+const flags = (d.flags||[]).map(f => {
+const ic = f.type==='danger'?`<i class="ti ti-alert-circle flag-row-icon" style="color:var(--danger)"></i>`:f.type==='warn'?`<i class="ti ti-alert-triangle flag-row-icon" style="color:var(--warn)"></i>`:`<i class="ti ti-info-circle flag-row-icon" style="color:var(--sky-light)"></i>`;
+return `<div class="flag-row">${ic}<div class="flag-txt">${f.title}<div class="flag-sub">${f.detail}</div></div></div>`;
+}).join('');
+
+document.getElementById('nn-result').innerHTML = `
+<div class="reg-card">
+<div class="reg-hdr">
+<div><div class="reg-aircraft-name">${d.year} ${d.make} ${d.model}</div><div class="reg-n-tag">${d.nnumber} · S/N ${d.serialNumber||'—'}</div></div>
+<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+<span class="badge bg-green"><i class="ti ti-circle-check" style="font-size:12px"></i> ${d.status||'Valid'}</span>
+<span class="badge bg-blue">${d.aircraftType||'Fixed wing'}</span>
+</div>
+</div>
+<div class="reg-grid">
+<div class="reg-cell"><div class="reg-lbl">Engine</div><div class="reg-val">${d.engineMake||'N/A'} ${d.engineModel||''}</div></div>
+<div class="reg-cell"><div class="reg-lbl">Seats</div><div class="reg-val">${d.seats||'—'}</div></div>
+<div class="reg-cell"><div class="reg-lbl">Airworthiness</div><div class="reg-val">${d.airworthinessCert||'Standard'} · ${fmtDate(d.certDate)}</div></div>
+<div class="reg-cell"><div class="reg-lbl">Reg. expiry</div><div class="reg-val">${fmtDate(d.registrationExpiry)}</div></div>
+<div class="reg-cell"><div class="reg-lbl">Registrant</div><div class="reg-val">${d.registrantName}</div></div>
+<div class="reg-cell"><div class="reg-lbl">Location</div><div class="reg-val">${d.city}, ${d.state}</div></div>
+</div>
+</div>
+${flags ? `<div class="reg-card">${flags}</div>` : ''}
+<div class="reg-card">
+<div style="padding:12px 18px;border-bottom:1px solid rgba(11,37,69,0.08);font-size:12px;font-weight:500;color:var(--muted);display:flex;align-items:center;gap:8px"><i class="ti ti-users" style="font-size:15px"></i> Ownership history · ${(d.ownerHistory||[]).length} owner${(d.ownerHistory||[]).length===1?'':'s'}</div>
+${owners}
+</div>
+${d.adNotes ? `<div style="background:rgba(232,160,32,0.1);border-radius:var(--radius);padding:10px 14px;margin-bottom:1rem;display:flex;gap:10px;align-items:flex-start"><i class="ti ti-tool" style="font-size:16px;color:var(--warn);flex-shrink:0"></i><div style="font-size:13px;color:var(--sky)"><strong>ADs to verify:</strong> ${d.adNotes}</div></div>` : ''}
+<div class="action-row-3">
+<button class="action-btn" onclick="prefillVal('${d.make}','${d.model}','${d.year}','${d.aircraftType||""}',' ${d.numEngines||""}','${d.engineMake||""}','${d.engineModel||""}');switchTab('val')"><i class="ti ti-calculator" style="font-size:15px"></i> Get valuation</button>
+<button class="action-btn" onclick="prefillCl('${d.make}','${d.model}','${d.year}','${d.engineMake}','${d.engineModel}','${d.aircraftType||""}',' ${d.numEngines||""}');switchTab('checklist')"><i class="ti ti-clipboard-check" style="font-size:15px"></i> Pre-buy checklist</button>
+<button class="action-btn" onclick="window.open('https://registry.faa.gov/aircraftinquiry/Search/NNumberInquiry?nNumberTxt=${d.nnumber.replace(/^N/,'')}','_blank')"><i class="ti ti-external-link" style="font-size:15px"></i> FAA website</button>
+</div>
+<div class="note-box" style="margin-top:.75rem">Data sourced from FAA aircraft registry (registry.faa.gov). Owner names are public FAA records.</div>`;
+}
+
+function cleanPastedText(raw) {
+  return (raw || '').trim()
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&[a-z]+;/g, ' ')
+    .replace(/[\r]/g, '')
+    .replace(/[\u2022]/g, '- ')
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/[\u2013\u2014]/g, '-')
+    .replace(/  +/g, ' ');
+}
+
+async function parseListing() {
+var txt = cleanPastedText(document.getElementById('v-paste').value);
+if (!txt) { alert('Paste a listing first.'); return; }
+document.getElementById('paste-spin').classList.add('on');
+document.getElementById('paste-btn').disabled = true;
+try {
+var d = await apiPost('/api/parse-listing', { text: txt.substring(0, 5000) });
+resetForm();
+// Preserve identity from the N-number lookup; listing values overlay on top
+var L = window._lastLookup || {};
+if (L.make) document.getElementById('v-make').value = L.make;
+if (L.model) document.getElementById('v-model').value = L.model;
+if (L.year) document.getElementById('v-year').value = L.year;
+window._valEngMake = L.engineMake || window._valEngMake || '';
+window._valEngModel = L.engineModel || window._valEngModel || '';
+var edp = document.getElementById('v-engine-display');
+if (edp) edp.value = ((window._valEngMake||'') + ' ' + (window._valEngModel||'')).trim();
+if ((L.aircraftType && L.aircraftType.toLowerCase().indexOf('multi') >= 0) || L.numEngines == 2) {
+  var esel = document.getElementById('v-engines'); if (esel) { esel.value = '2'; toggleEngineFields(); }
+}
+if (d.make) document.getElementById('v-make').value = d.make;
+if (d.model) document.getElementById('v-model').value = d.model;
+if (d.year) document.getElementById('v-year').value = d.year;
+if (d.ttaf) document.getElementById('v-ttaf').value = d.ttaf;
+// Determine engine count: listing wins if it reported one, else keep lookup-derived value
+if (d.engines == 2 || d.engines == 1) {
+  document.getElementById('v-engines').value = (d.engines == 2) ? '2' : '1';
+  toggleEngineFields();
+}
+var isTwinFill = document.getElementById('v-engines').value === '2';
+if (isTwinFill) {
+  if (d.smoh != null) { var el = document.getElementById('v-smoh-l'); if(el) el.value = d.smoh; }
+  if (d.smohR != null) { var el = document.getElementById('v-smoh-r'); if(el) el.value = d.smohR; }
+  if (d.propHrs != null) { var el = document.getElementById('v-prop-l'); if(el) el.value = d.propHrs; }
+  if (d.propHrsR != null) { var el = document.getElementById('v-prop-r'); if(el) el.value = d.propHrsR; }
+} else {
+  if (d.smoh != null) { var el = document.getElementById('v-smoh'); if(el) el.value = d.smoh; }
+  if (d.propHrs != null) { var el = document.getElementById('v-prop1'); if(el) el.value = d.propHrs; }
+}
+if (d.condition) { var el = document.getElementById('v-cond'); if(el) el.value = d.condition; }
+if (d.cosmetics) { var el = document.getElementById('v-cosm'); if(el) el.value = d.cosmetics; }
+if (d.notes) { var el = document.getElementById('v-notes'); if(el) el.value = (d.notes||'').substring(0, 200); }
+// Auto-check avionics based on parsed list
+var avMap = {
+  'GTX345':'av-gtx345','GTX 345':'av-gtx345','ADS-B':'av-adsb',
+  'GFC500':'av-gfc500','GFC 500':'av-gfc500','GFC600':'av-gfc600','GFC 600':'av-gfc600','GFC700':'av-gfc700','GFC 700':'av-gfc700',
+  'G1000':'av-g1000','G1000 NXi':'av-g1000nxi','G500':'av-g500','G500 TXi':'av-g500txi','G600 TXi':'av-g600txi',
+  'G3X':'av-g3x','G5':'av-g5','GI 275':'av-gi275','GI275':'av-gi275',
+  'GTN650':'av-gtn650','GTN 650':'av-gtn650','GTN750':'av-gtn750','GTN 750':'av-gtn750',
+  'GTN650Xi':'av-gtn650xi','GTN 650Xi':'av-gtn650xi','GTN750Xi':'av-gtn750xi','GTN 750Xi':'av-gtn750xi',
+  'GNS430':'av-gns430','GNS 430':'av-gns430','GNS430W':'av-gns430w','GNS 430W':'av-gns430w',
+  'GNS530':'av-gns530','GNS 530':'av-gns530','GNS530W':'av-gns530w','GNS 530W':'av-gns530w',
+  'GNS480':'av-gns480','GNS 480':'av-gns480','GPS175':'av-gps175','GNX375':'av-gnx375',
+  'GMA345':'av-gma345','GDL88':'av-gdl88','GDL 88':'av-gdl88',
+  'KFC200':'av-kfc200','KFC 200':'av-kfc200','KFC150':'av-kfc200','KFC 150':'av-kfc200',
+  'STEC55':'av-stec55','S-TEC 55X':'av-stec55','STEC3100':'av-stec3100','S-TEC 3100':'av-stec3100',
+  'DFC90':'av-dfc90','DFC 90':'av-dfc90','DFC100':'av-dfc100','DFC 100':'av-dfc100',
+  'IFD440':'av-ifd440','IFD 440':'av-ifd440','IFD550':'av-ifd550','IFD 550':'av-ifd550',
+  'Entegra':'av-avr9','PMA8000':'av-pma8000','PMA 8000':'av-pma8000','PS Engineering':'av-pma8000','MX20':'av-mx20','MX 20':'av-mx20','GMX200':'av-gmx200','GMX 200':'av-gmx200','Stormscope':'av-wx500','WX500':'av-wx500','WX1000':'av-wx500',
+  'Autoland':'av-autoland','HALO':'av-autoland','Safe Return':'av-autoland',
+  'Radar':'av-radar-legacy','GWX':'av-radar-garmin','RDR':'av-radar-bk',
+  'JPI':'av-jpi','EDM':'av-jpi','CGR':'av-ei-cgr','Insight':'av-ei-other',
+  'SkyView HDX':'av-dynon-hdx','SkyView SE':'av-dynon-se','Dynon':'av-dynon-hdx','STEC 65':'av-stec65','STEC65':'av-stec65','S-TEC 65':'av-stec65','STEC 60':'av-stec65','S-TEC 60':'av-stec65','STEC 50':'av-stec65','S-TEC 50':'av-stec65','STEC 40':'av-stec65','S-TEC 40':'av-stec65','STEC 30':'av-stec65','S-TEC 30':'av-stec65','Skywatch':'av-tcas','TCAS':'av-tcas','TAS':'av-tcas','TAWS':'av-taws','terrain awareness':'av-taws','terrain avoidance':'av-taws','AOA':'av-aoa','angle of attack':'av-aoa','Alpha Systems':'av-aoa','FIKI':'av-fiki','flight into known ice':'av-fiki','TKS FIKI':'av-fiki','inadvertent':'av-known-ice','inadvertent ice':'av-known-ice','known ice':'av-known-ice','TKS inadvertent':'av-known-ice','deice':'av-known-ice','anti-ice':'av-known-ice','ice protection':'av-known-ice','Oshkosh':'av-oshkosh','AirVenture':'av-oshkosh','EAA award':'av-oshkosh','Grand Champion':'av-oshkosh','Gold Lindy':'av-oshkosh','synthetic vision':'av-svt','SVT':'av-svt','air conditioning':'av-ac','A/C':'av-ac','air cond':'av-ac','PiperAire':'av-ac','EDM 830':'av-jpi','EDM 760':'av-jpi','EDM 900':'av-jpi','EDM830':'av-jpi','WX 500':'av-wx500','BFG':'av-wx500','Flight Stream':'av-adsb','CNX 80':'av-gns430w','CNX80':'av-gns430w','GNS 480':'av-gns480','speed brakes':'av-stc','IO-550':'av-stc','3-blade':'av-3blade','3 blade':'av-3blade','LED':'av-led','CiES':'av-cies','tip tank':'av-stc'
+};
+if (d.avionics && Array.isArray(d.avionics)) {
+  d.avionics.forEach(function(av) {
+    for (var key in avMap) {
+      if (av.toUpperCase().indexOf(key.toUpperCase()) >= 0) {
+        var el = document.getElementById(avMap[key]);
+        if (el) el.checked = true;
+        break;
+      }
+    }
+  });
+}
+toggleCirrusGen();
+await refreshEngineLife();
+} catch(e) { console.error('Parse failed:', e); alert('Could not parse listing. Try entering details manually.'); }
+document.getElementById('paste-spin').classList.remove('on');
+document.getElementById('paste-btn').disabled = false;
+}
+
+function resetForm() {
+document.getElementById('v-make').value = '';
+document.getElementById('v-model').value = '';
+document.getElementById('v-year').value = '';
+document.getElementById('v-ttaf').value = '';
+var engSel = document.getElementById('v-engines');
+if (engSel) { engSel.value = '1'; toggleEngineFields(); }
+var smoh = document.getElementById('v-smoh'); if (smoh) smoh.value = '';
+var prop = document.getElementById('v-prop1'); if (prop) prop.value = '';
+var sl = document.getElementById('v-smoh-l'); if (sl) sl.value = '';
+var sr = document.getElementById('v-smoh-r'); if (sr) sr.value = '';
+var pl = document.getElementById('v-prop-l'); if (pl) pl.value = '';
+var pr = document.getElementById('v-prop-r'); if (pr) pr.value = '';
+var cond = document.getElementById('v-cond'); if (cond) cond.value = 'Good';
+var cosm = document.getElementById('v-cosm'); if (cosm) cosm.value = 'Average';
+var notes = document.getElementById('v-notes'); if (notes) notes.value = '';
+var engDisp = document.getElementById('v-engine-display'); if (engDisp) engDisp.value = '';
+var asking = document.getElementById('v-asking'); if (asking) asking.value = '';
+var annualM = document.getElementById('v-annual-month'); if (annualM) annualM.value = '';
+var annualY = document.getElementById('v-annual-year'); if (annualY) annualY.value = '';
+var outAnnual = document.getElementById('v-out-of-annual'); if (outAnnual) outAnnual.checked = false;
+var engConv = document.getElementById('v-eng-conv'); if (engConv) engConv.value = '';
+var tboIn = document.getElementById('v-tbo'); if (tboIn) { removeAutoExtraTboOptions(); tboIn.value = '2000'; }
+window._tboUserOverride = false;
+var tboReset = document.getElementById('v-tbo-reset'); if (tboReset) tboReset.style.display = 'none';
+var engNote = document.getElementById('engine-tbo-note'); if (engNote) engNote.textContent = '';
+var els = document.getElementById('engine-life-single'); if (els) els.innerHTML = '';
+var elt = document.getElementById('engine-life-twin'); if (elt) elt.innerHTML = '';
+window._lastEngineLife = null;
+var cgen = document.getElementById('v-cirrusgen'); if (cgen) { cgen.value = ''; delete cgen.dataset.touched; }
+var lbk = document.getElementById('v-logbooks'); if (lbk) lbk.value = '';
+var dmg = document.getElementById('v-damage'); if (dmg) dmg.value = '';
+var avpkg = document.getElementById('v-avionics-package'); if (avpkg) avpkg.value = '';
+toggleCirrusGen();
+document.querySelectorAll('input[type="checkbox"][id^="av-"]').forEach(function(cb) { cb.checked = false; });
+document.querySelectorAll('select[id$="-qty"]').forEach(function(s) { s.value = '1'; });
+document.getElementById('v-result').innerHTML = '';
+var vp = document.getElementById('v-paste'); if(vp) vp.value = '';
+// nn-result preserved between lookups
+}
+
+function prefillVal(make, model, year, aircraftType, numEngines, engMake, engModel) {
+window._valEngMake = engMake || "";window._valEngModel = engModel || "";
+resetForm();
+var ed=document.getElementById("v-engine-display");if(ed)ed.value=((engMake||"")+" "+(engModel||"")).trim();
+document.getElementById('v-make').value = make;
+document.getElementById('v-model').value = model;
+document.getElementById('v-year').value = year;
+if ((aircraftType && aircraftType.toLowerCase().indexOf('multi') >= 0) || numEngines > 1) {
+var sel = document.getElementById('v-engines');
+if (sel) { sel.value = '2'; toggleEngineFields(); }
+}
+toggleCirrusGen();
+refreshEngineLife();
+}
+function prefillCl(make, model, year, eng, engModel, acType, numEng) {
+window._engModel = engModel || '';
+window._acType = acType || '';
+window._numEng = numEng || '';
+document.getElementById('cl-make').value = make;
+document.getElementById('cl-model').value = model;
+document.getElementById('cl-year').value = year;
+if (eng) {
+  var e = eng.toUpperCase();
+  var sel = document.getElementById('cl-eng');
+  if (e.indexOf('LYCOMING') >= 0) sel.value = 'Lycoming';
+  else if (e.indexOf('CONT') >= 0) sel.value = 'Continental';
+  else if (e.indexOf('ROTAX') >= 0) sel.value = 'Rotax (LSA)';
+  else if (e.indexOf('TURB') >= 0 || e.indexOf('PT6') >= 0 || e.indexOf('PRATT') >= 0 || e.indexOf('GARRETT') >= 0) sel.value = 'Turboprop';
+  else sel.value = 'Other / unknown';
+}
+}
+
+/* ── ENGINE TBO & LIFE REMAINING ── */
+window._engineTboCache = window._engineTboCache || {};
+window._lastEngineLife = null;
+window._tboUserOverride = false;
+window._engineTboAuto = 2000;
+
+function ensureTboOption(hours) {
+  var sel = document.getElementById('v-tbo');
+  if (!sel || !hours) return;
+  var v = String(Math.round(hours));
+  if (!sel.querySelector('option[value="' + v + '"]')) {
+    var opt = document.createElement('option');
+    opt.value = v;
+    opt.textContent = Number(v).toLocaleString() + ' hrs (auto)';
+    opt.dataset.autoExtra = '1';
+    sel.appendChild(opt);
+  }
+}
+
+function setTboSelectValue(hours) {
+  var sel = document.getElementById('v-tbo');
+  if (!sel || !hours) return;
+  ensureTboOption(hours);
+  sel.value = String(Math.round(hours));
+}
+
+function removeAutoExtraTboOptions() {
+  var sel = document.getElementById('v-tbo');
+  if (!sel) return;
+  sel.querySelectorAll('option[data-auto-extra="1"]').forEach(function(o) { o.remove(); });
+}
+
+function currentEngineModelStr() {
+  var disp = document.getElementById('v-engine-display');
+  var fromDisp = disp && disp.value ? disp.value.trim() : '';
+  var fromLookup = ((window._valEngMake || '') + ' ' + (window._valEngModel || '')).trim();
+  return fromLookup || fromDisp;
+}
+
+function modelForEngineLife() {
+  var convEl = document.getElementById('v-eng-conv');
+  var conv = convEl && convEl.value ? convEl.value.trim() : '';
+  if (/io[\s-]?550|o[\s-]?550/i.test(conv)) return 'IO-550';
+  return currentEngineModelStr();
+}
+
+async function fetchEngineTbo(model, smoh, tboOverride) {
+  var make = window._valEngMake || '';
+  var key = (model || '').toUpperCase() + '|' + make.toUpperCase() + '|' + (smoh != null ? smoh : '') + '|' + (tboOverride || '');
+  if (window._engineTboCache[key]) return window._engineTboCache[key];
+  var q = new URLSearchParams();
+  if (model) q.set('model', model);
+  if (window._valEngMake) q.set('make', window._valEngMake);
+  if (smoh != null && smoh !== '') q.set('smoh', String(smoh));
+  if (tboOverride) q.set('tbo', String(tboOverride));
+  var r = await fetch('/api/engine-tbo?' + q.toString());
+  var data = await r.json().catch(function() { return {}; });
+  window._engineTboCache[key] = data;
+  return data;
+}
+
+function getEffectiveTbo() {
+  var v = parseInt(document.getElementById('v-tbo') && document.getElementById('v-tbo').value, 10);
+  return (v > 0 ? v : window._engineTboAuto) || 2000;
+}
+
+function onTboOverride() {
+  var v = getEffectiveTbo();
+  var auto = window._engineTboAuto || 2000;
+  window._tboUserOverride = (v !== auto);
+  var btn = document.getElementById('v-tbo-reset');
+  if (btn) btn.style.display = window._tboUserOverride ? '' : 'none';
+  refreshEngineLifeBars();
+}
+
+function resetTboAuto() {
+  window._tboUserOverride = false;
+  var btn = document.getElementById('v-tbo-reset');
+  if (btn) btn.style.display = 'none';
+  refreshEngineLife();
+}
+
+function refreshEngineLifeBars() {
+  var tbo = getEffectiveTbo();
+  var isTwin = document.getElementById('v-engines') && document.getElementById('v-engines').value === '2';
+  var lifeBlocks = [];
+  if (isTwin) {
+    var sl = parseInt(document.getElementById('v-smoh-l') && document.getElementById('v-smoh-l').value, 10);
+    var sr = parseInt(document.getElementById('v-smoh-r') && document.getElementById('v-smoh-r').value, 10);
+    var twinHtml = '';
+    if (sl > 0) {
+      twinHtml += engineLifeBarHtml('Left engine', sl, tbo, null);
+      lifeBlocks.push({ label: 'Left', smoh: sl, tbo: tbo });
+    }
+    if (sr > 0) {
+      twinHtml += (twinHtml ? '<div style="height:10px"></div>' : '') + engineLifeBarHtml('Right engine', sr, tbo, null);
+      lifeBlocks.push({ label: 'Right', smoh: sr, tbo: tbo });
+    }
+    var twinEl = document.getElementById('engine-life-twin');
+    if (twinEl) twinEl.innerHTML = twinHtml;
+    var singleEl = document.getElementById('engine-life-single');
+    if (singleEl) singleEl.innerHTML = '';
+  } else {
+    var smoh = parseInt(document.getElementById('v-smoh') && document.getElementById('v-smoh').value, 10);
+    var singleHtml = smoh > 0 ? engineLifeBarHtml('Engine', smoh, tbo, null) : '';
+    if (smoh > 0) lifeBlocks.push({ label: 'Engine', smoh: smoh, tbo: tbo });
+    var singleEl2 = document.getElementById('engine-life-single');
+    if (singleEl2) singleEl2.innerHTML = singleHtml;
+    var twinEl2 = document.getElementById('engine-life-twin');
+    if (twinEl2) twinEl2.innerHTML = '';
+  }
+  window._lastEngineLife = { tbo: tbo, engines: lifeBlocks, model: currentEngineModelStr() };
+}
+
+function engineLifeBarHtml(label, smoh, tbo, life) {
+  if (!smoh || smoh <= 0 || !tbo) return '';
+  var pct = life && life.pctRemaining != null ? life.pctRemaining : Math.max(0, Math.round((1 - smoh / tbo) * 100));
+  var used = life && life.pctUsed != null ? life.pctUsed : Math.min(100, Math.round(smoh / tbo * 100));
+  var hrsLeft = life && life.hrsRemaining != null ? life.hrsRemaining : Math.max(0, tbo - smoh);
+  var status = life && life.status ? life.status : (pct >= 60 ? 'fresh' : pct >= 30 ? 'mid' : pct >= 10 ? 'high' : 'runout');
+  var fillClass = status === 'fresh' ? '' : status;
+  return '<div class="engine-life-label"><span><strong>' + label + '</strong> ' + Number(smoh).toLocaleString() + ' / ' + Number(tbo).toLocaleString() + ' SMOH</span><span><strong>' + pct + '%</strong> life remaining (' + hrsLeft.toLocaleString() + ' hrs)</span></div>'
+    + '<div class="engine-life-track"><div class="engine-life-fill ' + fillClass + '" style="width:' + pct + '%"></div></div>';
+}
+
+async function refreshEngineLife() {
+  var model = modelForEngineLife();
+  var tboEl = document.getElementById('v-tbo');
+  var noteEl = document.getElementById('engine-tbo-note');
+  var spec = await fetchEngineTbo(model, null, window._tboUserOverride ? getEffectiveTbo() : null);
+  window._engineTboAuto = spec.tbo || 2000;
+  if (tboEl && !window._tboUserOverride) {
+    removeAutoExtraTboOptions();
+    setTboSelectValue(window._engineTboAuto);
+  }
+  if (noteEl) {
+    var note = window._tboUserOverride
+      ? 'TBO manually set to ' + getEffectiveTbo().toLocaleString() + ' hrs (auto would be ' + window._engineTboAuto.toLocaleString() + ').'
+      : (spec.matchType === 'default'
+        ? 'TBO defaulting to ' + (spec.tbo || 2000).toLocaleString() + ' hrs — select above if your engine has a different interval.'
+        : 'TBO ' + spec.tbo.toLocaleString() + ' hrs (' + spec.matchType + ' match: ' + spec.matchedKey + ').');
+    noteEl.textContent = note;
+  }
+  refreshEngineLifeBars();
+}
+
+/* ── ENGINE TOGGLE ── */
+function toggleEngineFields() {
+var isTwin = document.getElementById('v-engines') && document.getElementById('v-engines').value === '2';
+var s = document.getElementById('single-eng-fields');
+var t = document.getElementById('twin-eng-fields');
+if (s) s.style.display = isTwin ? 'none' : '';
+if (t) t.style.display = isTwin ? 'block' : 'none';
+refreshEngineLife();
+}
+
+function cirrusGenFromYear(yearStr, model) {
+var y = parseInt((yearStr || '').replace(/[^0-9]/g, ''), 10);
+var m = (model || '').toLowerCase();
+var isJet = /sf50|vision\s*jet/.test(m);
+if (!y) return '';
+if (isJet) {
+  if (y <= 2018) return 'SF50 G1';
+  if (y <= 2022) return 'SF50 G2';
+  return 'SF50 G2+';
+}
+if (y <= 2003) return 'G1';
+if (y <= 2006) return 'G2';
+if (y <= 2012) return 'G3';
+if (y <= 2016) return 'G5';
+if (y <= 2023) return 'G6';
+return 'G7';
+}
+function toggleCirrusGen() {
+var grp = document.getElementById('v-cirrusgen-group');
+if (!grp) return;
+var mk = (document.getElementById('v-make') ? document.getElementById('v-make').value : '') || '';
+var md = (document.getElementById('v-model') ? document.getElementById('v-model').value : '') || '';
+var yr = (document.getElementById('v-year') ? document.getElementById('v-year').value : '') || '';
+var blob = (mk + ' ' + md).toLowerCase();
+var isCirrus = /\bcirrus\b/.test(blob) || /\bsr20\b|\bsr22t?\b|\bsf50\b|vision\s*jet/.test(blob);
+grp.style.display = isCirrus ? '' : 'none';
+var sel = document.getElementById('v-cirrusgen');
+if (isCirrus && sel && !sel.dataset.touched) {
+  var g = cirrusGenFromYear(yr, mk + ' ' + md);
+  if (g) sel.value = g;
+}
+}
+
+/* ── VALUATION ── */
+const BANDS = { 'Piston single':{low:5,high:15}, 'Piston twin':{low:8,high:18}, 'LSA':{low:4,high:10}, 'Experimental':{low:10,high:25}, 'Turboprop':{low:6,high:14}, 'Vintage':{low:3,high:20} };
+
+async function doValuation() {
+var make=document.getElementById('v-make').value.trim();
+var model=document.getElementById('v-model').value.trim();
+var year=document.getElementById('v-year').value;
+if (!make||!model) { alert('Enter make and model.'); return; }
+
+var ttaf=document.getElementById('v-ttaf').value;
+var cond=document.getElementById('v-cond').value;
+var cosm=document.getElementById('v-cosm').value;
+var notes=document.getElementById('v-notes').value.replace(/["'\\]/g, ' ');
+var annualMEl=document.getElementById('v-annual-month');var annualYEl=document.getElementById('v-annual-year');var annualVal=(annualMEl&&annualYEl&&annualMEl.value&&annualYEl.value)?(annualYEl.value+'-'+annualMEl.value):'';var annualInfo='';
+if(annualVal){var ad=new Date(annualVal+'-01');var now=new Date();var months=Math.round((now-ad)/(1000*60*60*24*30));var pct=Math.min(100,Math.round(months/12*100));annualInfo='Annual inspection done '+months+' months ago ('+pct+'% through annual cycle). ';}
+var outOfAnnualEl=document.getElementById('v-out-of-annual');var outOfAnnual=!!(outOfAnnualEl&&outOfAnnualEl.checked);if(outOfAnnual){annualInfo+='Aircraft is OUT OF ANNUAL (airworthiness inspection lapsed). ';}
+await refreshEngineLife();
+var tbo = getEffectiveTbo();
+var isTwin = document.getElementById('v-engines') && document.getElementById('v-engines').value === '2';
+var engineModel = currentEngineModelStr();
+var engineSmoh = null, engineSmohL = null, engineSmohR = null;
+var engineInfo = '';
+if (isTwin) {
+var sl=document.getElementById('v-smoh-l')?document.getElementById('v-smoh-l').value:'';
+var sr2=document.getElementById('v-smoh-r')?document.getElementById('v-smoh-r').value:'';
+if (sl) engineSmohL = parseInt(sl, 10);
+if (sr2) engineSmohR = parseInt(sr2, 10);
+var pl=document.getElementById('v-prop-l')?document.getElementById('v-prop-l').value:'';
+var pr=document.getElementById('v-prop-r')?document.getElementById('v-prop-r').value:'';
+engineInfo='Twin engine. Engine: ' + (window._valEngMake||'') + ' ' + (window._valEngModel||'') + '. Left SMOH: '+(sl||'?')+' hrs, Right SMOH: '+(sr2||'?')+' hrs, Left prop: '+(pl||'?')+' hrs, Right prop: '+(pr||'?')+' hrs';
+} else {
+var smoh=document.getElementById('v-smoh')?document.getElementById('v-smoh').value:'';
+if (smoh) engineSmoh = parseInt(smoh, 10);
+var prop=document.getElementById('v-prop1')?document.getElementById('v-prop1').value:'';
+engineInfo='Single engine. Engine: ' + (window._valEngMake||'') + ' ' + (window._valEngModel||'') + '. SMOH: '+(smoh||'?')+' hrs, Prop TSOH: '+(prop||'?')+' hrs';
+}
+var engConvEl=document.getElementById('v-eng-conv');
+if(engConvEl&&engConvEl.value.trim()){engineInfo+='. Engine conversion/STC: '+engConvEl.value.trim().replace(/["'\\]/g,' ');}
+if (window._lastEngineLife && window._lastEngineLife.engines && window._lastEngineLife.engines.length) {
+  engineInfo += '. Recommended TBO: ' + tbo + ' hrs.';
+  window._lastEngineLife.engines.forEach(function(e) {
+    var pct = e.life ? e.life.pctRemaining : Math.max(0, Math.round((1 - e.smoh / e.tbo) * 100));
+    engineInfo += ' ' + e.label + ' engine: ' + e.smoh + ' SMOH / ' + e.tbo + ' TBO (' + pct + '% life remaining).';
+  });
+} else if (tbo) {
+  engineInfo += '. Recommended TBO: ' + tbo + ' hrs (enter SMOH for life-remaining analysis).';
+}
+var avIds={'av-sixpack':'Standard six pack','av-nav1':'Single NAV/COM','av-nav2':'Dual NAV/COM','av-adf':'ADF','av-dme':'DME','av-kx155':'King KX-155/165','av-g5':'Garmin G5','av-gi275':'Garmin GI 275','av-g500':'Garmin G500','av-g500txi':'Garmin G500 TXi','av-g600txi':'Garmin G600 TXi','av-g1000':'Garmin G1000','av-g1000nxi':'Garmin G1000 NXi','av-g3x':'Garmin G3X Touch','av-gns430':'GNS 430(non WAAS)','av-gns430w':'GNS 430W WAAS','av-gns530':'GNS 530 non-WAAS','av-gns530w':'GNS 530W WAAS','av-gns480':'GNS 480 WAAS','av-gtn650':'GTN 650','av-gtn750':'GTN 750','av-gtn650xi':'GTN 650Xi','av-gtn750xi':'GTN 750Xi','av-gps175':'Garmin GPS 175','av-gnx375':'Garmin GNX 375','av-gnc255':'Garmin GNC 255','av-gtr205':'Garmin GTR 205','av-gfc500':'Garmin GFC 500','av-gfc600':'Garmin GFC 600','av-gfc700':'Garmin GFC 700','av-autoland':'Garmin Autoland (emergency autoland)','av-gad43':'Garmin GAD 43e','av-gma345':'GMA 345 audio','av-gma350':'Garmin GMA 350','av-pma8000':'PS Engineering PMA 8000','av-pma450':'PS Engineering PMA 450B','av-pma6000':'PS Engineering PMA 6000/7000','av-esi500':'L3 ESI-500','av-gi275-standby':'Garmin GI 275 standby','av-uav-skybeacon':'uAvionix skyBeacon','av-uav-tailbeacon':'uAvionix tailBeacon','av-uav-echouat':'uAvionix echoUAT','av-uav-tailbeaconx':'uAvionix tailBeaconX','av-uav-avipro':'uAvionix AV-30','av-uav-avlink':'uAvionix AvLink','av-uav-beaconx':'uAvionix BeaconX','av-mx20':'Garmin MX20 MFD','av-gmx200':'Garmin GMX 200 MFD','av-aspen-e5':'Aspen E5','av-aspen-pro':'Aspen Pro 1000 MAX','av-aspen-mfd':'Aspen MFD 500/1000','av-aspen-2500':'Aspen 2500 MAX','av-avr9':'Avidyne Entegra R9','av-ex500':'Avidyne EX500/600','av-ifd440':'Avidyne IFD 440','av-ifd550':'Avidyne IFD 540/550','av-dfc90':'Avidyne DFC 90','av-dfc100':'Avidyne DFC 100','av-stec55':'S-TEC 55X','av-stec65':'S-TEC (other)','av-stec3100':'S-TEC 3100','av-kfc200':'King KFC 150/200/225','av-trutrak':'TruTrak/BendixKing','av-dynon-hdx':'Dynon SkyView HDX','av-dynon-se':'Dynon SkyView SE','av-dynon-d10':'Dynon D10A/D100','av-dynon-ap':'Dynon SV-AP autopilot','av-dynon-gps':'Dynon SkyView GPS','av-gtx345':'GTX 345 ADS-B','av-adsb':'ADS-B Out','av-tcas':'Traffic TAS','av-wx500':'Stormscope','av-gdl88':'Garmin GDL 88','av-radar-garmin':'Garmin GWX radar','av-radar-bk':'BendixKing RDR 2000/2100 radar','av-radar-legacy':'Legacy radar','av-ei-cgr':'EI CGR-30P','av-ei-other':'EI monitor','av-jpi':'JPI EDM','av-garmin-eis':'Garmin EIS','av-wx':'XM weather','av-ac':'Air conditioning','av-aoa':'Angle of attack (AOA)','av-fiki':'FIKI certified (known ice)','av-known-ice':'Known ice / inadvertent TKS','av-oshkosh':'Oshkosh / EAA award winner','av-taws':'TAWS (terrain awareness)','av-svt':'Synthetic vision','av-stc':'Engine STC','av-3blade':'3-blade prop','av-cies':'CiES senders','av-led':'LED lighting','av-annual':'Fresh annual','av-oxy':'Oxygen system'};
+var avs=[];for(var id in avIds){var el=document.getElementById(id);if(!el||!el.checked)continue;var nm=avIds[id];
+  var sizeEl=document.getElementById(id+'-size');
+  if(sizeEl&&sizeEl.value){var sv=sizeEl.value;if(sv.indexOf('dual')===0){var oneSize=sv.replace('dual ','');avs.push(nm+' '+oneSize);avs.push(nm+' '+oneSize);}else if(sv.indexOf('+')>=0){var parts=sv.split('+');avs.push(nm+' '+parts[0].trim());avs.push(nm+' '+parts[1].trim());}else{avs.push(nm+' '+sv);}continue;}
+  var qtyEl=document.getElementById(id+'-qty');var qty=(qtyEl&&qtyEl.value)?parseInt(qtyEl.value,10):1;if(!(qty>=1))qty=1;
+  for(var q=0;q<qty;q++)avs.push(nm);
+}
+var band=BANDS['Piston single'];
+setLoading('v-spin','v-btn',true);
+document.getElementById('v-result').innerHTML='';
+try {
+var askPrice=document.getElementById('v-asking')?document.getElementById('v-asking').value:'';
+var v=await apiPost('/api/valuate', {
+  make: make,
+  model: model,
+  year: year || '',
+  ttaf: ttaf || '',
+  engineInfo: engineInfo,
+  annualInfo: annualInfo,
+  cond: cond,
+  cosm: cosm,
+  avionics: avs,
+  notes: notes || '',
+  asking: askPrice || '',
+  cirrusGen: (document.getElementById('v-cirrusgen') ? document.getElementById('v-cirrusgen').value : ''),
+  logbooks: (document.getElementById('v-logbooks') ? document.getElementById('v-logbooks').value : ''),
+  damage: (document.getElementById('v-damage') ? document.getElementById('v-damage').value : ''),
+  outOfAnnual: outOfAnnual,
+  avionicsPackage: (document.getElementById('v-avionics-package') ? document.getElementById('v-avionics-package').value : ''),
+  clientId: getOrCreateClientId(),
+  email: getValuationEmail() || null,
+  engineModel: engineModel,
+  engineTbo: tbo,
+  engineSmoh: engineSmoh,
+  engineSmohL: engineSmohL,
+  engineSmohR: engineSmohR,
+  isTwin: isTwin,
+  engineConversion: (engConvEl && engConvEl.value.trim()) ? engConvEl.value.trim() : ''
+});
+renderVal(v,make,model,year);
+trackEvent('valuation_completed', { make: make, model: model });
+} catch(e) {
+    console.error('Valuation error:', e);
+    document.getElementById('v-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed: ' + (e.message || e) + '</p>';
+}
+setLoading('v-spin','v-btn',false);
+}
+
+async function sendAppFeedback(opts) {
+  var entry = {
+    email: opts.email || '',
+    aircraft: opts.aircraft || '',
+    accuracy: opts.accuracy || '',
+    message: opts.message || '',
+    ts: new Date().toISOString()
+  };
+  try {
+    var fb = JSON.parse(localStorage.getItem('spv_feedback') || '[]');
+    fb.push(entry);
+    localStorage.setItem('spv_feedback', JSON.stringify(fb));
+  } catch (e) {}
+  try {
+    var resp = await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: entry.email || null,
+        aircraft: entry.aircraft || null,
+        accuracy: entry.accuracy || null,
+        message: entry.message || null
+      })
+    });
+    var d = await resp.json().catch(function() { return {}; });
+    return resp.ok && !d.error;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function submitFeedback() {
+  var email = document.getElementById('fb-email').value.trim();
+  var aircraft = document.getElementById('fb-aircraft').value.trim();
+  var accuracy = document.getElementById('fb-accuracy').value;
+  var message = document.getElementById('fb-message').value.trim();
+  if (!message && !accuracy) { alert('Please enter feedback or select accuracy.'); return; }
+  var btn = document.getElementById('fb-btn');
+  var origHtml = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader-2"></i> Sending...';
+  await sendAppFeedback({ email: email, aircraft: aircraft, accuracy: accuracy, message: message });
+  trackEvent('feedback_submitted', { source: 'feedback_tab', accuracy: accuracy || 'none' });
+  document.getElementById('fb-result').innerHTML = '<p style="color:var(--success);font-size:14px;margin-top:1rem;font-weight:600">Thank you for your feedback! This helps us improve SmallPlaneValue.</p>';
+  document.getElementById('fb-email').value = '';
+  document.getElementById('fb-aircraft').value = '';
+  document.getElementById('fb-accuracy').value = '';
+  document.getElementById('fb-message').value = '';
+  btn.disabled = false;
+  btn.innerHTML = origHtml;
+}
+
+async function submitValuationFeedback(accuracy) {
+  var ctx = window._lastValContext || {};
+  var row = document.getElementById('val-accuracy-row');
+  if (!row || row.dataset.submitted === '1') return;
+  var btns = row.querySelectorAll('.val-acc-btn');
+  btns.forEach(function(b) { b.disabled = true; });
+  var aircraft = [ctx.year, ctx.make, ctx.model].filter(Boolean).join(' ');
+  var msg = 'Post-valuation rating. FMV: $' + (ctx.fmv || 0).toLocaleString();
+  if (ctx.listingAsk) msg += ', Listing ask: $' + ctx.listingAsk.toLocaleString();
+  if (ctx.buyer) msg += ', Buyer target: $' + ctx.buyer.toLocaleString();
+  msg += '.';
+  await sendAppFeedback({ aircraft: aircraft, accuracy: accuracy, message: msg });
+  trackEvent('valuation_accuracy_feedback', {
+    accuracy: accuracy,
+    make: ctx.make || '',
+    model: ctx.model || '',
+    fmv: ctx.fmv || 0,
+    listing_ask: ctx.listingAsk || 0
+  });
+  row.dataset.submitted = '1';
+  btns.forEach(function(b) {
+    var on = b.getAttribute('data-acc') === accuracy;
+    b.classList.toggle('selected', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  var msgEl = document.getElementById('val-accuracy-msg');
+  if (msgEl) {
+    msgEl.style.color = 'var(--success)';
+    msgEl.textContent = 'Thanks — your rating helps us improve valuations.';
+  }
+}
+
+function buildListingNarrative(listingAsk, fmv, buyer, marketAsk, v) {
+  var parts = [];
+  var drivers = [];
+  var el = window._lastEngineLife;
+  if (el && el.engines && el.engines.length) {
+    var minLife = 100;
+    el.engines.forEach(function(e) {
+      var pct = e.life && e.life.pctRemaining != null
+        ? e.life.pctRemaining
+        : Math.max(0, Math.round((1 - e.smoh / e.tbo) * 100));
+      if (pct < minLife) minLife = pct;
+      if (pct >= 55) drivers.push('low engine time (' + pct + '% TBO life remaining)');
+    });
+  }
+  if (v.engineVerdict && /fresh/i.test(v.engineVerdict) && !drivers.length) {
+    drivers.push('strong engine condition (' + v.engineVerdict + ')');
+  }
+  if (v.avVerdict && /above|modern|glass|premium/i.test(v.avVerdict)) {
+    drivers.push('above-average avionics');
+  }
+  if (listingAsk > 0 && fmv > 0) {
+    var gapD = listingAsk - fmv;
+    var gapPct = Math.round(gapD / fmv * 100);
+    var verdict = '';
+    if (gapPct > 20) {
+      verdict = 'This listing looks ambitious relative to our estimate.';
+      if (listingAsk >= 380000) {
+        parts.push('Dealer listings in this range often carry a 12–20% premium over fair market — the ask is not always the value.');
+      }
+    } else if (gapPct > 10) verdict = 'This listing is priced toward the high end of the market.';
+    else if (gapPct > 5) verdict = 'This listing is slightly above our fair market value.';
+    else if (gapPct >= -5) verdict = 'This listing is roughly in line with our fair market value.';
+    else verdict = 'This listing may offer good value below our estimate.';
+    parts.push(
+      verdict + ' The ask of ' + fmt(listingAsk) + ' is ' + fmt(Math.abs(gapD)) + ' (' +
+      Math.abs(gapPct) + '%) ' + (gapPct >= 0 ? 'above' : 'below') + ' our ' + fmt(fmv) + ' fair market value.'
+    );
+    if (gapPct > 8 && drivers.length) {
+      parts.push(
+        'Even so, ' + drivers.join(' and ') +
+        ' supports paying toward the top of the range — consider opening near ' + fmt(buyer) +
+        ' and negotiating toward ' + fmt(fmv) + ' rather than the full ask.'
+      );
+    } else if (gapPct <= 8 && drivers.length) {
+      parts.push('Key value drivers: ' + drivers.join(' and ') + '.');
+    }
+    if (marketAsk && Math.abs(marketAsk - listingAsk) > 5000) {
+      parts.push('Typical comparable listings ask around ' + fmt(marketAsk) + '.');
+    }
+  } else if (fmv > 0) {
+    parts.push('Our fair market value is ' + fmt(fmv) + ', with a buyer target near ' + fmt(buyer) + '.');
+    if (marketAsk) parts.push('Similar aircraft are typically listed around ' + fmt(marketAsk) + '.');
+    if (drivers.length) parts.push('This estimate reflects ' + drivers.join(' and ') + '.');
+    parts.push('Enter a listing ask above to see how a specific price compares.');
+  }
+  return parts.join(' ');
+}
+
+function renderVal(v, make, model, year) {
+// Support both old and new format
+var apEl=document.getElementById("v-asking");
+var listingAsk = (apEl && apEl.value) ? parseInt(apEl.value, 10) : 0;
+var marketAsk = v.sellerAsk || v.askHigh || 0;
+var seller = marketAsk || listingAsk;
+var fmv = v.fairMarketValue || v.askMid || 0;
+var buyer = v.buyerTarget || v.askLow || 0;
+var total = seller - buyer;
+var fmvPct = total > 0 ? Math.round((fmv - buyer) / total * 100) : 50;
+window._lastValContext = { make: make, model: model, year: year, fmv: fmv, buyer: buyer, listingAsk: listingAsk, marketAsk: marketAsk };
+var listingNarrative = buildListingNarrative(listingAsk, fmv, buyer, marketAsk, v);
+var listingNarrativeHtml = listingNarrative
+  ? '<div class="listing-narrative"><div class="listing-narrative-hdr"><i class="ti ti-report-analytics"></i> LISTING VS MARKET</div><div class="listing-narrative-body">' + listingNarrative + '</div></div>'
+  : '';
+var listingGapHtml = '';
+if (listingAsk > 0 && fmv > 0 && listingAsk !== marketAsk) {
+  var gapPct = Math.round((listingAsk - fmv) / fmv * 100);
+  var gapLabel = gapPct > 0 ? gapPct + '% above' : Math.abs(gapPct) + '% below';
+  var gapColor = gapPct > 15 ? 'var(--danger)' : gapPct > 5 ? 'var(--warn)' : 'var(--success)';
+  listingGapHtml = '<div style="background:rgba(232,160,32,0.12);border:1px solid rgba(232,160,32,0.35);border-radius:var(--radius);padding:12px 14px;margin-bottom:1rem;font-size:13px;color:var(--sky)">'
+    + '<strong>Listing ask:</strong> ' + fmt(listingAsk) + ' — <span style="color:' + gapColor + ';font-weight:600">' + gapLabel + ' our fair market value</span>'
+    + (marketAsk ? ' · Typical market list for comps: ' + fmt(marketAsk) : '')
+    + '</div>';
+}
+function ic(s){if(!s)return 'neu';const n=parseFloat(s);return n>0?'up':n<0?'down':'neu';}
+const tips=(v.negotiatingTips||[]).map(t=>`<div class="tip-item"><i class="ti ti-arrow-right"></i><span>${t}</span></div>`).join('');
+var engLifeHtml = '';
+var elLife = window._lastEngineLife;
+if (elLife && elLife.engines && elLife.engines.length) {
+  engLifeHtml = '<div style="margin:1rem 0;padding:14px 16px;background:rgba(19,64,116,0.04);border-radius:var(--radius);border:1px solid rgba(19,64,116,0.08)">'
+    + '<div style="font-size:12px;font-weight:600;color:var(--sky);margin-bottom:12px;letter-spacing:.04em;display:flex;align-items:center;gap:6px"><i class="ti ti-engine"></i> ENGINE LIFE — SMOH vs TBO</div>';
+  elLife.engines.forEach(function(e, i) {
+    if (i > 0) engLifeHtml += '<div style="height:10px"></div>';
+    engLifeHtml += engineLifeBarHtml(e.label, e.smoh, e.tbo, e.life);
+  });
+  engLifeHtml += '</div>';
+}
+document.getElementById('v-result').innerHTML=`
+<div class="result-card">
+<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem">
+<div>
+<div style="font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.04em;margin-bottom:4px">AIRCRAFT VALUATION</div>
+<div class="result-main-val">${fmt(fmv)}</div>
+<div class="result-range">${year||''} ${make} ${model} · fair market value</div>
+</div>
+<span class="badge ${v.confidence==='high'?'bg-green':'bg-amber'}"><i class="ti ti-${v.confidence==='high'?'circle-check':'alert-circle'}" style="font-size:12px"></i> ${v.confidence==='high'?'High':'Moderate'} confidence</span>
+</div>
+${listingGapHtml}
+${listingNarrativeHtml}
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:1rem">
+<div style="text-align:center;padding:14px 8px;background:var(--offwhite);border-radius:var(--radius)">
+<div style="font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em;margin-bottom:4px">BUYER TARGET</div>
+<div style="font-size:22px;font-weight:700;color:#27ae60">${fmt(buyer)}</div>
+<div style="font-size:11px;color:var(--muted);margin-top:2px">negotiate to this</div>
+</div>
+<div style="text-align:center;padding:14px 8px;background:var(--sky);border-radius:var(--radius)">
+<div style="font-size:11px;font-weight:500;color:rgba(255,255,255,0.7);letter-spacing:.04em;margin-bottom:4px">FAIR MARKET VALUE</div>
+<div style="font-size:22px;font-weight:700;color:#fff">${fmt(fmv)}</div>
+<div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:2px">realistic price</div>
+</div>
+<div style="text-align:center;padding:14px 8px;background:var(--offwhite);border-radius:var(--radius)">
+<div style="font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em;margin-bottom:4px">TYPICAL MARKET ASK</div>
+<div style="font-size:22px;font-weight:700;color:#c0392b">${fmt(seller)}</div>
+<div style="font-size:11px;color:var(--muted);margin-top:2px">from comps, not your listing</div>
+</div>
+</div>
+<div class="price-bar-wrap">
+<div class="pbar-labels"><span>${fmt(buyer)}</span><span style="color:var(--muted)">valuation range</span><span>${fmt(seller)}</span></div>
+<div class="pbar-track">
+<div class="pbar-range"></div>
+<div class="pbar-pin" style="left:${fmvPct}%"><div class="pbar-pin-lbl">${fmt(fmv)}</div></div>
+</div>
+</div>
+<div style="background:var(--offwhite);border-radius:var(--radius);padding:12px 14px;margin:1rem 0;font-size:13px;color:var(--muted)">
+<strong style="color:var(--sky)">How this works:</strong> Fair Market Value is what the aircraft is realistically worth today. Buyer Target is a strong negotiating position. Typical Market Ask is what similar listings ask — if you entered a listing price, it is shown separately above.
+</div>
+<div class="metric-row">
+<div class="metric"><div class="metric-val">${v.condVerdict}</div><div class="metric-lbl">Condition</div><div class="metric-note ${ic(v.condImpact)}">${v.condImpact||'—'} vs avg</div></div>
+<div class="metric"><div class="metric-val">${v.avVerdict}</div><div class="metric-lbl">Avionics</div><div class="metric-note ${ic(v.avImpact)}">${v.avImpact||'—'} vs avg</div></div>
+<div class="metric"><div class="metric-val">${v.engineVerdict}</div><div class="metric-lbl">Engine</div><div class="metric-note ${ic(v.engineImpact)}">${v.engineImpact||'—'} vs avg</div></div>
+</div>
+${engLifeHtml}
+<div class="val-accuracy-row" id="val-accuracy-row">
+<div class="val-accuracy-label">How was this valuation?</div>
+<div class="val-accuracy-btns">
+<button type="button" class="val-acc-btn" data-acc="low" aria-pressed="false" onclick="submitValuationFeedback('low')">Too low</button>
+<button type="button" class="val-acc-btn" data-acc="right" aria-pressed="false" onclick="submitValuationFeedback('right')">About right</button>
+<button type="button" class="val-acc-btn" data-acc="high" aria-pressed="false" onclick="submitValuationFeedback('high')">Too high</button>
+</div>
+<div class="val-accuracy-msg" id="val-accuracy-msg"></div>
+</div>
+<div style="font-size:13px;font-weight:500;color:var(--sky);margin-bottom:.75rem;padding:10px 14px;background:rgba(19,64,116,0.06);border-radius:var(--radius)">${v.keyFinding}</div>
+<div class="analysis-text">${v.analysis}</div>
+${tips?`<div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(11,37,69,0.08)"><div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:.04em">NEGOTIATING GUIDANCE</div><div class="tip-list">${tips}</div></div>`:''}
+<div class="note-box" style="margin-top:1rem">AI-generated for research purposes only. Not a certified appraisal. Engage an ASA-certified appraiser for financing or insurance.</div>
+</div>`;
+}
+
+/* ── COMPS ── */
+async function doComps() {
+const model=document.getElementById('c-model').value.trim();
+const years=document.getElementById('c-years').value;
+if (!model){alert('Enter a make and model.');return;}
+setLoading('c-spin','c-btn',true);
+document.getElementById('c-result').innerHTML='';
+try {
+const v = await apiPost('/api/comps', { model: model, years: years || '' });
+renderComps(v, model);
+} catch(e){document.getElementById('c-result').innerHTML='<p style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>';}
+setLoading('c-spin','c-btn',false);
+}
+
+function renderComps(v, model) {
+const rows=(v.listings||[]).map(l=>`<tr style="border-bottom:1px solid rgba(11,37,69,0.06)">
+<td style="padding:8px 10px;font-size:13px;color:var(--sky)">${l.year}</td>
+<td style="padding:8px 10px;font-size:13px;color:var(--sky)">${l.ttaf?l.ttaf.toLocaleString()+' h':'—'}</td>
+<td style="padding:8px 10px;font-size:13px;color:var(--sky)">${l.smoh?l.smoh.toLocaleString()+' h':'—'}</td>
+<td style="padding:8px 10px;font-size:13px;color:var(--sky)">${l.cond}</td>
+<td style="padding:8px 10px;font-size:13px;font-weight:500;color:var(--sky)">${l.ask ? fmt(l.ask) : '<span style="color:var(--accent);font-style:italic">Call for price</span>'}</td>
+<td style="padding:8px 10px"><span class="badge ${l.daysListed<30?'bg-green':'bg-amber'}">${l.daysListed}d</span></td>
+</tr>`).join('');
+document.getElementById('c-result').innerHTML=`
+<div class="result-card">
+<div style="font-weight:500;font-size:16px;color:var(--sky);margin-bottom:1rem">${model} — active listings</div>
+<div class="metric-row" style="grid-template-columns:repeat(4,1fr)">
+<div class="metric"><div class="metric-val">${fmt(v.askLow)}</div><div class="metric-lbl">Low ask</div></div>
+<div class="metric"><div class="metric-val">${fmt(v.askMid)}</div><div class="metric-lbl">Median ask</div></div>
+<div class="metric"><div class="metric-val">${fmt(v.askHigh)}</div><div class="metric-lbl">High ask</div></div>
+<div class="metric"><div class="metric-val">${v.avgDaysListed}d</div><div class="metric-lbl">Avg listed</div></div>
+</div>
+<p style="font-size:14px;color:rgba(11,37,69,0.7);margin-bottom:.75rem">${v.summary}</p>
+<div style="font-size:13px;color:var(--muted);padding:10px 12px;background:var(--offwhite);border-radius:var(--radius);margin-bottom:1rem"><i class="ti ti-info-circle" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i>${v.negotiationNote}</div>
+<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
+<thead><tr style="border-bottom:1px solid rgba(11,37,69,0.1)">
+<th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em">YEAR</th>
+<th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em">TTAF</th>
+<th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em">SMOH</th>
+<th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em">COND.</th>
+<th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em">ASKING PRICE</th>
+<th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em">LISTED</th>
+</tr></thead>
+<tbody>${rows}</tbody>
+</table></div>
+<div class="note-box" style="margin-top:.75rem">Asking prices only — no sale prices, as GA transactions are not publicly recorded. Verify at <a href="https://www.trade-a-plane.com" target="_blank" style="color:var(--sky-light)">Trade-A-Plane</a>, <a href="https://www.controller.com" target="_blank" style="color:var(--sky-light)">Controller.com</a>, <a href="https://www.barnstormers.com" target="_blank" style="color:var(--sky-light)">Barnstormers</a>.</div>
+</div>`;
+}
+
+/* ── CHECKLIST ── */
+let clItems = [];
+
+async function doChecklist() {
+const make=document.getElementById('cl-make').value.trim();
+const model=document.getElementById('cl-model').value.trim();
+const year=document.getElementById('cl-year').value;
+const eng=document.getElementById('cl-eng').value;
+const exp=document.getElementById('cl-exp').value;
+const concerns=document.getElementById('cl-concerns').value.trim();
+const purpose=document.getElementById('cl-purpose').value;
+if (!make||!model){alert('Enter make and model.');return;}
+setLoading('cl-spin','cl-btn',true);
+document.getElementById('cl-result').innerHTML='';
+
+// FAA types say "Fixed wing …" (not rotorcraft). That is not fixed-gear.
+var isRetract = /retract/i.test(window._acType || '') || /arrow|210|baron|bonanza|saratoga|seneca|310|340|414|421|mooney|lance|comanche|centurion|r182|182rg/i.test(model);
+var isMulti = Number(window._numEng) > 1 || /multi/i.test(window._acType || '') || /baron|seneca|310|340|414|421|twin|duchess|seminole|apache|aztec|navajo|chieftain/i.test(model);
+
+var base = [
+{name:"Documents and Records", items:[
+{name:"Airworthiness certificate",note:"Must be original, displayed in aircraft. Verify it matches registration and aircraft serial number.",critical:true},
+{name:"Registration",note:"Must be in aircraft, match N-number markings and serial number. Confirm name and current address of registered owner.",critical:true},
+{name:"POH / Flight Manual",note:"Must be appropriate to this specific aircraft model and serial number. Check for all supplements for installed equipment.",critical:true},
+{name:"Weight and balance",note:"Must be current with all modifications reflected. Calculate several typical loading scenarios to verify within limits.",critical:true},
+{name:"Airframe logbooks since manufacture",note:"Verify continuous entries with no unexplained gaps. Compare total airframe time to advertised and to tachometer/Hobbs meter.",critical:true},
+{name:"Latest annual inspection",note:"Confirm date and proper sign-off. Check who performed it and if any discrepancies were noted.",critical:true},
+{name:"24-month pitot-static and transponder checks",note:"Confirm currency and expiration dates for both inspections. Required for IFR flight.",critical:true},
+{name:"ELT battery",note:"Check current ELT battery and confirm replacement date is within limits.",critical:false},
+{name:"STCs, 337s, and yellow tags",note:"Confirm all Forms 337, STCs, and yellow tags match logbook entries for all installed equipment and modifications.",critical:true},
+{name:"Damage history",note:"Verify any damage history with documentation of repair. Cross-check NTSB records for accident history.",critical:true},
+{name:"Aircraft title search",note:"Conduct title search to verify clear title, no liens, and ownership history matches logbooks.",critical:true}
+]},
+{name:"Engine Logbook and History", items:[
+{name:"Engine time and calendar since overhaul",note:"Compare total engine time, calendar years since overhaul, and time since top overhaul to advertised and to tach/Hobbs.",critical:true},
+{name:"Compression test history",note:"Review trends in cylinder differential compression checks over the last several annuals. Look for declining trends in any cylinder.",critical:true},
+{name:"Oil analysis history",note:"If oil analysis was performed, check frequency, results and trends. Look for elevated metals indicating wear: iron, copper, aluminum.",critical:true},
+{name:"Engine STCs and 337s",note:"Check all Forms 337, yellow tags and logbook entries for engine equipment and modifications.",critical:false},
+{name:"Overhaul shop and specs",note:"Verify who performed the overhaul, whether it was to new limits, and if a factory reman or field overhaul.",critical:true},
+{name:"Alternator bearing age",note:"For engines with gear-driven alternators, check whether alternator has been rebuilt with bearing change within last 500 operating hours.",critical:false},
+{name:"Vacuum/pneumatic pump age",note:"Check whether dry pneumatic pump has been overhauled or replaced within last 500 operating hours.",critical:false}
+]},
+{name:"Engine Compartment Inspection", items:[
+{name:"Cylinder condition",note:"Check cylinders for leaks or cracks, especially around injector nozzles (fuel injected) and spark plug holes. Look for evidence of overheating.",critical:true},
+{name:"Crankcase inspection",note:"Check for cracks on top of the crankcase and at cylinder base bolts. Check rear case for leaks that may indicate a crankcase crack.",critical:true},
+{name:"Engine mounts",note:"Check rubber engine mounts for sagging, cracking, or deterioration. Check heat deflectors for wear and cutting into mount legs.",critical:true},
+{name:"Baffles",note:"Check condition of all baffles, especially hard, cracked, or missing pieces. Proper baffling is critical for cooling.",critical:false},
+{name:"Hoses, clamps and brackets",note:"Check all hoses for cracks, kinks, age, or bulging. Check clamps and brackets for broken, loose or missing items. Check fuel injector line grommets.",critical:true},
+{name:"Exhaust system",note:"Check for cracks, leaks, or dents. Check for missing mounting nuts or studs. Look for loose, bent, or collapsed clamps. Check for corrosion throughout.",critical:true},
+{name:"Muffler condition",note:"Check exterior for dents, heat warp, holes or cracks. Check for missing or distorted flame cones. Inspect tailpipe hangers at firewall.",critical:true},
+{name:"Oil leaks and stains",note:"Check for any unexplained fuel or oil leaks or stains. Look for evidence of oil from alternator vent tube.",critical:false},
+{name:"Magnetos and ignition",note:"Visually inspect magnetos, ignition harness, and spark plug leads for condition and security.",critical:false}
+]},
+{name:"Propeller", items:[
+{name:"Propeller time since overhaul",note:"Compare propeller time and years since overhaul to advertised and tach/Hobbs. Check for overhaul or re-lube within last six years.",critical:true},
+{name:"Blade condition",note:"Check propeller blades for nicks, cracks, erosion, corrosion, or other damage. Check blade security.",critical:true},
+{name:"Spinner and bulkhead",note:"Check spinner for cracks, dents or damage. Check spinner bulkhead/backplate for cracks, dents or damage.",critical:false},
+{name:"Governor",note:"Verify governor operation and check for leaks. Confirm governor has been overhauled at or before propeller overhaul.",critical:false},
+{name:"Prop strike cross-check",note:"Cross-check any prop strike history against engine logs for teardown evidence, and airframe logs for gear collapse or gear-up landing.",critical:true}
+]},
+{name:"Landing Gear", items:[
+{name:"Tires",note:"Check for cupping, sidewall cracks, excessively worn tread, flat spots, or cord showing. Check tire pressures.",critical:true},
+{name:"Brakes",note:"Check for grooves in brake discs and condition of brake pads. Look for hard, stiff, kinked or leaking brake hoses.",critical:true},
+{name:"Struts and hardware",note:"Check for leaks, visible corrosion or rust on struts. Check for pitting or corrosion on chromed surfaces. Check for looseness in mountings.",critical:true},
+{name:"Nose gear",note:"Check shimmy damper for security, bends or leaks. Check tow pin area for damage. Check steering mechanism.",critical:false}
+]},
+{name:"Wings and Tail", items:[
+{name:"Wing surface inspection",note:"Sight across top and bottom of wing checking for dents, wrinkles, or paint blistering (may indicate corrosion of internal structure).",critical:true},
+{name:"Wing attach fittings",note:"Check wing attach bolt fittings for corrosion, standing water, or evidence of past water. Check bathtub fitting covers and drain holes.",critical:true},
+{name:"Control surfaces",note:"Inspect ailerons, elevator, and rudder for dents, wrinkles, corrosion. Check that control surfaces were properly balanced after any paint.",critical:true},
+{name:"Fuel system",note:"Check for evidence of fuel leaks on top and bottom of wing. Check fuel caps, vents, and fuel selector valve operation through all positions including off.",critical:true},
+{name:"Tail surfaces",note:"Check fuselage tail area for wrinkles, dents, loose rivets, corrosion. Check trim tabs flush with surfaces when indicators at neutral.",critical:false},
+{name:"Rivet condition",note:"Check for ground-down rivet heads which may indicate damage from sanding if airplane was not stripped before repainting.",critical:false}
+]},
+{name:"Cabin and Interior", items:[
+{name:"Windows and doors",note:"Check for crazed or cracked windows. Check forward door fit and hinge condition. Look for signs of interior leaks around door and window seals.",critical:false},
+{name:"Corrosion check",note:"Check cabin sidewalls for corrosion under windows, doors, and pilot storm window. This is a common hidden problem area.",critical:true},
+{name:"Seats and restraints",note:"Check proper installation and operation of seat belts, shoulder harnesses, seats and adjustment mechanisms.",critical:true},
+{name:"Emergency exits",note:"Check proper operation of all emergency exits.",critical:true},
+{name:"Fuel selector",note:"Verify fuel selector valve moves easily between all positions. Check proper operation of off-position safety stops.",critical:true}
+]},
+{name:"Warm Engine Checks", items:[
+{name:"Borescope all cylinders",note:"Conduct borescope inspection of all cylinders. Look for scoring, corrosion, deposits, cracked valves, and cam lobe wear indicators.",critical:true},
+{name:"Differential compression",note:"Conduct differential compression check on all cylinders. Record specific numbers. Minimum 60/80 with no more than 5 PSI variance between cylinders.",critical:true},
+{name:"Oil filter and screen",note:"Cut open oil filter and inspect oil screen for metal contamination. Any metal requires further investigation.",critical:true}
+]},
+{name:"Flight Check", items:[
+{name:"Manifold pressure before start",note:"Check manifold pressure gauge reads ambient pressure before engine start.",critical:false},
+{name:"Instrument check",note:"Check all instruments against tolerance for IFR flight after start and during taxi.",critical:true},
+{name:"Takeoff performance",note:"Confirm expected manifold pressure and RPM at full throttle takeoff. Check fuel flow is at or above redline.",critical:true},
+{name:"Cruise performance",note:"Compute true airspeed at cruise and compare to POH expectations for altitude and power setting.",critical:true},
+{name:"Avionics operational check",note:"Systematically check all instruments, avionics and indicators. Check magnetic compass for proper fluid and operation.",critical:true},
+{name:"Autopilot check",note:"Functionally check the autopilot system and all methods of disconnect per POH supplement procedures.",critical:false},
+{name:"VOR accuracy",note:"Conduct VOR check and compare to 30-day VOR check log entry.",critical:false}
+]}
+];
+
+if (isRetract) {
+var gearIdx = base.findIndex(function(s){return s.name==='Landing Gear';});
+base[gearIdx].items.push(
+{name:"Gear retraction test",note:"Conduct full gear retraction test. Check transit speed (14V: 11-13 sec, 28V: 4-8 sec). Check all position indicators.",critical:true},
+{name:"Gear rigging",note:"Check rigging tolerances including down tensions, free play in gear box, uplock clearance. Check for bent extension arms.",critical:true},
+{name:"Gear doors and uplocks",note:"Check outer gear doors for security, cracks or loose rivets. Check uplock cable condition and roller freedom. Check inner doors retract fully.",critical:true},
+{name:"Emergency gear extension",note:"Verify manual gear extension crank is accessible, snaps into cranking position, and restows properly.",critical:true}
+);
+}
+
+if (isMulti) {
+var flightIdx = base.findIndex(function(s){return s.name==='Flight Check';});
+base[flightIdx].items.push(
+{name:"Single engine performance",note:"Verify Vmc and single-engine climb performance. Check feathering operation if applicable.",critical:true},
+{name:"Engine synchronization",note:"Check prop sync system operation. Verify both engines produce matching performance at same power settings.",critical:false}
+);
+}
+
+try {
+var specific = await apiPost('/api/checklist', {
+  make: make,
+  model: model,
+  year: year || '',
+  eng: eng || '',
+  engModel: window._engModel || '',
+  acType: window._acType || '',
+  numEng: String(window._numEng || ''),
+  exp: exp || '',
+  concerns: concerns || '',
+  purpose: purpose || ''
+});
+var specItems = Array.isArray(specific) ? specific : [specific];
+base.push({name: make + ' ' + model + ' Specific Items', items: specItems});
+} catch(e) { console.log('Model-specific items failed, using base checklist'); }
+
+var ac = (year||'') + ' ' + make + ' ' + model;
+renderChecklist({aircraft: ac.trim(), sections: base});
+document.getElementById('cl-result').insertAdjacentHTML('afterbegin', '<div style="background:var(--offwhite);border-radius:var(--radius);padding:12px 16px;margin-bottom:1rem;font-size:13px;color:var(--muted);line-height:1.6"><i class="ti ti-info-circle" style="font-size:14px;vertical-align:-2px;margin-right:4px"></i><strong>This is a starting point for your pre-buy inspection.</strong> More in-depth checklists can be obtained from your A&P mechanic and your aircraft\'s respective type club or pilot owners association (<a href="https://www.bonanza.org" target="_blank" style="color:var(--sky)">ABS</a>, <a href="https://www.cirruspilots.org" target="_blank" style="color:var(--sky)">COPA</a>, <a href="https://cessnaowner.org" target="_blank" style="color:var(--sky)">Cessna Owner Organization</a>, <a href="https://www.mmopa.com" target="_blank" style="color:var(--sky)">MMOPA</a>, <a href="https://www.piperowner.org" target="_blank" style="color:var(--sky)">POA</a>).</div>');
+setLoading('cl-spin','cl-btn',false);
+}
+
+const CLICONS = {'Documents':'ti-file-text','Airframe':'ti-box','Engine':'ti-engine','Prop':'ti-propeller','Landing':'ti-circle','Flight':'ti-arrows-move','Avionics':'ti-device-desktop-analytics','Electrical':'ti-bolt','Fuel':'ti-droplet','Interior':'ti-armchair','Test':'ti-plane-departure'};
+function clIcon(name) { for(const [k,v] of Object.entries(CLICONS)){if(name.toLowerCase().includes(k.toLowerCase()))return v;} return 'ti-checklist'; }
+
+function renderChecklist(cl) {
+clItems=[];let id=0;
+cl.sections.forEach((sec,si)=>sec.items.forEach(item=>clItems.push({...item,id:id++,si,status:'open'})));
+let html=`
+<div style="display:flex;align-items:center;justify-content:space-between;margin:1.5rem 0 .75rem;flex-wrap:wrap;gap:8px">
+<div style="font-size:16px;font-weight:500;color:var(--sky)">${cl.aircraft}</div>
+<div style="display:flex;align-items:center;gap:8px"><button onclick="window.print()" style="padding:6px 14px;font-size:13px;border:1px solid rgba(11,37,69,0.15);border-radius:6px;background:var(--offwhite);color:var(--sky);cursor:pointer;display:flex;align-items:center;gap:5px"><i class="ti ti-printer" style="font-size:15px"></i> Print</button><div class="cl-stats" id="cl-stats-row"></div></div>
+</div>
+<div class="progress-bar"><div class="prog-fill" id="cl-prog" role="progressbar" aria-label="Checklist progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" style="width:0%"></div></div>`;
+cl.sections.forEach((sec,si)=>{
+const sitems=clItems.filter(i=>i.si===si);
+html+=`<div class="cl-section" id="cls-${si}">
+<div class="cl-sec-hdr" onclick="clToggle(${si})">
+<i class="ti ${clIcon(sec.name)}" style="font-size:18px;color:var(--muted)"></i>
+<span class="cl-sec-name">${sec.name}</span>
+<span class="cl-sec-count">${sitems.length} items</span>
+<i class="ti ti-chevron-down cl-chev open" id="clch-${si}"></i>
+</div>
+<div class="cl-body" id="clb-${si}">`;
+sitems.forEach(item=>{
+html+=`<div class="cl-item" id="cli-${item.id}">
+<div class="cl-item-text">
+<div class="cl-item-name">${item.name}${item.critical?` <span style="color:var(--danger);font-size:11px">&#9654; critical</span>`:''}</div>
+<div class="cl-item-note">${item.note}</div>
+${item.critical&&item.criticalReason?`<div class="cl-item-crit"><i class="ti ti-alert-triangle" style="font-size:13px"></i>${item.criticalReason}</div>`:''}
+</div>
+<div class="btn-grp">
+<button class="s-btn" onclick="clStatus(${item.id},'pass')" title="Pass" aria-label="Pass"><i class="ti ti-check" style="font-size:13px" aria-hidden="true"></i></button>
+<button class="s-btn" onclick="clStatus(${item.id},'flag')" title="Flag" aria-label="Flag"><i class="ti ti-flag" style="font-size:13px" aria-hidden="true"></i></button>
+<button class="s-btn" onclick="clStatus(${item.id},'fail')" title="Fail" aria-label="Fail"><i class="ti ti-x" style="font-size:13px" aria-hidden="true"></i></button>
+</div>
+</div>`;
+});
+html+=`</div></div>`;
+});
+html+=`<div id="cl-summary"></div>`;
+document.getElementById('cl-result').innerHTML=html;
+clUpdateStats();
+}
+
+function clToggle(si) {
+const b=document.getElementById('clb-'+si), c=document.getElementById('clch-'+si);
+if(c.classList.contains('open')){b.style.display='none';c.classList.remove('open');}
+else{b.style.display='';c.classList.add('open');}
+}
+
+function clStatus(id, s) {
+const item=clItems.find(i=>i.id===id); if(!item)return;
+item.status=item.status===s?'open':s;
+const row=document.getElementById('cli-'+id);
+const btns=row.querySelectorAll('.s-btn');
+btns[0].className='s-btn'+(item.status==='pass'?' s-pass':'');
+btns[1].className='s-btn'+(item.status==='flag'?' s-flag':'');
+btns[2].className='s-btn'+(item.status==='fail'?' s-fail':'');
+clUpdateStats();
+}
+
+function clUpdateStats() {
+const pass=clItems.filter(i=>i.status==='pass').length;
+const flag=clItems.filter(i=>i.status==='flag').length;
+const fail=clItems.filter(i=>i.status==='fail').length;
+const open=clItems.filter(i=>i.status==='open').length;
+const total=clItems.length; const pct=total>0?Math.round((total-open)/total*100):0;
+const prog=document.getElementById('cl-prog'); if(prog){prog.style.width=pct+'%';prog.setAttribute('aria-valuenow',String(pct));}
+const sr=document.getElementById('cl-stats-row');
+if(sr)sr.innerHTML=`<span class="stat-pill" style="background:rgba(26,122,74,0.1);color:var(--success)"><i class="ti ti-check" style="font-size:12px"></i> ${pass}</span><span class="stat-pill" style="background:rgba(232,160,32,0.12);color:var(--warn)"><i class="ti ti-flag" style="font-size:12px"></i> ${flag}</span><span class="stat-pill" style="background:rgba(192,57,43,0.08);color:var(--danger)"><i class="ti ti-x" style="font-size:12px"></i> ${fail}</span><span class="stat-pill" style="background:var(--offwhite);color:var(--muted)">${open} left</span>`;
+const flagged=clItems.filter(i=>i.status==='flag'||i.status==='fail');
+const verdict=fail>0?'Issues found — negotiate hard or walk away':flag>2?'Concerns noted — get repair quotes before committing':flag>0?'Minor concerns — use as negotiating points':open>0?'Inspection in progress...':'Looking good — no major issues found';
+const vc=fail>0?'var(--danger)':flag>0?'var(--warn)':open>0?'var(--muted)':'var(--success)';
+const flagHtml=flagged.length?`<div style="margin-top:.75rem"><div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;letter-spacing:.04em">ITEMS NEEDING ATTENTION</div>${flagged.map(i=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(11,37,69,0.06);font-size:13px;color:var(--sky)"><div style="width:8px;height:8px;border-radius:50%;background:${i.status==='fail'?'var(--danger)':'var(--warn)'};flex-shrink:0"></div>${i.name}${i.critical?' <span style="font-size:11px;color:var(--danger)">(critical)</span>':''}</div>`).join('')}</div>`:'';
+const sumEl=document.getElementById('cl-summary'); if(!sumEl)return;
+sumEl.innerHTML=`<div class="result-card" style="margin-top:1.5rem">
+<div style="font-size:14px;font-weight:500;color:${vc};margin-bottom:1rem;display:flex;align-items:center;gap:8px"><i class="ti ti-${fail>0?'alert-circle':flag>0?'alert-triangle':open>0?'clock':'circle-check'}" style="font-size:18px"></i>${verdict}</div>
+<div class="metric-row" style="grid-template-columns:repeat(4,1fr)">
+<div class="metric"><div class="metric-val" style="color:var(--success)">${pass}</div><div class="metric-lbl">Passed</div></div>
+<div class="metric"><div class="metric-val" style="color:var(--warn)">${flag}</div><div class="metric-lbl">Flagged</div></div>
+<div class="metric"><div class="metric-val" style="color:var(--danger)">${fail}</div><div class="metric-lbl">Failed</div></div>
+<div class="metric"><div class="metric-val">${pct}%</div><div class="metric-lbl">Complete</div></div>
+</div>
+${flagHtml}
+<div class="note-box" style="margin-top:1rem">This checklist is a buyer guide, not a substitute for a certified pre-buy inspection by an independent A&P mechanic.</div>
+</div>`;
+}
+
+/* ── REPORT A SALE ─────────────────────────────────── */
+function matchSelectOption(selectId, value) {
+  if (!value) return '';
+  var sel = document.getElementById(selectId);
+  if (!sel) return '';
+  var target = String(value).trim().toLowerCase();
+  for (var i = 0; i < sel.options.length; i++) {
+    var opt = sel.options[i];
+    if (!opt.value && !opt.textContent.trim()) continue;
+    var text = (opt.textContent || '').trim().toLowerCase();
+    if (text === target || text.indexOf(target) >= 0 || target.indexOf(text) >= 0) return opt.value || opt.textContent;
+  }
+  return '';
+}
+
+function inferAvionicsTier(avionics) {
+  if (!avionics || !avionics.length) return '';
+  var s = avionics.join(' ').toUpperCase();
+  if (/G1000|G3X|G500 TXI|G600 TXI|ENTEGRA|AVIDYNE R9|DYNON HDX|SKYVIEW HDX/.test(s)) {
+    return 'Full glass (G1000, Avidyne Entegra)';
+  }
+  if (/GTN|GNS430W|GNS530W|IFD ?5|GTX ?3|ADS-?B/.test(s)) {
+    return 'Modern IFR (GTN/Avidyne + ADS-B)';
+  }
+  if (/GNS ?4|GNS ?5|430W|530W|430\/530/.test(s)) {
+    return 'Mid panel (430/530 or equivalent)';
+  }
+  if (/NAV\/COM|KX155|IFR/.test(s)) {
+    return 'Basic IFR (one nav/com, no GPS)';
+  }
+  return 'Steam gauges / basic VFR';
+}
+
+async function parseSalePost() {
+  var txt = cleanPastedText(document.getElementById('sd-paste').value);
+  if (!txt) { alert('Paste a sale post first.'); return; }
+  document.getElementById('sd-paste-spin').classList.add('on');
+  document.getElementById('sd-paste-btn').disabled = true;
+  try {
+    var d = await apiPost('/api/parse-sale', { text: txt.substring(0, 5000) });
+    if (d.make) document.getElementById('sd-make').value = d.make;
+    if (d.model) document.getElementById('sd-model').value = d.model;
+    if (d.year) document.getElementById('sd-year').value = d.year;
+    if (d.salePrice) document.getElementById('sd-price').value = d.salePrice;
+    if (d.askingPrice) document.getElementById('sd-ask').value = d.askingPrice;
+    if (d.ttaf) document.getElementById('sd-ttaf').value = d.ttaf;
+    if (d.smoh) document.getElementById('sd-smoh').value = d.smoh;
+    if (d.saleMonth) {
+      var dateEl = document.getElementById('sd-date');
+      if (dateEl) dateEl.value = d.saleMonth;
+    }
+    var region = matchSelectOption('sd-region', d.region || '');
+    if (region) document.getElementById('sd-region').value = region;
+    var tier = d.avionicsTier || inferAvionicsTier(d.avionics);
+    var tierMatch = matchSelectOption('sd-avionics', tier);
+    if (tierMatch) document.getElementById('sd-avionics').value = tierMatch;
+    var dom = matchSelectOption('sd-dom', d.daysOnMarket || '');
+    if (dom) document.getElementById('sd-dom').value = dom;
+    if (d.notes) document.getElementById('sd-notes').value = (d.notes || '').substring(0, 500);
+    document.getElementById('sd-result').innerHTML =
+      '<div class="note-box" style="margin-top:1rem"><i class="ti ti-circle-check" style="color:var(--success);font-size:14px"></i> Fields filled from post — review and submit when ready.</div>';
+  } catch (e) {
+    console.error('Sale parse failed:', e);
+    alert('Could not parse sale post. Try entering details manually.');
+  }
+  document.getElementById('sd-paste-spin').classList.remove('on');
+  document.getElementById('sd-paste-btn').disabled = false;
+}
+
+function getSoldData() {
+  try { return JSON.parse(localStorage.getItem('spv_sold')||'[]'); } catch(e) { return []; }
+}
+function saveSoldData(arr) {
+  localStorage.setItem('spv_sold', JSON.stringify(arr));
+}
+
+function doSoldSubmit() {
+  const make = document.getElementById('sd-make').value.trim();
+  const model = document.getElementById('sd-model').value.trim();
+  const year = document.getElementById('sd-year').value.trim();
+  const price = document.getElementById('sd-price').value.trim();
+  const ask = document.getElementById('sd-ask').value.trim();
+  const ttaf = document.getElementById('sd-ttaf').value.trim();
+  const smoh = document.getElementById('sd-smoh').value.trim();
+  const saleDate = document.getElementById('sd-date').value;
+  const region = document.getElementById('sd-region').value;
+  const avionics = document.getElementById('sd-avionics').value;
+  const notes = document.getElementById('sd-notes').value.trim();
+  const role = document.getElementById('sd-role').value;
+  const dom = document.getElementById('sd-dom').value;
+  const agreed = document.getElementById('sd-agree').checked;
+
+  if (!make || !model || !year || !price) {
+    document.getElementById('sd-result').innerHTML = '<div class="note-box" style="border-color:var(--danger);background:rgba(192,57,43,0.06);margin-top:1rem"><i class="ti ti-alert-circle" style="color:var(--danger);font-size:14px"></i> Please fill in at least make, model, year, and sale price.</div>';
+    return;
+  }
+  if (!agreed) {
+    document.getElementById('sd-result').innerHTML = '<div class="note-box" style="border-color:var(--danger);background:rgba(192,57,43,0.06);margin-top:1rem"><i class="ti ti-alert-circle" style="color:var(--danger);font-size:14px"></i> Please check the confirmation box before submitting.</div>';
+    return;
+  }
+
+  setLoading('sd-spin','sd-btn',true);
+
+  // Simulate brief network delay
+  setTimeout(function() {
+    const entry = {
+      id: Date.now(),
+      make, model, year: parseInt(year),
+      price: parseInt(price),
+      ask: ask ? parseInt(ask) : null,
+      ttaf: ttaf ? parseInt(ttaf) : null,
+      smoh: smoh ? parseInt(smoh) : null,
+      saleDate: saleDate || null,
+      region: region || null,
+      avionics: avionics || null,
+      notes: notes || null,
+      role, dom: dom || null,
+      ts: new Date().toISOString()
+    };
+
+    const data = getSoldData();
+    data.unshift(entry);
+    saveSoldData(data);
+
+    const discount = entry.ask ? Math.round((1 - entry.price / entry.ask) * 100) : null;
+
+    document.getElementById('sd-result').innerHTML = `
+    <div class="result-card" style="margin-top:1.5rem">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
+        <i class="ti ti-circle-check" style="font-size:22px;color:var(--success)"></i>
+        <div style="font-size:15px;font-weight:500;color:var(--success)">Sale data submitted — thank you!</div>
+      </div>
+      <div class="metric-row" style="grid-template-columns:repeat(${discount !== null ? 3 : 2},1fr)">
+        <div class="metric"><div class="metric-val" style="font-family:var(--mono)">$${entry.price.toLocaleString()}</div><div class="metric-lbl">Sale price</div></div>
+        ${entry.ask ? `<div class="metric"><div class="metric-val" style="font-family:var(--mono)">$${entry.ask.toLocaleString()}</div><div class="metric-lbl">Asking price</div></div>` : ''}
+        ${discount !== null ? `<div class="metric"><div class="metric-val" style="color:${discount > 0 ? 'var(--success)' : 'var(--danger)'}">${discount > 0 ? '-' : '+'}${Math.abs(discount)}%</div><div class="metric-lbl">vs. asking</div></div>` : ''}
+      </div>
+      <div class="note-box" style="margin-top:1rem">
+        <div style="font-size:13px;color:var(--sky)"><strong>${entry.year} ${entry.make} ${entry.model}</strong>${entry.ttaf ? ' · ' + entry.ttaf.toLocaleString() + ' TT' : ''}${entry.smoh ? ' · ' + entry.smoh.toLocaleString() + ' SMOH' : ''}${entry.region ? ' · ' + entry.region : ''}</div>
+      </div>
+      <div style="margin-top:1rem;font-size:13px;color:var(--muted);line-height:1.6">
+        As SmallPlaneValue grows, submissions like yours will feed into real discount band calculations — making this tool more accurate for every GA buyer and seller.
+      </div>
+    </div>`;
+
+    // Clear form
+    ['sd-make','sd-model','sd-year','sd-price','sd-ask','sd-ttaf','sd-smoh','sd-notes'].forEach(function(id) {
+      const el = document.getElementById(id); if(el) el.value = '';
+    });
+    document.getElementById('sd-date').value = '';
+    document.getElementById('sd-region').value = '';
+    document.getElementById('sd-avionics').value = '';
+    document.getElementById('sd-dom').value = '';
+    document.getElementById('sd-agree').checked = false;
+
+    renderRecentSales();
+    setLoading('sd-spin','sd-btn',false);
+  }, 600);
+}
+
+function renderRecentSales() {
+  const data = getSoldData();
+  const container = document.getElementById('sd-recent');
+  if (!container) return;
+  if (data.length === 0) {
+    container.innerHTML = `
+    <div style="text-align:center;padding:2rem 1rem;color:var(--muted)">
+      <i class="ti ti-database" style="font-size:32px;display:block;margin-bottom:8px;opacity:0.4"></i>
+      <div style="font-size:14px;font-weight:500;margin-bottom:4px">No sales reported yet</div>
+      <div style="font-size:13px">Be the first to contribute. Your data stays anonymous.</div>
+    </div>`;
+    return;
+  }
+
+  let html = '<div style="font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.04em;margin-bottom:12px;display:flex;align-items:center;gap:8px"><i class="ti ti-database" style="font-size:14px"></i> RECENT COMMUNITY SUBMISSIONS (' + data.length + ')</div>';
+  html += '<div style="display:flex;flex-direction:column;gap:8px">';
+
+  data.slice(0, 10).forEach(function(s) {
+    const discount = s.ask ? Math.round((1 - s.price / s.ask) * 100) : null;
+    const dateStr = s.saleDate ? s.saleDate : (s.ts ? new Date(s.ts).toLocaleDateString('en-US',{month:'short',year:'numeric'}) : '');
+    html += `<div style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <div>
+        <div style="font-size:14px;font-weight:500;color:var(--sky)">${s.year} ${s.make} ${s.model}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">${s.ttaf ? s.ttaf.toLocaleString()+' TT' : ''}${s.ttaf && s.smoh ? ' · ' : ''}${s.smoh ? s.smoh.toLocaleString()+' SMOH' : ''}${(s.ttaf||s.smoh) && s.region ? ' · ' : ''}${s.region||''}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:15px;font-weight:500;font-family:var(--mono);color:var(--sky)">$${s.price.toLocaleString()}</div>
+        <div style="font-size:12px;color:var(--muted)">${discount !== null ? '<span style="color:'+(discount>0?'var(--success)':'var(--danger)')+'">'+( discount>0?'▼':'▲')+Math.abs(discount)+'% vs ask</span>' : ''}${discount !== null && dateStr ? ' · ' : ''}${dateStr}</div>
+      </div>
+    </div>`;
+  });
+
+  html += '</div>';
+  if (data.length > 10) {
+    html += '<div style="text-align:center;font-size:12px;color:var(--muted);margin-top:8px">Showing 10 of ' + data.length + ' submissions</div>';
+  }
+  container.innerHTML = html;
+}
+
+// Render recent sales when sold tab is shown
+(function() {
+  const origSwitch = switchTab;
+  switchTab = function(id) {
+    origSwitch(id);
+    if (id === 'sold') renderRecentSales();
+  };
+})();
+
+// Deep link from ntailnum: ?n=12345&utm_source=ntailnum
+(function initNtailnumDeepLink() {
+  var params = new URLSearchParams(location.search);
+  var n = params.get('n');
+  if (!n) return;
+  var nn = n.replace(/^N/i, '').trim().toUpperCase();
+  if (!nn) return;
+  var utmSource = params.get('utm_source') || 'ntailnum';
+  trackEvent('ntailnum_referral', {
+    utm_source: utmSource,
+    utm_medium: params.get('utm_medium') || '',
+    utm_campaign: params.get('utm_campaign') || '',
+  });
+  var nnInput = document.getElementById('nn');
+  if (nnInput) nnInput.value = nn;
+  switchTab('lookup');
+  var app = document.getElementById('app');
+  if (app) app.scrollIntoView({ behavior: 'smooth' });
+  setTimeout(function() { doLookup(); }, 300);
+})();
+
+</script>
+</body>
+</html>

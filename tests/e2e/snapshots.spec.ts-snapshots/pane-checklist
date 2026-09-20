@@ -1,0 +1,30 @@
+- tabpanel "Pre-buy checklist":
+  - text: MAKE
+  - textbox "MAKE":
+    - /placeholder: Cessna, Piper, Van's...
+  - text: MODEL
+  - textbox "MODEL":
+    - /placeholder: 172S, RV-10, SR22...
+  - text: YEAR
+  - spinbutton "YEAR"
+  - text: ENGINE TYPE
+  - combobox:
+    - option "Lycoming" [selected]
+    - option "Continental"
+    - option "Rotax (LSA)"
+    - option "Turboprop"
+    - option "Other / unknown"
+  - text: BUYER EXPERIENCE
+  - combobox:
+    - option "First-time buyer" [selected]
+    - option "Some experience"
+    - option "Experienced buyer"
+  - text: KNOWN CONCERNS (optional)
+  - textbox "damage history, high time engine..."
+  - text: PURPOSE
+  - combobox:
+    - option "Personal flying / training" [selected]
+    - option "IFR / instrument flying"
+    - option "Commercial / charter use"
+    - option "Financing / lender required"
+  - button " Generate inspection checklist"
