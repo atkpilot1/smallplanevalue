@@ -1,13 +1,13 @@
 <template>
   <main class="qr-page">
     <a class="qr-back" href="/">
-      <i class="ti ti-arrow-left"></i>
+      <i class="ti ti-arrow-left" aria-hidden="true"></i>
       SmallPlane<span>Value</span>.com
     </a>
 
     <article class="qr-card">
       <div class="qr-kicker">
-        <i class="ti ti-sparkles"></i>
+        <i class="ti ti-sparkles" aria-hidden="true"></i>
         The Honest GA Valuation Tool
       </div>
       <div class="qr-brand">
@@ -17,8 +17,8 @@
       <div class="qr-frame">
         <img
           src="/qr.svg"
-          width="360"
-          height="360"
+          width="280"
+          height="280"
           alt="QR code linking to https://smallplanevalue.com"
         >
       </div>
@@ -29,11 +29,11 @@
 
     <div class="qr-actions">
       <button type="button" class="btn-primary" @click="printPage">
-        <i class="ti ti-printer"></i>
+        <i class="ti ti-printer" aria-hidden="true"></i>
         Print
       </button>
       <a class="btn-ghost" href="/qr.png" download="smallplanevalue-qr.png">
-        <i class="ti ti-download"></i>
+        <i class="ti ti-download" aria-hidden="true"></i>
         PNG
       </a>
       <a class="btn-ghost" href="/qr.svg" download="smallplanevalue-qr.svg">
@@ -68,7 +68,7 @@ function printPage() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 28px 20px 48px;
+  padding: 20px 20px 36px;
   position: relative;
 }
 .qr-page::before {
@@ -90,7 +90,7 @@ function printPage() {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 28px;
+  margin-bottom: 16px;
 }
 .qr-back span { color: var(--accent); }
 .qr-back:hover { color: var(--white); }
@@ -101,7 +101,7 @@ function printPage() {
   background: rgba(7,15,28,0.55);
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: var(--radius-lg);
-  padding: 28px 24px 32px;
+  padding: 22px 22px 24px;
   text-align: center;
   box-shadow: 0 24px 60px rgba(0,0,0,0.28);
 }
@@ -124,7 +124,7 @@ function printPage() {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin-bottom: 22px;
+  margin-bottom: 16px;
 }
 .qr-mark {
   width: 36px;
@@ -150,12 +150,12 @@ function printPage() {
   background: #fff;
   border-radius: 14px;
   padding: 18px;
-  margin: 0 auto 20px;
+  margin: 0 auto 14px;
   width: fit-content;
 }
 .qr-frame img {
   display: block;
-  width: min(280px, 70vw);
+  width: min(240px, 64vw);
   height: auto;
 }
 .qr-url {
@@ -182,7 +182,7 @@ function printPage() {
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
-  margin-top: 22px;
+  margin-top: 16px;
 }
 .qr-actions .btn-ghost,
 .qr-actions .btn-primary {
