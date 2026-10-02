@@ -64,18 +64,27 @@
   - spinbutton "ENGINE SMOH (HRS)"
   - text: PROP TSOH (HRS)
   - spinbutton /e\.g\. \d+/
+  - text: PAINT / EXTERIOR
+  - combobox "PAINT / EXTERIOR":
+    - option "New / recently painted"
+    - option "Good" [selected]
+    - option "Original (age-typical wear)"
+    - option "Fair — faded, chips, or hangar rash"
+    - option "Needs paint"
+  - text: INTERIOR
+  - combobox "INTERIOR":
+    - option "Brand new / recently redone"
+    - option "Good" [selected]
+    - option "Original (age-typical wear)"
+    - option "Fair / dated"
+    - option "Needs refurbishment"
   - text: OVERALL CONDITION
-  - combobox:
+  - combobox "OVERALL CONDITION":
     - option "Excellent — like new"
     - option "Good — minor wear" [selected]
     - option "Fair — visible wear"
     - option "Poor — needs work"
-  - text: PAINT & INTERIOR
-  - combobox:
-    - option "Fresh paint & new interior"
-    - option "Good condition" [selected]
-    - option "Fair / dated"
-    - option "Needs refurbishment"
+  - paragraph: /Score paint and interior separately — e\.g\. original \d+ paint with a brand-new interior\./
   - text: LOGBOOKS
   - combobox "LOGBOOKS":
     - option "Unknown" [selected]
@@ -118,4 +127,4 @@
   - textbox "NOTES (damage history, engine OH type, storage, special equipment)":
     - /placeholder: No damage history, all logs since new, hangared, factory reman engines at 200 SMOH, RAM conversion...
   - button " Get honest valuation"
-  - paragraph: 3 free valuations per account, then $24 each or $75 for five.
+  - paragraph: /3 free valuations per account, then \$\d+ each or \$\d+ for five\./
