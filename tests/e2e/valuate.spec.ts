@@ -111,6 +111,8 @@ test('parse listing auto-fills identity, times, and G1000', async ({ page }) => 
   await expect(field(form, 'Year')).toHaveValue('2004')
   await expect(field(form, /total time/i)).toHaveValue('3200')
   await expect(field(form, 'Engine SMOH (hrs)')).toHaveValue('850')
+  await expect(field(form, 'Paint / exterior')).toHaveValue('Good')
+  await expect(field(form, 'Interior')).toHaveValue('Good')
   await openAvionics(page)
   await expect(form.getByRole('checkbox', { name: 'G1000', exact: true })).toBeChecked()
 })
@@ -461,6 +463,18 @@ test.describe('credit gate', () => {
 })
 
 test.describe('valuation form persist', () => {
+  test('paint and interior can be scored independently', async ({ page }) => {
+    await openApp(page)
+    await fillMidtimeValuation(page, {
+      paint: 'Original (age-typical wear)',
+      interior: 'Brand new / recently redone',
+    })
+    const form = pane(page, 'val')
+    await expect(field(form, 'Paint / exterior')).toHaveValue('Original (age-typical wear)')
+    await expect(field(form, 'Interior')).toHaveValue('Brand new / recently redone')
+    await expect(field(form, 'Overall condition')).toHaveValue('Good — minor wear')
+  })
+
   test('reload restores filled fields from localStorage', async ({ page }) => {
     await openApp(page)
     await fillValuation(page, {
@@ -472,6 +486,8 @@ test.describe('valuation form persist', () => {
       notes: 'Hangared, no damage',
       outOfAnnual: true,
       logbooks: 'Complete since new',
+      paint: 'Original (age-typical wear)',
+      interior: 'Brand new / recently redone',
     })
     await checkAvionics(page, 'G1000')
 
@@ -487,6 +503,8 @@ test.describe('valuation form persist', () => {
       notes: 'Hangared, no damage',
       outOfAnnual: true,
       logbooks: 'Complete since new',
+      paint: 'Original (age-typical wear)',
+      interior: 'Brand new / recently redone',
     })
     expect(stored?.avChecked?.['av-g1000']).toBe(true)
 
@@ -501,6 +519,8 @@ test.describe('valuation form persist', () => {
     await expect(field(form, /^notes/i)).toHaveValue('Hangared, no damage')
     await expect(form.getByRole('checkbox', { name: 'Out of annual' })).toBeChecked()
     await expect(field(form, 'Logbooks')).toHaveValue('Complete since new')
+    await expect(field(form, 'Paint / exterior')).toHaveValue('Original (age-typical wear)')
+    await expect(field(form, 'Interior')).toHaveValue('Brand new / recently redone')
     await openAvionics(page)
     await expect(form.getByRole('checkbox', { name: 'G1000', exact: true })).toBeChecked()
     await expect(valuationResult(page)).not.toContainText('AIRCRAFT VALUATION')

@@ -1,4 +1,10 @@
 import { ALL_AVIONICS_ITEMS } from '~/data/avionicsCatalog'
+import {
+  DEFAULT_INTERIOR_CONDITION,
+  DEFAULT_OVERALL_CONDITION,
+  DEFAULT_PAINT_CONDITION,
+  migrateLegacyCosmetics,
+} from '~/utils/conditionOptions'
 
 export const VALUATION_FORM_STORAGE_KEY = 'spv_valuation_form'
 
@@ -25,7 +31,8 @@ export type ValuationFormSnapshot = {
   propL: string
   propR: string
   cond: string
-  cosm: string
+  paint: string
+  interior: string
   logbooks: string
   damage: string
   avionicsPackage: string
@@ -79,8 +86,9 @@ export function emptyValuationForm(): ValuationFormSnapshot {
     smohR: '',
     propL: '',
     propR: '',
-    cond: 'Good — minor wear',
-    cosm: 'Good condition',
+    cond: DEFAULT_OVERALL_CONDITION,
+    paint: DEFAULT_PAINT_CONDITION,
+    interior: DEFAULT_INTERIOR_CONDITION,
     logbooks: '',
     damage: '',
     avionicsPackage: '',
@@ -99,10 +107,14 @@ export function emptyValuationForm(): ValuationFormSnapshot {
 export function mergeValuationForm(raw: unknown): ValuationFormSnapshot {
   const base = emptyValuationForm()
   if (!raw || typeof raw !== 'object') return base
-  const v = raw as Partial<ValuationFormSnapshot>
+  const v = raw as Partial<ValuationFormSnapshot> & { cosm?: string }
+  const { cosm: _legacyCosm, ...rest } = v
+  const migrated = rest.paint && rest.interior ? null : migrateLegacyCosmetics(_legacyCosm)
   return {
     ...base,
-    ...v,
+    ...rest,
+    paint: rest.paint || migrated?.paint || base.paint,
+    interior: rest.interior || migrated?.interior || base.interior,
     avChecked: { ...base.avChecked, ...(v.avChecked || {}) },
     avQty: { ...base.avQty, ...(v.avQty || {}) },
     avSize: { ...base.avSize, ...(v.avSize || {}) },
