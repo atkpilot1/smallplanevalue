@@ -1,23 +1,29 @@
 <template>
   <div class="form-grid-2">
     <div class="form-group">
-      <label>OVERALL CONDITION</label>
-      <select id="v-cond" v-model="cond">
-        <option>Excellent — like new</option>
-        <option>Good — minor wear</option>
-        <option>Fair — visible wear</option>
-        <option>Poor — needs work</option>
+      <label for="v-paint">PAINT / EXTERIOR</label>
+      <select id="v-paint" v-model="paint">
+        <option v-for="opt in paintOptions" :key="opt" :value="opt">{{ opt }}</option>
       </select>
     </div>
     <div class="form-group">
-      <label>PAINT &amp; INTERIOR</label>
-      <select id="v-cosm" v-model="cosm">
-        <option>Fresh paint &amp; new interior</option>
-        <option>Good condition</option>
-        <option>Fair / dated</option>
-        <option>Needs refurbishment</option>
+      <label for="v-interior">INTERIOR</label>
+      <select id="v-interior" v-model="interior">
+        <option v-for="opt in interiorOptions" :key="opt" :value="opt">{{ opt }}</option>
       </select>
     </div>
+  </div>
+
+  <div class="form-grid-2">
+    <div class="form-group">
+      <label for="v-cond">OVERALL CONDITION</label>
+      <select id="v-cond" v-model="cond">
+        <option v-for="opt in overallOptions" :key="opt" :value="opt">{{ opt }}</option>
+      </select>
+    </div>
+    <p class="cond-split-hint">
+      Score paint and interior separately — e.g. original 1971 paint with a brand-new interior.
+    </p>
   </div>
 
   <div class="form-grid-2">
@@ -44,9 +50,31 @@
 </template>
 
 <script setup lang="ts">
+import {
+  INTERIOR_CONDITION_OPTIONS,
+  OVERALL_CONDITION_OPTIONS,
+  PAINT_CONDITION_OPTIONS,
+} from '~/utils/conditionOptions'
+
 const val = useValuationForm()
 const cond = val.cond
-const cosm = val.cosm
+const paint = val.paint
+const interior = val.interior
 const logbooks = val.logbooks
 const damage = val.damage
+
+const overallOptions = OVERALL_CONDITION_OPTIONS
+const paintOptions = PAINT_CONDITION_OPTIONS
+const interiorOptions = INTERIOR_CONDITION_OPTIONS
 </script>
+
+<style scoped>
+.cond-split-hint {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.45;
+  margin: 0;
+  padding-top: 22px;
+}
+</style>
+
