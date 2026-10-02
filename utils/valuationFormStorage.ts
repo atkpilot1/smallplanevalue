@@ -107,6 +107,7 @@ export function emptyValuationForm(): ValuationFormSnapshot {
 export function mergeValuationForm(raw: unknown): ValuationFormSnapshot {
   const base = emptyValuationForm()
   if (!raw || typeof raw !== 'object') return base
+  const v = raw as Partial<ValuationFormSnapshot> & { cosm?: string }
   const { cosm: _legacyCosm, ...rest } = v
   const migrated = rest.paint && rest.interior ? null : migrateLegacyCosmetics(_legacyCosm)
   return {

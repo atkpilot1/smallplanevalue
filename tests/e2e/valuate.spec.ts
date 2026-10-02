@@ -130,17 +130,6 @@ test('parse listing failure alerts the user', async ({ page, consoleGuard }) => 
   )
 })
 
-test('paint and interior can be scored independently', async ({ page }) => {
-  await fillMidtimeValuation(page, {
-    paint: 'Original (age-typical wear)',
-    interior: 'Brand new / recently redone',
-  })
-  const form = pane(page, 'val')
-  await expect(field(form, 'Paint / exterior')).toHaveValue('Original (age-typical wear)')
-  await expect(field(form, 'Interior')).toHaveValue('Brand new / recently redone')
-  await expect(field(form, 'Overall condition')).toHaveValue('Good — minor wear')
-})
-
 test('missing SMOH applies a fresh-engine premium of $23k', async ({ page }) => {
   await fillValuation(page, { make: 'Cessna', model: '172S', year: '2004' })
   await submitValuation(page)
@@ -474,6 +463,18 @@ test.describe('credit gate', () => {
 })
 
 test.describe('valuation form persist', () => {
+  test('paint and interior can be scored independently', async ({ page }) => {
+    await openApp(page)
+    await fillMidtimeValuation(page, {
+      paint: 'Original (age-typical wear)',
+      interior: 'Brand new / recently redone',
+    })
+    const form = pane(page, 'val')
+    await expect(field(form, 'Paint / exterior')).toHaveValue('Original (age-typical wear)')
+    await expect(field(form, 'Interior')).toHaveValue('Brand new / recently redone')
+    await expect(field(form, 'Overall condition')).toHaveValue('Good — minor wear')
+  })
+
   test('reload restores filled fields from localStorage', async ({ page }) => {
     await openApp(page)
     await fillValuation(page, {
