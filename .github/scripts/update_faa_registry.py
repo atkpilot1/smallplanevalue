@@ -342,6 +342,7 @@ def parse_master_csv(zip_content):
                     return text or None
 
                 status_code = col('STATUS CODE')
+                raw_weight = (ref.get('weight') or '').strip()
                 records.append({
                     'nnumber': nnumber,
                     'make': ref.get('make') or mfr_code,
@@ -354,7 +355,7 @@ def parse_master_csv(zip_content):
                     'seats': opt_int(ref.get('seats', '')),
                     'speed': opt_int(ref.get('speed', '')),
                     'num_engines': opt_int(ref.get('engines', ''), zero_is_none=False),
-                    'weight_class': WEIGHT_CLASSES.get(ref.get('weight', ''), None),
+                    'weight_class': WEIGHT_CLASSES.get(raw_weight, raw_weight or None),
                     'aircraft_type': AIRCRAFT_TYPES.get(col('TYPE AIRCRAFT'), col('TYPE AIRCRAFT')),
                     'engine_type': ENGINE_TYPES.get(col('TYPE ENGINE'), ''),
                     'registrant_name': col('NAME'),
