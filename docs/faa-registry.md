@@ -12,6 +12,8 @@ Production’s `aircraft` table was created before `0001` and already uses the n
 
 If PostgREST reports a missing column (`PGRST204`), the importer drops that column for that project only and retries the batch. A project host that does not resolve is skipped with an error; update `SUPABASE_PROJECTS` when a project is deleted.
 
+**Keep staging Supabase awake** runs every 3 hours at :15 (00:15, 03:15, 06:15, 09:15, 12:15, 15:15, 18:15, 21:15 UTC), and from the Actions tab with **Run workflow**. Each run reads one `aircraft` row on the project named `staging`. Supabase counts that as database activity. A health check would not. A few requests a day is their stated minimum, so eight a day leaves room for a delayed or skipped run. The Sunday import alone is too infrequent to keep a free project from pausing. The same `SUPABASE_PROJECTS` secret is used. The schedule runs only from `main`.
+
 ## GitHub repository secrets
 
 | Secret | Required | Purpose |

@@ -1,0 +1,25 @@
+# Free Supabase projects pause after a week with too little database traffic.
+# Their guidance is a few database requests every day. The Sunday FAA import
+# is one request a week. This reads one aircraft row every 3 hours, so a
+# delayed or skipped run still leaves several queries that day. The schedule
+# runs only from the default branch. workflow_dispatch runs it on demand.
+name: Keep staging Supabase awake
+
+on:
+  schedule:
+    - cron: '15 */3 * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Read one staging row
+        env:
+          SUPABASE_PROJECTS: ${{ secrets.SUPABASE_PROJECTS }}
+        run: python3 .github/scripts/ping_staging.py
