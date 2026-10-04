@@ -8,6 +8,10 @@ Sunday 07:00 UTC uses `both` (every object in the JSON). The schedule only runs 
 
 `aircraft` must already exist (`npm run db:push:staging` / `db:push:prod`). An empty new project returns PostgREST `PGRST205`.
 
+Production’s `aircraft` table was created before `0001` and already uses the names `/api/faa-lookup` reads (`cert_issue_date`, `airworth_date`, `zip_code`, and the reference fields). `0001` is `CREATE TABLE IF NOT EXISTS` with different names (`cert_date`, `airworthiness`, `zip`), so it never altered production. Staging, created empty from `0001`, got those other names. The importer writes the production names. `0009_aircraft_registry_columns.sql` adds the production columns on a database that does not have them yet.
+
+If PostgREST reports a missing column (`PGRST204`), the importer drops that column for that project only and retries the batch. A project host that does not resolve is skipped with an error; update `SUPABASE_PROJECTS` when a project is deleted.
+
 ## GitHub repository secrets
 
 | Secret | Required | Purpose |

@@ -9,10 +9,12 @@ import io
 import json
 import re
 import csv
+import socket
 import zipfile
 import requests
 import time
 from datetime import datetime
+from urllib.parse import urlparse
 
 FAA_ZIP_URL = os.environ.get('FAA_ZIP_URL', 'https://registry.faa.gov/database/ReleasableAircraft.zip')
 
@@ -71,11 +73,57 @@ ENGINE_TYPES = {
     '9': 'Unknown', '10': 'Electric', '11': 'Rotary'
 }
 
+# Labels already stored on production. V must stay "Valid": the lookup treats
+# any other status as a warning. Numeric codes are the FAA cancellation states.
 STATUS_CODES = {
-    'A': 'Valid', 'D': 'Dealer', 'E': 'Expired',
-    'I': 'Invalid', 'M': 'Reserved', 'N': 'Non-citizen Corporations',
-    'R': 'Revoked', 'S': 'Student', 'T': 'Triennial',
-    'W': 'Writtenoff', 'X': 'Exported'
+    'V': 'Valid',
+    'T': 'Valid',
+    'M': 'Manufacturer',
+    'R': 'Registration pending',
+    'N': 'Non-citizen, no report',
+    'D': 'Expired Dealer',
+    'W': 'Ineffective/Invalid',
+    'A': 'Triennial notice mailed',
+    'E': 'Revoked',
+    'S': 'Second triennial mailed',
+    'X': 'Enforcement letter',
+    'Z': 'Permanent reserved',
+    '1': 'Triennial undeliverable',
+    '2': 'N-number assigned, not registered',
+    '3': 'N-number assigned, not type certificated',
+    '4': 'N-number assigned as import',
+    '5': 'Reserved',
+    '6': 'Administratively canceled',
+    '7': 'Sale reported',
+    '8': 'Second triennial, no response',
+    '9': 'Certificate revoked',
+    '10': 'Assigned, pending cancellation',
+    '11': 'Amateur, pending cancellation',
+    '12': 'Import, pending cancellation',
+    '13': 'Registration expired',
+    '14': 'First re-registration notice',
+    '15': 'Second re-registration notice',
+    '16': 'Expired, pending cancellation',
+    '17': 'Sale reported, pending cancellation',
+    '18': 'Sale reported, canceled',
+    '19': 'Registration pending, pending cancellation',
+    '20': 'Registration pending, canceled',
+    '21': 'Revoked, pending cancellation',
+    '22': 'Revoked, canceled',
+    '23': 'Expired dealer, pending cancellation',
+    '24': 'Third re-registration notice',
+    '25': 'First renewal notice',
+    '26': 'Second renewal notice',
+    '27': 'Registration expired',
+    '28': 'Third renewal notice',
+    '29': 'Expired, pending cancellation',
+}
+
+WEIGHT_CLASSES = {
+    '1': 'CLASS 1',
+    '2': 'CLASS 2',
+    '3': 'CLASS 3',
+    '4': 'CLASS 4',
 }
 
 HEADERS = {
@@ -219,7 +267,11 @@ def parse_master_csv(zip_content):
                             ref_data[code] = {
                                 'make': row[1].strip(),
                                 'model': row[2].strip(),
-                                'seats': row[9].strip() if len(row) > 9 else ''
+                                # ACFTREF.csv: 7 engines, 8 seats, 9 weight, 10 speed.
+                                'engines': row[7].strip() if len(row) > 7 else '',
+                                'seats': row[8].strip() if len(row) > 8 else '',
+                                'weight': row[9].strip() if len(row) > 9 else '',
+                                'speed': row[10].strip() if len(row) > 10 else '',
                             }
                 print(f"Loaded {len(ref_data)} aircraft references")
                 break
@@ -235,7 +287,8 @@ def parse_master_csv(zip_content):
                             code = row[0].strip()
                             eng_data[code] = {
                                 'make': row[1].strip(),
-                                'model': row[2].strip()
+                                'model': row[2].strip(),
+                                'horsepower': row[4].strip() if len(row) > 4 else '',
                             }
                 print(f"Loaded {len(eng_data)} engine references")
                 break
@@ -275,38 +328,50 @@ def parse_master_csv(zip_content):
                 ref = ref_data.get(mfr_code, {})
                 eng = eng_data.get(eng_code, {})
                 
-                try:
-                    year = int(col('YEAR MFR')) if col('YEAR MFR').isdigit() else None
-                except Exception:
-                    year = None
+                def opt_int(value, zero_is_none=True):
+                    digits = (value or '').strip()
+                    if not digits.isdigit():
+                        return None
+                    number = int(digits)
+                    if zero_is_none and number == 0:
+                        return None
+                    return number
 
-                try:
-                    seats = int(ref.get('seats', '') or 0)
-                    seats = seats if seats > 0 else None
-                except Exception:
-                    seats = None
+                def blank(value):
+                    text = (value or '').strip()
+                    return text or None
 
+                status_code = col('STATUS CODE')
                 records.append({
                     'nnumber': nnumber,
                     'make': ref.get('make') or mfr_code,
                     'model': ref.get('model', ''),
-                    'year': year,
+                    'year': opt_int(col('YEAR MFR')),
                     'serial_number': col('SERIAL NUMBER'),
                     'engine_make': eng.get('make', ''),
                     'engine_model': eng.get('model', ''),
-                    'seats': seats,
-                    'category': col('TYPE REGISTRANT'),
+                    'horsepower': blank(eng.get('horsepower', '')),
+                    'seats': opt_int(ref.get('seats', '')),
+                    'speed': opt_int(ref.get('speed', '')),
+                    'num_engines': opt_int(ref.get('engines', ''), zero_is_none=False),
+                    'weight_class': WEIGHT_CLASSES.get(ref.get('weight', ''), None),
                     'aircraft_type': AIRCRAFT_TYPES.get(col('TYPE AIRCRAFT'), col('TYPE AIRCRAFT')),
                     'engine_type': ENGINE_TYPES.get(col('TYPE ENGINE'), ''),
                     'registrant_name': col('NAME'),
-                    'street': col('STREET'),
                     'city': col('CITY'),
                     'state': col('STATE'),
-                    'zip': col('ZIP CODE'),
-                    'status': STATUS_CODES.get(col('STATUS CODE'), col('STATUS CODE') or 'Valid'),
-                    'cert_date': col('CERT ISSUE DATE'),
-                    'expiry_date': col('EXPIRATION DATE'),
-                    'airworthiness': col('CERTIFICATION'),
+                    'zip_code': blank(col('ZIP CODE')),
+                    'status': STATUS_CODES.get(status_code, status_code or 'Valid'),
+                    'status_code': blank(status_code),
+                    'cert_issue_date': blank(col('CERT ISSUE DATE')),
+                    'airworth_date': blank(col('AIR WORTH DATE')),
+                    'expiry_date': blank(col('EXPIRATION DATE')),
+                    'mode_s_code': blank(col('MODE S CODE')),
+                    'mode_s_hex': blank(col('MODE S CODE HEX')),
+                    'kit_mfr': blank(col('KIT MFR')),
+                    'kit_model': blank(col('KIT MODEL')),
+                    'fract_owner': col('FRACT OWNER').upper() == 'Y',
+                    'updated_at': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
                 })
                 
                 if i % 50000 == 0 and i > 0:
@@ -315,23 +380,58 @@ def parse_master_csv(zip_content):
     print(f"Total records: {len(records):,}")
     return records
 
+def missing_column_name(body):
+    """PostgREST PGRST204: Could not find the 'zip_code' column of 'aircraft'."""
+    match = re.search(r"Could not find the '([^']+)' column", body or '')
+    return match.group(1) if match else None
+
+
+def rows_without(records, omitted):
+    if not omitted:
+        return records
+    return [{k: v for k, v in row.items() if k not in omitted} for row in records]
+
+
+def host_resolves(url, name):
+    host = urlparse(url).hostname
+    if not host:
+        print(f"{name} URL has no host")
+        return False
+    try:
+        socket.getaddrinfo(host, 443)
+    except socket.gaierror as err:
+        print(
+            f"{name} host {host} does not resolve ({err}). "
+            "The Supabase project may have been deleted. Update SUPABASE_PROJECTS."
+        )
+        return False
+    return True
+
+
 def upsert_to_supabase(records, url, key, name):
     print(f"Uploading to {name} ({url})...")
+    if not host_resolves(url, name):
+        print(f"Done {name}: 0 uploaded, {len(records)} errors")
+        return False
+
     headers = {
         'apikey': key,
         'Authorization': f'Bearer {key}',
         'Content-Type': 'application/json',
         'Prefer': 'resolution=merge-duplicates'
     }
-    
+
     batch_size = 2000
     total = len(records)
     success = 0
     errors = 0
-    
+    # Per project. Do not mutate `records`; the next project may have the column.
+    omitted = set()
+
     for i in range(0, total, batch_size):
-        batch = records[i:i+batch_size]
-        for attempt in range(3):
+        attempt = 0
+        while attempt < 3:
+            batch = rows_without(records[i:i + batch_size], omitted)
             try:
                 resp = requests.post(
                     f'{url}/rest/v1/aircraft',
@@ -341,20 +441,29 @@ def upsert_to_supabase(records, url, key, name):
                 )
                 if resp.status_code in (200, 201):
                     success += len(batch)
-                    print(f"  Batch {i//batch_size + 1}: {len(batch)} records uploaded ({success:,}/{total:,})")
+                    print(f"  Batch {i // batch_size + 1}: {len(batch)} records uploaded ({success:,}/{total:,})")
                     break
-                elif attempt < 2:
+                column = missing_column_name(resp.text)
+                if column and column not in omitted:
+                    print(f"  {name} aircraft has no {column!r} column; omitting it and retrying")
+                    omitted.add(column)
+                    continue
+                attempt += 1
+                if attempt < 3:
                     time.sleep(1)
                 else:
                     errors += len(batch)
-                    print(f"  Batch error: {resp.status_code} - {resp.text[:200]}")
+                    print(f"  Batch error: {resp.status_code} - {resp.text[:300]}")
             except Exception as e:
-                if attempt < 2:
+                attempt += 1
+                if attempt < 3:
                     time.sleep(1)
                 else:
                     errors += len(batch)
-                    print(f"  Batch exception: {str(e)[:100]}")
-    
+                    print(f"  Batch exception: {e}")
+
+    if omitted:
+        print(f"  Omitted columns not in {name}.aircraft: {', '.join(sorted(omitted))}")
     print(f"Done {name}: {success:,} uploaded, {errors} errors")
     return errors == 0 and success > 0
 
