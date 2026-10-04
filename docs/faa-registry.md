@@ -8,6 +8,8 @@ Sunday 07:00 UTC uses `both` (every object in the JSON). The schedule only runs 
 
 `aircraft` must already exist (`npm run db:push:staging` / `db:push:prod`). An empty new project returns PostgREST `PGRST205`.
 
+`0009_aircraft_airworthiness.sql` adds `airworthiness` on databases created before that column was in `0001`. Push it before the next ingest if you want that field stored. If PostgREST still reports a missing column (`PGRST204`), the importer drops that column and retries the batch so the rest of the registry still loads. A project host that does not resolve is skipped with an error; update `SUPABASE_PROJECTS` when a project is deleted.
+
 ## GitHub repository secrets
 
 | Secret | Required | Purpose |

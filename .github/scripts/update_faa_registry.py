@@ -9,10 +9,12 @@ import io
 import json
 import re
 import csv
+import socket
 import zipfile
 import requests
 import time
 from datetime import datetime
+from urllib.parse import urlparse
 
 FAA_ZIP_URL = os.environ.get('FAA_ZIP_URL', 'https://registry.faa.gov/database/ReleasableAircraft.zip')
 
@@ -315,23 +317,56 @@ def parse_master_csv(zip_content):
     print(f"Total records: {len(records):,}")
     return records
 
+def missing_column_name(body):
+    """PostgREST PGRST204: Could not find the 'airworthiness' column of 'aircraft'."""
+    match = re.search(r"Could not find the '([^']+)' column", body or '')
+    return match.group(1) if match else None
+
+
+def omit_column(records, column):
+    for row in records:
+        row.pop(column, None)
+
+
+def host_resolves(url, name):
+    host = urlparse(url).hostname
+    if not host:
+        print(f"{name} URL has no host")
+        return False
+    try:
+        socket.getaddrinfo(host, 443)
+    except socket.gaierror as err:
+        print(
+            f"{name} host {host} does not resolve ({err}). "
+            "The Supabase project may have been deleted. Update SUPABASE_PROJECTS."
+        )
+        return False
+    return True
+
+
 def upsert_to_supabase(records, url, key, name):
     print(f"Uploading to {name} ({url})...")
+    if not host_resolves(url, name):
+        print(f"Done {name}: 0 uploaded, {len(records)} errors")
+        return False
+
     headers = {
         'apikey': key,
         'Authorization': f'Bearer {key}',
         'Content-Type': 'application/json',
         'Prefer': 'resolution=merge-duplicates'
     }
-    
+
     batch_size = 2000
     total = len(records)
     success = 0
     errors = 0
-    
+    dropped = set()
+
     for i in range(0, total, batch_size):
-        batch = records[i:i+batch_size]
-        for attempt in range(3):
+        batch = records[i:i + batch_size]
+        attempt = 0
+        while attempt < 3:
             try:
                 resp = requests.post(
                     f'{url}/rest/v1/aircraft',
@@ -341,20 +376,31 @@ def upsert_to_supabase(records, url, key, name):
                 )
                 if resp.status_code in (200, 201):
                     success += len(batch)
-                    print(f"  Batch {i//batch_size + 1}: {len(batch)} records uploaded ({success:,}/{total:,})")
+                    print(f"  Batch {i // batch_size + 1}: {len(batch)} records uploaded ({success:,}/{total:,})")
                     break
-                elif attempt < 2:
+                column = missing_column_name(resp.text)
+                if column and column not in dropped:
+                    print(f"  {name} aircraft has no {column!r} column; omitting it and retrying")
+                    omit_column(records, column)
+                    dropped.add(column)
+                    batch = records[i:i + batch_size]
+                    continue
+                attempt += 1
+                if attempt < 3:
                     time.sleep(1)
                 else:
                     errors += len(batch)
-                    print(f"  Batch error: {resp.status_code} - {resp.text[:200]}")
+                    print(f"  Batch error: {resp.status_code} - {resp.text[:300]}")
             except Exception as e:
-                if attempt < 2:
+                attempt += 1
+                if attempt < 3:
                     time.sleep(1)
                 else:
                     errors += len(batch)
-                    print(f"  Batch exception: {str(e)[:100]}")
-    
+                    print(f"  Batch exception: {e}")
+
+    if dropped:
+        print(f"  Omitted columns not in {name}.aircraft: {', '.join(sorted(dropped))}")
     print(f"Done {name}: {success:,} uploaded, {errors} errors")
     return errors == 0 and success > 0
 
