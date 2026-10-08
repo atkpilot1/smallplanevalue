@@ -1,6 +1,6 @@
 # GA4 key events (conversions) — setup for SmallPlaneValue
 
-Property ID: **G-9ET7HJRJWC**
+Property ID: **G-1Y4143JY7Y**
 
 Events are already firing from the site. You only need to **mark them as key events** in GA4 (takes ~2 minutes after one test fire).
 
@@ -60,5 +60,5 @@ Key events apply to **new data only** (not retroactive).
 ## Troubleshooting
 
 - **Event not in list?** Trigger it once with `?ga_debug=1` and watch DebugView.
-- **No DebugView data?** Disable ad blockers; confirm `G-9ET7HJRJWC` in page source.
+- **No DebugView data?** Disable ad blockers; confirm `G-1Y4143JY7Y` in page source.
 - **Still waiting?** Custom events can take up to 24h to appear under Events without DebugView; DebugView is instant.
