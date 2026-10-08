@@ -40,7 +40,7 @@
 import type { ValuationResult } from '~/types/app'
 import { TRUSTED_PARTNERS, partnerTipHtml } from '~/data/partners'
 import { getOrCreateClientId, getValuationEmail } from '~/composables/useClientId'
-import { trackEvent } from '~/composables/useAnalytics'
+import { trackValuationCompleted, trackValuationStarted } from '~/composables/useAnalytics'
 
 const { activeTab } = useToolsTab()
 const { openLogin, openPaywall, getAccessToken } = useAuth()
@@ -103,6 +103,8 @@ async function doValuation() {
   startPartnerTipRotation()
   result.value = null
   failMsg.value = ''
+  const aircraft = { make: body.make, model: body.model, year: body.year }
+  trackValuationStarted(aircraft)
   try {
     const v = await apiPost<ValuationResult>('/api/valuate', body, { accessToken })
     submittedMake.value = body.make
@@ -111,7 +113,7 @@ async function doValuation() {
     submittedAsk.value = body.asking ? parseInt(body.asking, 10) : 0
     result.value = v
     val.hasResult.value = true
-    trackEvent('valuation_completed', { make: body.make, model: body.model })
+    trackValuationCompleted(aircraft)
   } catch (e) {
     const err = e as Error & { status?: number }
     if (err.status === 401) {

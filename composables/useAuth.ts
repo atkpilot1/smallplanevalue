@@ -1,7 +1,9 @@
 import type { User } from '@supabase/supabase-js'
+import { trackAccountCreated } from '~/composables/useAnalytics'
+import { useToast } from '~/composables/useToast'
+import { isNewAccount } from '~/utils/analytics'
 import { FREE_VALUATIONS, freeRemaining as freeRemainingOf } from '~/utils/credits'
 import { STATE } from '~/utils/stateKeys'
-import { useToast } from '~/composables/useToast'
 
 export type AuthDialog = 'login' | 'account' | 'paywall' | null
 export type AuthStep = 'email' | 'code'
@@ -121,7 +123,7 @@ export function useAuth() {
     verifying.value = true
     error.value = ''
     try {
-      const { error: err } = await useSupabase().auth.verifyOtp({
+      const { data, error: err } = await useSupabase().auth.verifyOtp({
         email: otpEmail.value,
         token: code,
         type: 'email',
@@ -130,6 +132,7 @@ export function useAuth() {
         error.value = err.message
         return false
       }
+      if (data.user && isNewAccount(data.user)) trackAccountCreated()
       closeDialog()
       return true
     } catch (e) {

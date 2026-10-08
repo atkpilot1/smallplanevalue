@@ -40,6 +40,13 @@
     <div id="nn-result" data-testid="lookup-result">
       <LookupResult :d="result" :not-found="notFound" :error="errored" :raw="lastRaw" />
     </div>
+    <SalesInquiry
+      v-if="result"
+      :n-number="result.nnumber"
+      :make="result.make"
+      :model="result.model"
+      :year="result.year"
+    />
   </div>
 </template>
 
@@ -115,6 +122,12 @@ async function doLookup() {
     ctx.setLookup(d)
     result.value = d
     trackEvent('lookup_success', { source: 'spv' })
+    trackAircraftInfoView({
+      n_number: d.nnumber || raw,
+      make: d.make || '',
+      model: d.model || '',
+      year: d.year != null && d.year !== '' ? String(d.year) : '',
+    })
     if (isTwinFromLookup(d)) val.engines.value = '2'
   } catch (e) {
     console.log('N-number lookup failed:', e)

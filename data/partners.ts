@@ -8,5 +8,5 @@ export const TRUSTED_PARTNERS = [
 
 export function partnerTipHtml(p: { name: string; url: string; tip: string } | undefined) {
   if (!p) return ''
-  return p.tip + ' Trusted partner: <a href="' + p.url + '" target="_blank" rel="noopener noreferrer">' + p.name + '</a>.'
+  return p.tip + ' Trusted partner: <a href="' + p.url + '" target="_blank" rel="noopener noreferrer" data-ga-event="broker_contact_click" data-ga-label="' + p.name + '">' + p.name + '</a>.'
 }
