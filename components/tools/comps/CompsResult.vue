@@ -39,7 +39,7 @@
         </tbody>
       </table>
     </div>
-    <div class="note-box" style="margin-top:.75rem">Asking prices only — no sale prices, as GA transactions are not publicly recorded. Verify at <a href="https://www.trade-a-plane.com" target="_blank" style="color:var(--sky-light)">Trade-A-Plane</a>, <a href="https://www.controller.com" target="_blank" style="color:var(--sky-light)">Controller.com</a>, <a href="https://www.barnstormers.com" target="_blank" style="color:var(--sky-light)">Barnstormers</a>.</div>
+    <div class="note-box" style="margin-top:.75rem">Asking prices only — no sale prices, as GA transactions are not publicly recorded. Verify at <a href="https://www.trade-a-plane.com" target="_blank" style="color:var(--sky-light)" data-ga-event="broker_contact_click" data-ga-label="Trade-A-Plane">Trade-A-Plane</a>, <a href="https://www.controller.com" target="_blank" style="color:var(--sky-light)" data-ga-event="broker_contact_click" data-ga-label="Controller">Controller.com</a>, <a href="https://www.barnstormers.com" target="_blank" style="color:var(--sky-light)" data-ga-event="broker_contact_click" data-ga-label="Barnstormers">Barnstormers</a>.</div>
   </div>
 </template>
 

@@ -896,3 +896,54 @@ to { opacity: 1; transform: translateY(0); }
 
 /* Nuxt root — keep layout/a11y tree matching the original body children. */
 #__nuxt { display: contents; }
+
+/* Sales inquiry under an aircraft record. */
+.sales-inquiry {
+  margin-top: 1rem;
+  padding: 14px 16px;
+  background: var(--offwhite);
+  border: 1px solid rgba(11, 37, 69, 0.08);
+  border-radius: var(--radius-lg);
+}
+.sales-inquiry label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: .03em;
+  margin-bottom: 4px;
+}
+.sales-inquiry-help {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0 0 10px;
+}
+.sales-inquiry-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.sales-inquiry-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(11, 37, 69, 0.15);
+  font-size: 14px;
+  background: var(--white);
+  color: var(--sky);
+  font-family: var(--body);
+  outline: none;
+}
+.sales-inquiry-row input:focus { border-color: var(--sky-light); }
+.sales-inquiry-msg {
+  font-size: 13px;
+  color: var(--danger);
+  margin: 8px 0 0;
+}
+.sales-inquiry-ok { color: var(--success); margin-top: 1rem; }
+@media (max-width: 768px) {
+  .sales-inquiry-row { flex-direction: column; align-items: stretch; }
+  .sales-inquiry-row button { width: 100%; justify-content: center; }
+}
