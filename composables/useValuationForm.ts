@@ -2,6 +2,7 @@ import { AV_PARSE_MAP, collectAvionics } from '~/data/avionicsCatalog'
 import type { EngineLifeState, EngineTboSpec, LookupRecord, ParsedListing, ValuationRequest } from '~/types/app'
 import { isTwinFromLookup } from '~/utils/lookupPrefill'
 import { STATE } from '~/utils/stateKeys'
+import { valuationQueryFromSearch } from '~/data/aircraftGuides'
 import {
   VALUATION_FORM_STORAGE_KEY,
   emptyValuationForm,
@@ -33,6 +34,7 @@ function bindValuationFormPersistence(
   form: Ref<ValuationFormSnapshot>,
   ctx: ReturnType<typeof useAircraftContext>,
   refreshEngineLife: () => Promise<void>,
+  hasResult: Ref<boolean>,
 ) {
   if (import.meta.server) return
 
@@ -48,11 +50,19 @@ function bindValuationFormPersistence(
 
   onMounted(async () => {
     await nextTick()
+    const query = valuationQueryFromSearch(location.search)
     const hasStored = !!localStorage.getItem(VALUATION_FORM_STORAGE_KEY)
-    if (hasStored) {
+    if (hasStored && !query) {
       Object.assign(form.value, mergeValuationForm(persisted.value))
       ctx.valEngMake.value = form.value.valEngMake
       ctx.valEngModel.value = form.value.valEngModel
+    }
+    if (query) {
+      if (query.make) form.value.make = query.make
+      if (query.model) form.value.model = query.model
+      if (query.year) form.value.year = query.year
+      if (query.engines) form.value.engines = query.engines
+      hasResult.value = false
     }
 
     watch(
@@ -356,7 +366,7 @@ export function useValuationForm() {
     }
   }
 
-  bindValuationFormPersistence(form, ctx, refreshEngineLife)
+  bindValuationFormPersistence(form, ctx, refreshEngineLife, hasResult)
 
   return {
     paste, make, model, year, annualMonth, annualYear, outOfAnnual, engineDisplay,

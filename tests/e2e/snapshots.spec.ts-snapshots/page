@@ -5,8 +5,8 @@
     - /url: "#tools"
   - link "How it works":
     - /url: "#how-it-works"
-  - link "Aircraft types":
-    - /url: "#aircraft-types"
+  - link "Aircraft guides":
+    - /url: /aircraft
   - link "Get a valuation":
     - /url: "#app"
   - button "Look up my plane"
@@ -46,7 +46,18 @@
 - text: Coverage
 - heading "Built for the planes people actually fly." [level=2]
 - paragraph: We cover the full spectrum of general aviation — from first trainers to high-performance experimentals.
-- text:  Piston singles  Piston twins  Experimental / Homebuilt  Light Sport (LSA)  Turboprop singles  Vintage / Warbird  A note on GA aircraft valuations Unlike real estate, GA aircraft sale prices are not publicly recorded anywhere. SmallPlaneValue.com shows asking price ranges pulled from active listings (Trade-A-Plane, Controller, Barnstormers) paired with category-specific discount bands that represent typical negotiated outcomes — based on broker experience, not verified transactions. We believe being honest about this is more useful than showing made-up "sale prices." The tools
+- text:  Piston singles  Piston twins  Experimental / Homebuilt  Light Sport (LSA)  Turboprop singles  Vintage / Warbird
+- paragraph:
+  - text: "Value a specific model:"
+  - link "Beech Baron":
+    - /url: /aircraft/baron
+  - link "Beech Bonanza":
+    - /url: /aircraft/bonanza
+  - link "Cirrus SR22":
+    - /url: /aircraft/cirrus-sr22
+  - link "Piper Malibu":
+    - /url: /aircraft/piper-malibu
+- text:  A note on GA aircraft valuations Unlike real estate, GA aircraft sale prices are not publicly recorded anywhere. SmallPlaneValue.com shows asking price ranges pulled from active listings (Trade-A-Plane, Controller, Barnstormers) paired with category-specific discount bands that represent typical negotiated outcomes — based on broker experience, not verified transactions. We believe being honest about this is more useful than showing made-up "sale prices." The tools
 - heading "Start your research." [level=2]
 - tablist "Tools":
   - tab "N-number lookup" [selected]
@@ -76,6 +87,8 @@
     - /url: "#how-it-works"
   - link "Aircraft types":
     - /url: "#aircraft-types"
+  - link "Aircraft guides":
+    - /url: /aircraft
   - link "Share on Facebook":
     - /url: https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A3100
   - link "Share on X":

@@ -896,3 +896,52 @@ to { opacity: 1; transform: translateY(0); }
 
 /* Nuxt root — keep layout/a11y tree matching the original body children. */
 #__nuxt { display: contents; }
+
+/* Aircraft value guides */
+.guide-jump {
+  margin-top: 1.25rem;
+  font-size: 14px;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+}
+.guide-jump a { color: var(--sky-light); font-weight: 500; text-decoration: none; }
+.guide-jump a:hover { text-decoration: underline; }
+.guide {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 108px 5vw 80px;
+}
+.guide .section-body { max-width: none; }
+.guide-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 1.5rem 0 2rem; }
+.guide-back { color: var(--sky-light); font-weight: 500; text-decoration: none; }
+.guide-back:hover { text-decoration: underline; }
+.guide-h2 {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--sky);
+  margin: 2rem 0 .75rem;
+}
+.guide-drivers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.guide-drivers section, .guide-faqs section, .guide-card {
+  background: var(--offwhite);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.guide-drivers h3, .guide-faqs h3 { font-size: 15px; font-weight: 500; color: var(--sky); margin-bottom: 4px; }
+.guide-drivers p, .guide-faqs p, .guide-card p, .guide-return { font-size: 14px; color: var(--muted); line-height: 1.6; }
+.guide-variants { margin: 0 0 0 1.1rem; color: var(--sky); }
+.guide-variants li { margin-bottom: .6rem; font-size: 15px; }
+.guide-faqs { display: grid; gap: 12px; }
+.guide-related { display: flex; flex-wrap: wrap; gap: 8px 16px; list-style: none; margin: .75rem 0 1.5rem; padding: 0; }
+.guide-related a { color: var(--sky-light); font-weight: 500; text-decoration: none; }
+.guide-index { display: grid; gap: 12px; margin-top: 2rem; }
+.guide-card { display: block; text-decoration: none; color: inherit; border: 1px solid rgba(11,37,69,0.08); }
+.guide-card:hover { border-color: var(--sky-light); }
+.guide-card-name { font-size: 20px; font-weight: 500; color: var(--sky); margin-bottom: 6px; }
+@media (max-width: 768px) {
+  .guide-drivers { grid-template-columns: 1fr; }
+  .guide { padding-top: 92px; }
+}
