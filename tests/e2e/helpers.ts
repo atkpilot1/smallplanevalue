@@ -44,6 +44,57 @@ export async function openApp(page: Page, path = '/') {
   await page.goto(path, { waitUntil: 'domcontentloaded' })
 }
 
+type GaEvent = { name: string; params: Record<string, unknown> }
+
+function readGaEventsFromPage() {
+  const layer = window.dataLayer || []
+  const out: GaEvent[] = []
+  for (const raw of layer) {
+    let cmd: unknown[] = []
+    if (Array.isArray(raw)) cmd = raw
+    else if (raw && typeof raw === 'object' && typeof (raw as ArrayLike<unknown>).length === 'number') {
+      cmd = Array.from(raw as ArrayLike<unknown>)
+    }
+    if (cmd[0] === 'event' && typeof cmd[1] === 'string') {
+      const params = cmd[2]
+      out.push({
+        name: cmd[1],
+        params: params && typeof params === 'object' && !Array.isArray(params)
+          ? params as Record<string, unknown>
+          : {},
+      })
+    }
+  }
+  return out
+}
+
+export async function gaEvents(page: Page) {
+  return page.evaluate(readGaEventsFromPage)
+}
+
+export async function waitForGaEvent(page: Page, name: string, timeout = 10_000) {
+  const handle = await page.waitForFunction(
+    (eventName) => {
+      const layer = window.dataLayer || []
+      for (const raw of layer) {
+        let cmd: unknown[] = []
+        if (Array.isArray(raw)) cmd = raw
+        else if (raw && typeof raw === 'object' && typeof (raw as ArrayLike<unknown>).length === 'number') {
+          cmd = Array.from(raw as ArrayLike<unknown>)
+        }
+        if (cmd[0] === 'event' && cmd[1] === eventName) {
+          const params = cmd[2]
+          return params && typeof params === 'object' && !Array.isArray(params) ? params : {}
+        }
+      }
+      return false
+    },
+    name,
+    { timeout },
+  )
+  return (await handle.jsonValue()) as Record<string, unknown>
+}
+
 export async function expectAlert(page: Page, click: () => Promise<void>, message: string) {
   const dialogP = page.waitForEvent('dialog')
   const clickP = click()

@@ -39,13 +39,14 @@
         </tbody>
       </table>
     </div>
-    <div class="note-box" style="margin-top:.75rem">Asking prices only — no sale prices, as GA transactions are not publicly recorded. Verify at <a href="https://www.trade-a-plane.com" target="_blank" style="color:var(--sky-light)">Trade-A-Plane</a>, <a href="https://www.controller.com" target="_blank" style="color:var(--sky-light)">Controller.com</a>, <a href="https://www.barnstormers.com" target="_blank" style="color:var(--sky-light)">Barnstormers</a>.</div>
+    <div class="note-box" style="margin-top:.75rem">Asking prices only — no sale prices, as GA transactions are not publicly recorded. Verify at <a href="https://www.trade-a-plane.com" target="_blank" rel="noopener noreferrer" style="color:var(--sky-light)" @click="trackBrokerContact('trade-a-plane')">Trade-A-Plane</a>, <a href="https://www.controller.com" target="_blank" rel="noopener noreferrer" style="color:var(--sky-light)" @click="trackBrokerContact('controller')">Controller.com</a>, <a href="https://www.barnstormers.com" target="_blank" rel="noopener noreferrer" style="color:var(--sky-light)" @click="trackBrokerContact('barnstormers')">Barnstormers</a>.</div>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { CompsResult } from '~/types/app'
 import { fmt } from '~/utils/format'
+import { trackBrokerContact } from '~/composables/useAnalytics'
 
 defineProps<{
   v: CompsResult | null

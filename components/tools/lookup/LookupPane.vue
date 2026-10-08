@@ -115,6 +115,11 @@ async function doLookup() {
     ctx.setLookup(d)
     result.value = d
     trackEvent('lookup_success', { source: 'spv' })
+    trackEvent('view_item', {
+      item_id: d.nnumber,
+      item_name: [d.year, d.make, d.model].filter(Boolean).join(' '),
+      item_category: 'aircraft',
+    })
     if (isTwinFromLookup(d)) val.engines.value = '2'
   } catch (e) {
     console.log('N-number lookup failed:', e)

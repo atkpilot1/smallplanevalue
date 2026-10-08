@@ -1,11 +1,19 @@
 import type { User } from '@supabase/supabase-js'
 import { FREE_VALUATIONS, freeRemaining as freeRemainingOf } from '~/utils/credits'
 import { STATE } from '~/utils/stateKeys'
+import { trackEvent } from '~/composables/useAnalytics'
 import { useToast } from '~/composables/useToast'
 
 export type AuthDialog = 'login' | 'account' | 'paywall' | null
 export type AuthStep = 'email' | 'code'
 export type CheckoutSku = 'single' | 'pack'
+
+const CHECKOUT_VALUE: Record<CheckoutSku, number> = { single: 24, pack: 75 }
+
+function isNewAccount(user: User) {
+  const createdAt = Date.parse(user.created_at)
+  return Number.isFinite(createdAt) && Date.now() - createdAt < 120_000
+}
 
 function isEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
@@ -34,8 +42,10 @@ export function useAuth() {
     const sb = useSupabase()
     const { data } = await sb.auth.getSession()
     user.value = data.session?.user ?? null
-    sb.auth.onAuthStateChange((_event, session) => {
+    sb.auth.onAuthStateChange((event, session) => {
       user.value = session?.user ?? null
+      if (event !== 'SIGNED_IN' || !session?.user) return
+      trackEvent(isNewAccount(session.user) ? 'sign_up' : 'login', { method: 'email' })
     })
     ready.value = true
   }
@@ -159,6 +169,11 @@ export function useAuth() {
     }
     checkoutBusy.value = true
     checkoutError.value = ''
+    trackEvent('begin_checkout', {
+      currency: 'USD',
+      value: CHECKOUT_VALUE[sku],
+      item_id: sku,
+    })
     try {
       const { url } = await apiPost<{ url: string }>('/api/checkout', { sku }, { accessToken })
       if (url && import.meta.client) {
@@ -191,6 +206,10 @@ export function useAuth() {
       return
     }
     if (params.get('paid') !== '1') return
+    trackEvent('purchase', {
+      currency: 'USD',
+      transaction_id: params.get('session_id') || undefined,
+    })
     toast('Credits added. Click Get honest valuation to continue.', { variant: 'success' })
     const sessionId = params.get('session_id')
     if (sessionId) void confirmCheckout(sessionId)

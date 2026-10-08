@@ -83,6 +83,8 @@ async function doValuation() {
     return
   }
 
+  trackEvent('valuation_started', { make: id.make, model: id.model })
+
   const accessToken = await getAccessToken()
   if (!accessToken) {
     openLogin()
@@ -117,6 +119,7 @@ async function doValuation() {
     if (err.status === 401) {
       openLogin()
     } else if (err.status === 402 || err.code === 'credits_required') {
+      trackEvent('valuation_limit_reached', { make: body.make, model: body.model })
       openPaywall()
     } else {
       console.error('Valuation error:', e)
