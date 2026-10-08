@@ -4,7 +4,7 @@ export default defineNuxtPlugin(() => {
     window.dataLayer!.push(args)
   }
   gtag('js', new Date())
-  const GA_ID = 'G-9ET7HJRJWC'
+  const GA_ID = 'G-1Y4143JY7Y'
   const GA_DEBUG = new URLSearchParams(location.search).has('ga_debug')
   gtag('config', GA_ID, GA_DEBUG ? { debug_mode: true } : {})
   window.gtag = gtag
