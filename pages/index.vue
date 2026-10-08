@@ -15,6 +15,12 @@ import { pickPlanes, showcasePeriod } from '~/utils/showcase'
 import { trackEvent } from '~/composables/useAnalytics'
 import { STATE } from '~/utils/stateKeys'
 
+usePageSeo({
+  title: 'SmallPlaneValue.com — Honest GA Aircraft Valuations',
+  description: 'Honest GA aircraft valuations for piston singles, twins, and experimentals. Asking ranges and fair-market estimates — no fabricated sale prices.',
+  path: '/',
+})
+
 const { data: planes } = await useAsyncData('showcase', () => {
   return pickPlanes(3, showcasePeriod(process.env.SHOWCASE_PERIOD))
 })
@@ -39,7 +45,7 @@ onMounted(() => {
     }
   }
 
-  if (params.get('tab') === 'val') switchTab('val')
+  if (params.get('tab') === 'val' || params.get('make') || params.get('model')) switchTab('val')
   handleCheckoutReturn(params)
 })
 </script>

@@ -14,6 +14,10 @@
         <div class="type-pill"><i class="ti ti-wind"></i> Turboprop singles</div>
         <div class="type-pill"><i class="ti ti-clock"></i> Vintage / Warbird</div>
       </div>
+      <p class="guide-jump reveal">
+        Value a specific model:
+        <NuxtLink v-for="guide in AIRCRAFT_GUIDES" :key="guide.slug" :to="`/aircraft/${guide.slug}`">{{ guide.name }}</NuxtLink>
+      </p>
       <div style="margin-top:2.5rem; padding:20px 24px; background:var(--offwhite); border-radius:var(--radius-lg); display:flex; align-items:flex-start; gap:14px; transition-delay:.2s" class="reveal">
         <i class="ti ti-alert-circle" style="font-size:20px; color:var(--sky-light); flex-shrink:0; margin-top:2px;"></i>
         <div>
@@ -24,3 +28,7 @@
     </div>
   </section>
 </template>
+
+<script setup lang="ts">
+import { AIRCRAFT_GUIDES } from '~/data/aircraftGuides'
+</script>
