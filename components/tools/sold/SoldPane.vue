@@ -247,6 +247,7 @@ function doSoldSubmit() {
     }
     sold.add(entry)
     submitted.value = entry
+    trackEvent('generate_lead', { lead_type: 'sold_report', make: mk, model: md })
     make.value = ''
     model.value = ''
     year.value = ''

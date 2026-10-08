@@ -132,6 +132,18 @@ Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000`
 - [x] Post-valuation “too low / about right / too high” writes feedback
 - [x] Feedback POST returns 200
 
+## Analytics (GA4 `dataLayer` events)
+
+- [x] Logged-out valuation click fires `valuation_started` (not completed)
+- [x] Signed-in valuation fires `valuation_started` then `valuation_completed`
+- [x] Paywall fires `valuation_limit_reached`
+- [x] New OTP account fires `sign_up`
+- [x] Lookup success fires `view_item`
+- [x] Report-a-sale submit fires `generate_lead`
+- [x] TAP / Controller / Barnstormers clicks fire `broker_contact_click`
+- [x] Checkout buy fires `begin_checkout`
+- [x] Checkout return `/?paid=1` fires `purchase`
+
 ## Share
 
 - [x] Copy-for-BeechTalk sets the copied confirmation
