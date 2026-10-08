@@ -1,6 +1,6 @@
 # GA4 key events — SmallPlaneValue
 
-Property ID: **G-9ET7HJRJWC**
+Property ID: **G-1Y4143JY7Y**
 
 The site already sends page views. These six events measure the actions that show whether the product is getting traction. GA4 does not count an event as a **key event** until you mark it in Admin, so the home card stays at **Key events: 0** until Step 2.
 
@@ -61,5 +61,5 @@ If an event is missing from the list, fire it once with `?ga_debug=1` and watch 
 ## Troubleshooting
 
 - **Key events still 0?** The events are firing, but none are marked in Admin yet. Step 2 is required.
-- **No DebugView data?** Disable ad blockers and confirm `G-9ET7HJRJWC` is in the page source.
+- **No DebugView data?** Disable ad blockers and confirm `G-1Y4143JY7Y` is in the page source.
 - **`sign_up` missing on a test login?** That address already had an account. Use a new email.
