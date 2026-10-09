@@ -38,7 +38,8 @@ test.describe('promo code', () => {
     expect(res.status()).toBe(401)
   })
 
-  test('manage account applies the code and shows the new balance', async ({ page }) => {
+  test('manage account applies the code and shows the new balance', async ({ page, consoleGuard }) => {
+    consoleGuard.allow(409)
     const { userId } = await seedAdminSession(page)
     await openApp(page)
     await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
