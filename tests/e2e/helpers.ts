@@ -134,6 +134,8 @@ export async function fillValuation(
     outOfAnnual?: boolean
     logbooks?: string
     damage?: string
+    paint?: string
+    interior?: string
     avionicsPackage?: string
     conversion?: string
     asking?: string
@@ -152,6 +154,8 @@ export async function fillValuation(
   if (fields.outOfAnnual) await form.getByRole('checkbox', { name: 'Out of annual' }).check()
   if (fields.logbooks) await field(form, 'Logbooks').selectOption(fields.logbooks)
   if (fields.damage) await field(form, 'Damage history').selectOption(fields.damage)
+  if (fields.paint) await field(form, 'Paint / exterior').selectOption(fields.paint)
+  if (fields.interior) await field(form, 'Interior').selectOption(fields.interior)
   if (fields.avionicsPackage) await field(form, 'Avionics panel').selectOption(fields.avionicsPackage)
   if (fields.conversion) await field(form, /engine conversion/i).fill(fields.conversion)
   if (fields.asking) await field(form, 'Asking price ($)').fill(fields.asking)

@@ -17,6 +17,8 @@ const bodySchema = z.object({
   engineInfo: z.string().optional().default(''),
   annualInfo: z.string().optional().default(''),
   cond: z.string().optional().default(''),
+  paint: z.string().optional().default(''),
+  interior: z.string().optional().default(''),
   cosm: z.string().optional().default(''),
   avionics: z.array(z.string()).optional().default([]),
   notes: z.string().optional().default(''),
@@ -391,12 +393,15 @@ export default defineEventHandler(async (event) => {
   prompt +=
     'Aircraft: ' + (d.year || '?') + ' ' + d.make + ' ' + d.model + '\nTTAF: ' + (d.ttaf || '?') + ' hrs\n' + d.engineInfo + '\n'
   prompt +=
-    'Annual: ' + (d.annualInfo || 'Unknown') + '. Condition: ' + d.cond + ', Paint/Interior: ' + d.cosm + '\nAvionics: ' + (avs.length ? avs.join(', ') : 'Standard/basic') + '\n'
+    'Annual: ' + (d.annualInfo || 'Unknown') + '. Overall condition: ' + d.cond +
+    ', Paint/exterior: ' + (d.paint || d.cosm) +
+    ', Interior: ' + (d.interior || d.cosm) +
+    '\nAvionics: ' + (avs.length ? avs.join(', ') : 'Standard/basic') + '\n'
   prompt +=
     'Logbooks: ' + (d.logbooks || 'Unknown') + '. Damage history: ' + (d.damage || 'Unknown') + '\nNotes: ' + (d.notes || 'none') + '\n'
   prompt +=
     'IMPORTANT — LOGBOOKS and DAMAGE HISTORY are adjusted automatically AFTER your estimate, so DO NOT price them yourself. Price this aircraft assuming COMPLETE logbooks and NO damage history (a clean baseline). Ignore the "Logbooks:" and "Damage history:" lines above when setting sellerAsk, fairMarketValue and buyerTarget. Do not mention logbook completeness or damage history in keyFinding/analysis — a separate records adjustment is appended automatically.\n' +
-    'OTHER VALUE-ADD ITEMS (credit when present in notes/equipment, cap combined positives at +15% of base): fresh/recent engine overhaul or factory reman, recently complied ADs/SBs, recent annual, fresh paint, fresh interior, useful STC mods, hangared storage, useful-load mods.\n' +
+    'OTHER VALUE-ADD ITEMS (credit when present in notes/equipment, cap combined positives at +15% of base): fresh/recent engine overhaul or factory reman, recently complied ADs/SBs, recent annual, fresh paint, fresh interior, useful STC mods, hangared storage, useful-load mods. Paint and interior can diverge — original/old paint with a new interior (or the reverse) should be scored separately, not averaged into one cosmetics grade.\n' +
     'OTHER DEDUCTION ITEMS (subtract when present): run-out/high-time engine, corrosion, hail/hangar rash, outdated/inop equipment, overdue inspections.\n\n'
   if (detectIo550Conversion(d)) {
     prompt +=

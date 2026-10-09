@@ -1,5 +1,12 @@
 import { AV_PARSE_MAP, collectAvionics } from '~/data/avionicsCatalog'
 import type { EngineLifeState, EngineTboSpec, LookupRecord, ParsedListing, ValuationRequest } from '~/types/app'
+import {
+  composeCosmetics,
+  matchInteriorCondition,
+  matchOverallCondition,
+  matchPaintCondition,
+  migrateLegacyCosmetics,
+} from '~/utils/conditionOptions'
 import { isTwinFromLookup } from '~/utils/lookupPrefill'
 import { STATE } from '~/utils/stateKeys'
 import {
@@ -78,7 +85,7 @@ export function useValuationForm() {
   const {
     paste, make, model, year, annualMonth, annualYear, outOfAnnual, engineDisplay,
     asking, ttaf, engines, cirrusGen, cirrusTouched, tbo, engConv, smoh, prop1,
-    smohL, smohR, propL, propR, cond, cosm, logbooks, damage, avionicsPackage,
+    smohL, smohR, propL, propR, cond, paint, interior, logbooks, damage, avionicsPackage,
     notes, avChecked, avQty, avSize, tboUserOverride, extraTbo, engineTboAuto,
   } = toRefs(toReactive(form))
 
@@ -247,8 +254,16 @@ export function useValuationForm() {
       if (d.smoh != null) smoh.value = String(d.smoh)
       if (d.propHrs != null) prop1.value = String(d.propHrs)
     }
-    if (d.condition) cond.value = d.condition
-    if (d.cosmetics) cosm.value = d.cosmetics
+    if (d.condition) cond.value = matchOverallCondition(d.condition) || d.condition
+    const parsedPaint = matchPaintCondition(d.paint)
+    const parsedInterior = matchInteriorCondition(d.interior)
+    if (parsedPaint) paint.value = parsedPaint
+    if (parsedInterior) interior.value = parsedInterior
+    if (!parsedPaint && !parsedInterior && d.cosmetics) {
+      const migrated = migrateLegacyCosmetics(d.cosmetics)
+      paint.value = migrated.paint
+      interior.value = migrated.interior
+    }
     if (d.notes) notes.value = (d.notes || '').substring(0, 200)
     if (d.avionics && Array.isArray(d.avionics)) {
       const next = { ...avChecked.value }
@@ -335,7 +350,9 @@ export function useValuationForm() {
       engineInfo,
       annualInfo,
       cond: cond.value,
-      cosm: cosm.value,
+      paint: paint.value,
+      interior: interior.value,
+      cosm: composeCosmetics(paint.value, interior.value),
       avionics: collectedAvionics(),
       notes: notesText || '',
       asking: askPrice || '',
@@ -361,7 +378,7 @@ export function useValuationForm() {
   return {
     paste, make, model, year, annualMonth, annualYear, outOfAnnual, engineDisplay,
     asking, ttaf, engines, cirrusGen, cirrusTouched, tbo, engConv, smoh, prop1,
-    smohL, smohR, propL, propR, cond, cosm, logbooks, damage, avionicsPackage,
+    smohL, smohR, propL, propR, cond, paint, interior, logbooks, damage, avionicsPackage,
     notes, avChecked, avQty, avSize, tboNote, lastEngineLife, tboUserOverride, hasResult,
     annualYears, isTwin, isCirrus, tboOptions,
     toggleCirrusGen, refreshEngineLife, refreshEngineLifeBars, onTboOverride,
