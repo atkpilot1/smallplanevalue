@@ -860,6 +860,12 @@ outline: none;
 .promo-code-row input:focus { border-color: var(--sky-light); }
 .promo-code .auth-sent,
 .promo-code .auth-error { margin: 8px 0 0; }
+.promo-code-tools {
+margin: 0 0 16px;
+padding: 0;
+border: none;
+}
+.promo-code-tools .promo-code-row { max-width: 480px; }
 
 .app-toasts {
 position: fixed;

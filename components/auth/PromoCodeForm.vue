@@ -1,6 +1,10 @@
 <template>
-  <form class="promo-code" @submit.prevent="onSubmit">
-    <label :for="inputId">Have a code?</label>
+  <form
+    class="promo-code"
+    :class="{ 'promo-code-tools': placement === 'tools' }"
+    @submit.prevent="onSubmit"
+  >
+    <label :for="inputId">Tradeshow or promo code</label>
     <div class="promo-code-row">
       <input
         :id="inputId"
@@ -25,23 +29,30 @@
 <script setup lang="ts">
 import { apiPost } from '~/composables/useApi'
 
-defineProps<{
+withDefaults(defineProps<{
   inputId: string
-}>()
+  placement?: 'dialog' | 'tools'
+}>(), {
+  placement: 'dialog',
+})
 
 const code = ref('')
 const busy = ref(false)
 const error = ref('')
 const message = ref('')
 
-const { dialog, getAccessToken, refreshCredits, closeDialog } = useAuth()
+const { dialog, getAccessToken, refreshCredits, closeDialog, openLogin } = useAuth()
 const { toast } = useToast()
 
 async function onSubmit() {
   error.value = ''
   message.value = ''
   const accessToken = await getAccessToken()
-  if (!accessToken) return
+  if (!accessToken) {
+    error.value = 'Sign in, then apply the code.'
+    openLogin()
+    return
+  }
   busy.value = true
   try {
     const result = await apiPost<{ credits: number }>('/api/promo', { code: code.value }, { accessToken })

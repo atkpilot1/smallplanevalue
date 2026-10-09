@@ -2,6 +2,7 @@ import { test, expect } from './fixtures'
 import {
   accountDialog,
   createAdminSession,
+  loginDialog,
   manageAccountButton,
   paywallDialog,
   seedAdminSession,
@@ -38,6 +39,28 @@ test.describe('promo code', () => {
     expect(res.status()).toBe(401)
   })
 
+  test('the code field sits under the tool tabs', async ({ page }) => {
+    await openApp(page)
+    const tools = page.locator('#app')
+    const code = tools.getByLabel('Tradeshow or promo code')
+    await expect(code).toBeVisible()
+    await code.fill('TRADESHOW')
+    await tools.getByRole('button', { name: 'Apply' }).click()
+    await expect(loginDialog(page)).toBeVisible()
+    await expect(tools.getByRole('alert')).toContainText(/sign in, then apply the code/i)
+  })
+
+  test('tools code field grants valuations', async ({ page }) => {
+    const { userId } = await seedAdminSession(page)
+    await openApp(page)
+    await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
+    const tools = page.locator('#app')
+    await tools.getByLabel('Tradeshow or promo code').fill('TRADESHOW')
+    await tools.getByRole('button', { name: 'Apply' }).click()
+    await expect(tools.getByText('25 valuations added.')).toBeVisible()
+    expect((await fetchProfile(userId))?.credit_balance).toBe(25)
+  })
+
   test('manage account applies the code and shows the new balance', async ({ page, consoleGuard }) => {
     consoleGuard.allow(409)
     const { userId } = await seedAdminSession(page)
@@ -46,13 +69,13 @@ test.describe('promo code', () => {
     await manageAccountButton(page).click()
 
     const dialog = accountDialog(page)
-    await dialog.getByLabel('Have a code?').fill('tradeshow')
+    await dialog.getByLabel('Tradeshow or promo code').fill('tradeshow')
     await dialog.getByRole('button', { name: 'Apply' }).click()
     await expect(dialog.getByText('25 valuations added.')).toBeVisible()
     await expect(dialog.getByLabel('Paid credits')).toHaveText('25')
     expect((await fetchProfile(userId))?.credit_balance).toBe(25)
 
-    await dialog.getByLabel('Have a code?').fill('TRADESHOW')
+    await dialog.getByLabel('Tradeshow or promo code').fill('TRADESHOW')
     await dialog.getByRole('button', { name: 'Apply' }).click()
     await expect(dialog.getByRole('alert')).toContainText(/already used/i)
     expect((await fetchProfile(userId))?.credit_balance).toBe(25)
@@ -67,7 +90,7 @@ test.describe('promo code', () => {
     await pane(page, 'val').getByRole('button', { name: 'Get honest valuation' }).click()
     await expect(paywallDialog(page)).toBeVisible()
 
-    await paywallDialog(page).getByLabel('Have a code?').fill('TRADESHOW')
+    await paywallDialog(page).getByLabel('Tradeshow or promo code').fill('TRADESHOW')
     await paywallDialog(page).getByRole('button', { name: 'Apply' }).click()
     await expect(paywallDialog(page)).toBeHidden()
     await expect(page.getByRole('status').filter({ hasText: '25 valuations added' })).toBeVisible()
