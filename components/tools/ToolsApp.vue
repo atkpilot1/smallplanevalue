@@ -6,6 +6,7 @@
         <h2 class="section-h2">Start your research.</h2>
       </div>
       <TabBar />
+      <PromoCodeForm input-id="promo-code-tools" placement="tools" />
       <LookupPane />
       <ValuationPane />
       <CompsPane />
