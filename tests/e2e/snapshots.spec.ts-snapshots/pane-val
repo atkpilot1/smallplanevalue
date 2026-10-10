@@ -1,8 +1,11 @@
 - tabpanel "Get valuation":
   - text: PASTE A LISTING (optional)
+  - text: Paste the text, or paste, drop, or upload a screenshot of the listing.
   - textbox "Paste a listing":
-    - /placeholder: Paste an aircraft listing from Controller, Trade-A-Plane, Barnstormers, etc. We will auto-fill all fields and avionics for you...
+    - /placeholder: Paste an aircraft listing from Controller, Trade-A-Plane, Barnstormers, etc. Or drop a screenshot — we will auto-fill the fields and avionics.
   - button "Auto-fill from listing"
+  - text: Upload screenshot
+  - button "Upload a listing screenshot"
   - text: or enter details manually MAKE
   - textbox "MAKE":
     - /placeholder: Cessna, Piper, Beech, Cirrus...

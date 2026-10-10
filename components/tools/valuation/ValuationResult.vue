@@ -74,6 +74,7 @@
       </div>
       <div class="val-accuracy-msg" id="val-accuracy-msg" :style="{ color: accMsg ? 'var(--success)' : undefined }">{{ accMsg }}</div>
     </div>
+    <ForSaleNote v-if="forSale && forSale.count > 0" :summary="forSale" :year="year" />
     <div style="font-size:13px;font-weight:500;color:var(--sky);margin-bottom:.75rem;padding:10px 14px;background:rgba(19,64,116,0.06);border-radius:var(--radius)">{{ v.keyFinding }}</div>
     <div class="analysis-text">{{ v.analysis }}</div>
     <div v-if="tips.length" style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(11,37,69,0.08)">
@@ -87,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ValuationResult } from '~/types/app'
+import type { ForSaleCount, ValuationResult } from '~/types/app'
 import { fmt, impactClass } from '~/utils/format'
 import { buildListingNarrative } from '~/utils/listingNarrative'
 import { sendAppFeedback } from '~/composables/useFeedback'
@@ -100,6 +101,7 @@ const props = defineProps<{
   model: string
   year: string
   listingAsk: number
+  forSale?: ForSaleCount | null
 }>()
 
 const val = useValuationForm()

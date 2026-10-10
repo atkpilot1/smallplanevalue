@@ -149,6 +149,17 @@ export interface FeedbackEntry {
   ts: string
 }
 
+export interface ForSaleCount {
+  count: number
+  pricedCount: number
+  /** Listings in the match whose year equals the requested year. Null when no year was asked. */
+  sameYearCount: number | null
+  /** Matched catalog series names. Empty when nothing matched. */
+  series: string[]
+  label: string
+  syncedAtLabel: string | null
+}
+
 export interface ParsedListing {
   make?: string | null
   model?: string | null

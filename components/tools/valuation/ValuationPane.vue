@@ -10,6 +10,7 @@
     <ListingPaste />
     <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:12px">or enter details manually</div>
     <IdentityFields />
+    <ForSaleNote :summary="forSale" :year="year" test-id="for-sale-count" />
     <EngineTimes />
     <ConditionFields />
     <AvionicsFields />
@@ -30,6 +31,7 @@
         :model="submittedModel"
         :year="submittedYear"
         :listing-ask="submittedAsk"
+        :for-sale="forSale"
       />
     </div>
     <p class="val-free-note" id="v-free-note">3 free valuations per account, then $24 each or $75 for five.</p>
@@ -46,6 +48,16 @@ const { activeTab } = useToolsTab()
 const { openLogin, openPaywall, getAccessToken } = useAuth()
 const val = useValuationForm()
 const notes = val.notes
+const year = val.year
+const { summary: forSale, lookup: lookupForSale } = useForSaleLookup('valuation')
+
+watch(
+  [val.make, val.model, val.year],
+  () => {
+    lookupForSale(val.make.value, val.model.value, String(val.year.value ?? ''))
+  },
+  { immediate: true },
+)
 const loading = ref(false)
 const result = ref<ValuationResult | null>(null)
 const failMsg = ref('')

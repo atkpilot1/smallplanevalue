@@ -22,6 +22,7 @@
         </select>
       </div>
     </div>
+    <ForSaleNote :summary="forSale" test-id="for-sale-count" />
     <button class="submit-btn" id="c-btn" :disabled="loading" @click="doComps">
       <i class="ti ti-search"></i> Search asking prices
     </button>
@@ -38,6 +39,11 @@ import type { CompsResult } from '~/types/app'
 const { activeTab } = useToolsTab()
 const { model } = useCompsForm()
 const years = ref('All years')
+const { summary: forSale, lookup: lookupForSale } = useForSaleLookup('comps')
+
+watch(model, (value) => {
+  lookupForSale('', value, '')
+}, { immediate: true })
 const loading = ref(false)
 const result = ref<CompsResult | null>(null)
 const failed = ref(false)
