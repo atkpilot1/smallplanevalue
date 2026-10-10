@@ -16,8 +16,9 @@
       </button>
       <h2 id="login-title">Sign in</h2>
       <p id="login-lead" class="auth-dialog-lead">
-        Enter your email and we’ll send a 6-digit code. No password needed.
+        Have a tradeshow code? Enter it here, then sign in with your email.
       </p>
+      <PromoCodeForm input-id="promo-code-login" placement="login" />
 
       <form v-if="step === 'email'" class="auth-form" @submit.prevent="onSend">
         <div class="form-group">

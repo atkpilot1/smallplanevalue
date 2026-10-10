@@ -873,6 +873,48 @@ display: flex; align-items: center; justify-content: center;
 .auth-close:hover { background: rgba(11,37,69,0.06); color: var(--sky); }
 .auth-close i { font-size: 18px; }
 
+.promo-code {
+margin-top: 0.85rem;
+padding-top: 0.85rem;
+border-top: 1px solid var(--card-border);
+}
+.promo-code label {
+display: block;
+font-size: 12px;
+font-weight: 500;
+color: var(--muted);
+margin-bottom: 6px;
+letter-spacing: .03em;
+}
+.promo-code-row { display: flex; gap: 8px; }
+.promo-code-row input {
+flex: 1;
+min-width: 0;
+height: 38px;
+padding: 0 12px;
+border-radius: var(--radius);
+border: 1px solid rgba(11,37,69,0.15);
+font-size: 14px;
+background: var(--white);
+color: var(--sky);
+font-family: var(--body);
+outline: none;
+}
+.promo-code-row input:focus { border-color: var(--sky-light); }
+.promo-code .auth-sent,
+.promo-code .auth-error { margin: 8px 0 0; }
+.promo-code-tools {
+margin: 0 0 16px;
+padding: 0;
+border: none;
+}
+.promo-code-tools .promo-code-row { max-width: 480px; }
+.promo-code-login {
+margin: 0 0 1rem;
+padding: 0;
+border: none;
+}
+
 .app-toasts {
 position: fixed;
 top: 16px;
