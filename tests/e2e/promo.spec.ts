@@ -47,7 +47,21 @@ test.describe('promo code', () => {
     await code.fill('TRADESHOW')
     await tools.getByRole('button', { name: 'Apply' }).click()
     await expect(loginDialog(page)).toBeVisible()
-    await expect(tools.getByRole('alert')).toContainText(/sign in, then apply the code/i)
+    await expect(loginDialog(page).getByLabel('Tradeshow or promo code')).toHaveValue('TRADESHOW')
+    await expect(loginDialog(page).getByRole('alert')).toContainText(/applied when you finish signing in/i)
+  })
+
+  test('the sign-in dialog accepts the tradeshow code', async ({ page }) => {
+    await openApp(page)
+    await page.getByRole('button', { name: 'Sign In' }).click()
+    const dialog = loginDialog(page)
+    const code = dialog.getByLabel('Tradeshow or promo code')
+    await expect(code).toBeVisible()
+    await expect(code).toHaveAttribute('placeholder', 'TRADESHOW')
+    await code.fill('TRADESHOW')
+    await dialog.getByRole('button', { name: 'Apply' }).click()
+    await expect(dialog.getByRole('alert')).toContainText(/applied when you finish signing in/i)
+    await expect(dialog.getByLabel(/^email$/i)).toBeVisible()
   })
 
   test('tools code field grants valuations', async ({ page }) => {

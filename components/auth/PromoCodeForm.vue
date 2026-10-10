@@ -1,7 +1,10 @@
 <template>
   <form
     class="promo-code"
-    :class="{ 'promo-code-tools': placement === 'tools' }"
+    :class="{
+      'promo-code-tools': placement === 'tools',
+      'promo-code-login': placement === 'login',
+    }"
     @submit.prevent="onSubmit"
   >
     <label :for="inputId">Tradeshow or promo code</label>
@@ -14,7 +17,7 @@
         autocapitalize="characters"
         spellcheck="false"
         maxlength="40"
-        placeholder="Enter code"
+        :placeholder="placement === 'login' ? 'TRADESHOW' : 'Enter code'"
         :disabled="busy"
       />
       <button class="n-lookup-btn" type="submit" :disabled="busy || !code.trim()">
@@ -29,28 +32,35 @@
 <script setup lang="ts">
 import { apiPost } from '~/composables/useApi'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   inputId: string
-  placement?: 'dialog' | 'tools'
+  placement?: 'dialog' | 'tools' | 'login'
 }>(), {
   placement: 'dialog',
 })
 
-const code = ref('')
+const signedOutHint = 'Enter your email below. This code is applied when you finish signing in.'
+
+const { dialog, pendingPromo, rememberPromo, getAccessToken, refreshCredits, closeDialog, openLogin } = useAuth()
+const { toast } = useToast()
+
+const code = ref(pendingPromo.value)
 const busy = ref(false)
-const error = ref('')
+const error = ref(dialog.value === 'login' && pendingPromo.value ? signedOutHint : '')
 const message = ref('')
 
-const { dialog, getAccessToken, refreshCredits, closeDialog, openLogin } = useAuth()
-const { toast } = useToast()
+watch(code, (value) => {
+  if (props.placement === 'login') rememberPromo(value)
+})
 
 async function onSubmit() {
   error.value = ''
   message.value = ''
   const accessToken = await getAccessToken()
   if (!accessToken) {
-    error.value = 'Sign in, then apply the code.'
-    openLogin()
+    rememberPromo(code.value)
+    error.value = signedOutHint
+    if (dialog.value !== 'login') openLogin()
     return
   }
   busy.value = true

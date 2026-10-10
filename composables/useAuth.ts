@@ -1,6 +1,7 @@
 import type { User } from '@supabase/supabase-js'
 import { FREE_VALUATIONS, freeRemaining as freeRemainingOf } from '~/utils/credits'
 import { STATE } from '~/utils/stateKeys'
+import { apiPost } from '~/composables/useApi'
 import { useToast } from '~/composables/useToast'
 
 export type AuthDialog = 'login' | 'account' | 'paywall' | null
@@ -24,6 +25,7 @@ export function useAuth() {
   const creditBalance = useState(STATE.authCreditBalance, () => 0)
   const checkoutBusy = useState(STATE.authCheckoutBusy, () => false)
   const checkoutError = useState(STATE.authCheckoutError, () => '')
+  const pendingPromo = useState(STATE.authPendingPromo, () => '')
 
   const freeRemaining = computed(() =>
     freeRemainingOf({ valuation_count: valuationCount.value, credit_balance: creditBalance.value }),
@@ -131,6 +133,7 @@ export function useAuth() {
         return false
       }
       closeDialog()
+      await redeemPendingPromo()
       return true
     } catch (e) {
       error.value = (e as Error).message || 'Could not verify code.'
@@ -143,6 +146,28 @@ export function useAuth() {
   function backToEmail() {
     step.value = 'email'
     error.value = ''
+  }
+
+  function rememberPromo(code: string) {
+    pendingPromo.value = code.trim()
+  }
+
+  async function redeemPendingPromo() {
+    const code = pendingPromo.value.trim()
+    if (!code) return
+    const accessToken = await getAccessToken()
+    if (!accessToken) return
+    const { toast } = useToast()
+    try {
+      const result = await apiPost<{ credits: number }>('/api/promo', { code }, { accessToken })
+      pendingPromo.value = ''
+      await refreshCredits()
+      toast(`${result.credits} valuations added. Click Get honest valuation to continue.`, { variant: 'success' })
+    } catch (e) {
+      const msg = (e as Error).message || 'Could not apply that code.'
+      if (/already used|isn.t valid/i.test(msg)) pendingPromo.value = ''
+      toast(msg)
+    }
   }
 
   async function getAccessToken() {
@@ -197,6 +222,7 @@ export function useAuth() {
   }
 
   async function signOut() {
+    pendingPromo.value = ''
     await useSupabase().auth.signOut()
     valuationCount.value = 0
     creditBalance.value = 0
@@ -223,6 +249,8 @@ export function useAuth() {
     openAccount,
     openPaywall,
     closeDialog,
+    pendingPromo,
+    rememberPromo,
     sendCode,
     verifyCode,
     backToEmail,
