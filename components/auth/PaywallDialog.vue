@@ -19,6 +19,7 @@
         You’ve used your {{ freeAllowance }} free valuations. Buy more to keep going — your form is saved.
       </p>
       <CheckoutBuyButtons />
+      <PromoCodeForm input-id="promo-code-paywall" />
       <p v-if="checkoutError" class="auth-error" role="alert">{{ checkoutError }}</p>
     </div>
   </div>
