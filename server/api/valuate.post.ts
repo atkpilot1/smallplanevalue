@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { generateText, stepCountIs, tool } from 'ai'
 import { findComparables, formatComparables } from '../data/aircraftDb'
+import { applyBeech18N62CJFloor, beech18Guide, isTwinBeech } from '../utils/beech18Value'
 import {
   recordValuationUsage,
   withValuationCredit,
@@ -65,6 +66,7 @@ function isCirrus(make: string, model: string): boolean {
 }
 
 function isBonanzaFamily(make: string, model: string): boolean {
+  if (isTwinBeech(make, model)) return false
   const m = (make + ' ' + model).toLowerCase()
   return /\bbeech\b|\bbonanza\b|\bf33|\ba36|\ba35|\bv35|\bbaron\b/.test(m)
 }
@@ -353,6 +355,10 @@ export default defineEventHandler(async (event) => {
     prompt += bonanzaGuide(d)
   }
 
+  if (isTwinBeech(d.make, d.model)) {
+    prompt += beech18Guide(d)
+  }
+
   const listingAsk = parseInt((d.asking || '').replace(/[^0-9]/g, ''), 10) || 0
   if (listingAsk > 0) {
     prompt +=
@@ -556,6 +562,7 @@ export default defineEventHandler(async (event) => {
     isTwin: d.isTwin,
   })
   out = applyEquippedF33AFloor(out, d)
+  out = applyBeech18N62CJFloor(out, d)
 
   if (clientId) {
     await recordValuationUsage(
