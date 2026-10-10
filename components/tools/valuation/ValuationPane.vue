@@ -31,7 +31,6 @@
         :model="submittedModel"
         :year="submittedYear"
         :listing-ask="submittedAsk"
-        :for-sale="forSale"
       />
     </div>
     <p class="val-free-note" id="v-free-note">3 free valuations per account, then $24 each or $75 for five.</p>

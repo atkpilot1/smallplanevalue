@@ -1,6 +1,6 @@
 - tabpanel "Get valuation":
   - text: PASTE A LISTING (optional)
-  - text: Paste the text, or paste, drop, or upload a screenshot of the listing.
+  - paragraph: Paste the text, or paste, drop, or upload a screenshot of the listing.
   - textbox "Paste a listing":
     - /placeholder: Paste an aircraft listing from Controller, Trade-A-Plane, Barnstormers, etc. Or drop a screenshot — we will auto-fill the fields and avionics.
   - button "Auto-fill from listing"
