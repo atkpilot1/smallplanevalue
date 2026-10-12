@@ -1,6 +1,7 @@
 import { AV_PARSE_MAP, collectAvionics } from '~/data/avionicsCatalog'
 import type { EngineLifeState, EngineTboSpec, LookupRecord, ParsedListing, ValuationRequest } from '~/types/app'
 import { isTwinFromLookup } from '~/utils/lookupPrefill'
+import { readTradeshowCode } from '~/utils/tradeshowAccess'
 import { STATE } from '~/utils/stateKeys'
 import {
   VALUATION_FORM_STORAGE_KEY,
@@ -353,6 +354,7 @@ export function useValuationForm() {
       engineSmohR,
       isTwin: twin,
       engineConversion: engConv.value.trim() || '',
+      tradeshowCode: readTradeshowCode(),
     }
   }
 

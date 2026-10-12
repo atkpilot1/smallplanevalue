@@ -19,6 +19,7 @@
         Have a tradeshow code? Enter it here, then sign in with your email.
       </p>
       <PromoCodeForm input-id="promo-code-login" placement="login" />
+      <TradeshowStatus />
 
       <form v-if="step === 'email'" class="auth-form" @submit.prevent="onSend">
         <div class="form-group">

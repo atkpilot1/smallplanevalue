@@ -7,7 +7,7 @@ import {
   paywallDialog,
   seedAdminSession,
 } from './auth'
-import { fetchProfile, fillMidtimeValuation, openApp, pane, setProfile } from './helpers'
+import { fetchProfile, fillMidtimeValuation, openApp, pane, setProfile, submitValuation, valuationResult } from './helpers'
 
 test.describe('promo code', () => {
   test('TRADESHOW grants 25 valuations once per account', async ({ request }) => {
@@ -48,7 +48,8 @@ test.describe('promo code', () => {
     await tools.getByRole('button', { name: 'Apply' }).click()
     await expect(loginDialog(page)).toBeVisible()
     await expect(loginDialog(page).getByLabel('Tradeshow or promo code')).toHaveValue('TRADESHOW')
-    await expect(loginDialog(page).getByRole('alert')).toContainText(/applied when you finish signing in/i)
+    await expect(loginDialog(page).getByText('Tradeshow access is on.', { exact: true })).toBeVisible()
+    expect(await page.evaluate(() => localStorage.getItem('spv_tradeshow'))).toBe('TRADESHOW')
   })
 
   test('the sign-in dialog accepts the tradeshow code', async ({ page }) => {
@@ -59,9 +60,25 @@ test.describe('promo code', () => {
     await expect(code).toBeVisible()
     await expect(code).toHaveAttribute('placeholder', 'TRADESHOW')
     await code.fill('TRADESHOW')
+    await expect(dialog.getByText('Tradeshow access is on.', { exact: true })).toBeVisible()
+    expect(await page.evaluate(() => localStorage.getItem('spv_tradeshow'))).toBe('TRADESHOW')
     await dialog.getByRole('button', { name: 'Apply' }).click()
-    await expect(dialog.getByRole('alert')).toContainText(/applied when you finish signing in/i)
+    await expect(dialog.getByText(/sign in with your email to run a valuation/i)).toBeVisible()
     await expect(dialog.getByLabel(/^email$/i)).toBeVisible()
+    await page.reload()
+    await expect(page.getByText('Tradeshow access is on.', { exact: true }).first()).toBeVisible()
+    expect(await page.evaluate(() => localStorage.getItem('spv_tradeshow'))).toBe('TRADESHOW')
+  })
+
+  test('an invalid code does not authorize the browser', async ({ page }) => {
+    await openApp(page)
+    await page.getByRole('button', { name: 'Sign In' }).click()
+    const dialog = loginDialog(page)
+    await dialog.getByLabel('Tradeshow or promo code').fill('NOTACODE')
+    await dialog.getByRole('button', { name: 'Apply' }).click()
+    await expect(dialog.getByRole('alert')).toHaveText('That code isn’t valid.')
+    await expect(dialog.getByText('Tradeshow access is on.', { exact: true })).toHaveCount(0)
+    expect(await page.evaluate(() => localStorage.getItem('spv_tradeshow'))).toBeNull()
   })
 
   test('tools code field grants valuations', async ({ page }) => {
@@ -71,7 +88,7 @@ test.describe('promo code', () => {
     const tools = page.locator('#app')
     await tools.getByLabel('Tradeshow or promo code').fill('TRADESHOW')
     await tools.getByRole('button', { name: 'Apply' }).click()
-    await expect(tools.getByText('25 valuations added.')).toBeVisible()
+    await expect(tools.getByText('Tradeshow access is on. 25 valuations added.')).toBeVisible()
     expect((await fetchProfile(userId))?.credit_balance).toBe(25)
   })
 
@@ -85,13 +102,13 @@ test.describe('promo code', () => {
     const dialog = accountDialog(page)
     await dialog.getByLabel('Tradeshow or promo code').fill('tradeshow')
     await dialog.getByRole('button', { name: 'Apply' }).click()
-    await expect(dialog.getByText('25 valuations added.')).toBeVisible()
+    await expect(dialog.getByText('Tradeshow access is on. 25 valuations added.')).toBeVisible()
     await expect(dialog.getByLabel('Paid credits')).toHaveText('25')
     expect((await fetchProfile(userId))?.credit_balance).toBe(25)
 
     await dialog.getByLabel('Tradeshow or promo code').fill('TRADESHOW')
     await dialog.getByRole('button', { name: 'Apply' }).click()
-    await expect(dialog.getByRole('alert')).toContainText(/already used/i)
+    await expect(dialog.getByText('Tradeshow access is on.', { exact: true })).toBeVisible()
     expect((await fetchProfile(userId))?.credit_balance).toBe(25)
   })
 
@@ -109,5 +126,17 @@ test.describe('promo code', () => {
     await expect(paywallDialog(page)).toBeHidden()
     await expect(page.getByRole('status').filter({ hasText: '25 valuations added' })).toBeVisible()
     expect((await fetchProfile(userId))?.credit_balance).toBe(25)
+  })
+
+  test('saved tradeshow access values an account that is out of credits', async ({ page }) => {
+    const { userId } = await seedAdminSession(page)
+    await setProfile(userId, { valuation_count: 3, credit_balance: 0 })
+    await page.addInitScript(() => localStorage.setItem('spv_tradeshow', 'TRADESHOW'))
+    await openApp(page)
+    await expect(page.getByText('Tradeshow access is on.', { exact: true }).first()).toBeVisible()
+    await fillMidtimeValuation(page)
+    await submitValuation(page)
+    await expect(valuationResult(page)).toContainText('AIRCRAFT VALUATION')
+    expect(await fetchProfile(userId)).toMatchObject({ valuation_count: 3, credit_balance: 0 })
   })
 })

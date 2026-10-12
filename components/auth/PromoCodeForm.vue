@@ -31,6 +31,7 @@
 
 <script setup lang="ts">
 import { apiPost } from '~/composables/useApi'
+import { matchPromo } from '~/utils/promo'
 
 const props = withDefaults(defineProps<{
   inputId: string
@@ -39,27 +40,38 @@ const props = withDefaults(defineProps<{
   placement: 'dialog',
 })
 
-const signedOutHint = 'Enter your email below. This code is applied when you finish signing in.'
+const signedOutHint = 'Tradeshow access is on. Sign in with your email to run a valuation.'
 
 const { dialog, pendingPromo, rememberPromo, getAccessToken, refreshCredits, closeDialog, openLogin } = useAuth()
+const { authorize } = useTradeshowAccess()
 const { toast } = useToast()
 
 const code = ref(pendingPromo.value)
 const busy = ref(false)
-const error = ref(dialog.value === 'login' && pendingPromo.value ? signedOutHint : '')
-const message = ref('')
+const error = ref('')
+const message = ref(dialog.value === 'login' && matchPromo(pendingPromo.value) ? signedOutHint : '')
 
 watch(code, (value) => {
-  if (props.placement === 'login') rememberPromo(value)
+  if (props.placement !== 'login') return
+  rememberPromo(value)
+  if (!matchPromo(value)) return
+  authorize(value)
+  error.value = ''
+  message.value = signedOutHint
 })
 
 async function onSubmit() {
   error.value = ''
   message.value = ''
+  if (!matchPromo(code.value)) {
+    error.value = 'That code isn’t valid.'
+    return
+  }
+  authorize(code.value)
+  rememberPromo(code.value)
   const accessToken = await getAccessToken()
   if (!accessToken) {
-    rememberPromo(code.value)
-    error.value = signedOutHint
+    message.value = signedOutHint
     if (dialog.value !== 'login') openLogin()
     return
   }
@@ -68,15 +80,21 @@ async function onSubmit() {
     const result = await apiPost<{ credits: number }>('/api/promo', { code: code.value }, { accessToken })
     await refreshCredits()
     const added = result.credits
-    code.value = ''
+    const notice = `Tradeshow access is on. ${added} valuations added.`
     if (dialog.value === 'paywall') {
       closeDialog()
-      toast(`${added} valuations added. Click Get honest valuation to continue.`, { variant: 'success' })
+      toast(notice, { variant: 'success' })
     } else {
-      message.value = `${added} valuations added.`
+      message.value = notice
     }
   } catch (e) {
-    error.value = (e as Error).message || 'Could not apply that code.'
+    const msg = (e as Error).message || 'Could not apply that code.'
+    if (/already used/i.test(msg)) {
+      message.value = 'Tradeshow access is on.'
+    } else {
+      message.value = 'Tradeshow access is on.'
+      error.value = msg
+    }
   } finally {
     busy.value = false
   }

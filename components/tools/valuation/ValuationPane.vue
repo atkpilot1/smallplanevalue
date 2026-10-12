@@ -33,7 +33,8 @@
         :listing-ask="submittedAsk"
       />
     </div>
-    <p class="val-free-note" id="v-free-note">3 free valuations per account, then $24 each or $75 for five.</p>
+    <p v-if="tradeshowOn" class="val-free-note" id="v-free-note">Tradeshow access is on. You can run valuations.</p>
+    <p v-else class="val-free-note" id="v-free-note">3 free valuations per account, then $24 each or $75 for five.</p>
   </div>
 </template>
 
@@ -44,6 +45,7 @@ import { getOrCreateClientId, getValuationEmail } from '~/composables/useClientI
 import { trackEvent } from '~/composables/useAnalytics'
 
 const { activeTab } = useToolsTab()
+const { authorized: tradeshowOn } = useTradeshowAccess()
 const { openLogin, openPaywall, getAccessToken } = useAuth()
 const val = useValuationForm()
 const notes = val.notes

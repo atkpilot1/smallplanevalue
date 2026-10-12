@@ -7,6 +7,7 @@
       </div>
       <TabBar />
       <PromoCodeForm input-id="promo-code-tools" placement="tools" />
+      <TradeshowStatus />
       <LookupPane />
       <ValuationPane />
       <CompsPane />

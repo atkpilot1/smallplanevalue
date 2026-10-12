@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { generateText, stepCountIs, tool } from 'ai'
 import { findComparables, formatComparables } from '../data/aircraftDb'
+import { matchPromo } from '../../utils/promo'
 import {
   recordValuationUsage,
   withValuationCredit,
@@ -35,6 +36,7 @@ const bodySchema = z.object({
   engineSmohR: z.coerce.number().optional(),
   isTwin: z.boolean().optional().default(false),
   engineConversion: z.string().optional().default(''),
+  tradeshowCode: z.string().optional().default(''),
 })
 
 const valSchema = z.object({
@@ -324,8 +326,11 @@ export default defineEventHandler(async (event) => {
   const clientId = (d.clientId || '').trim()
 
   const user = await requireAuthUser(event)
+  const tradeshow = matchPromo(d.tradeshowCode)
+  const gate = <T>(work: () => Promise<T>) =>
+    tradeshow ? work() : withValuationCredit(user.id, work)
 
-  return await withValuationCredit(user.id, async () => {
+  return await gate(async () => {
   let prompt =
     'You are an expert aircraft appraiser with current 2025-2026 market knowledge. Provide ACCURATE asking prices — not lowballed.\n\n'
   prompt +=

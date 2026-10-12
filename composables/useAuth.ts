@@ -2,6 +2,8 @@ import type { User } from '@supabase/supabase-js'
 import { FREE_VALUATIONS, freeRemaining as freeRemainingOf } from '~/utils/credits'
 import { STATE } from '~/utils/stateKeys'
 import { apiPost } from '~/composables/useApi'
+import { matchPromo } from '~/utils/promo'
+import { readTradeshowCode } from '~/utils/tradeshowAccess'
 import { useToast } from '~/composables/useToast'
 
 export type AuthDialog = 'login' | 'account' | 'paywall' | null
@@ -153,7 +155,7 @@ export function useAuth() {
   }
 
   async function redeemPendingPromo() {
-    const code = pendingPromo.value.trim()
+    const code = readTradeshowCode() || pendingPromo.value.trim()
     if (!code) return
     const accessToken = await getAccessToken()
     if (!accessToken) return
@@ -165,6 +167,11 @@ export function useAuth() {
       toast(`${result.credits} valuations added. Click Get honest valuation to continue.`, { variant: 'success' })
     } catch (e) {
       const msg = (e as Error).message || 'Could not apply that code.'
+      if (/already used/i.test(msg) && matchPromo(code)) {
+        pendingPromo.value = ''
+        toast('Tradeshow access is on.', { variant: 'success' })
+        return
+      }
       if (/already used|isn.t valid/i.test(msg)) pendingPromo.value = ''
       toast(msg)
     }
