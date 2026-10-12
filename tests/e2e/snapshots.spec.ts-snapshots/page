@@ -55,6 +55,10 @@
   - tab "Pre-buy checklist"
   - tab "Report a sale"
   - tab "Feedback"
+- text: Tradeshow or promo code
+- textbox "Tradeshow or promo code":
+  - /placeholder: Enter code
+- button "Apply" [disabled]
 - tabpanel "N-number lookup":
   - text: N-NUMBER N
   - textbox "N-NUMBER":

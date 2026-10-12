@@ -31,6 +31,7 @@
         </div>
       </div>
       <CheckoutBuyButtons />
+      <PromoCodeForm input-id="promo-code-account" />
       <p v-if="checkoutError" class="auth-error" role="alert">{{ checkoutError }}</p>
       <button class="n-lookup-btn auth-submit" type="button" @click="signOut">Sign out</button>
     </div>

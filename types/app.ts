@@ -202,6 +202,7 @@ export interface ValuationRequest {
   engineSmohR: number | null
   isTwin: boolean
   engineConversion: string
+  tradeshowCode?: string
 }
 
 export interface ParsedSale {
