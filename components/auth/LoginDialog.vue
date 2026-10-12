@@ -43,13 +43,16 @@
           <input
             id="auth-code"
             ref="codeInput"
-            v-model="code"
+            :value="code"
             type="text"
             inputmode="numeric"
             autocomplete="one-time-code"
-            maxlength="6"
+            spellcheck="false"
+            autocapitalize="off"
             placeholder="123456"
+            @input="onCodeInput"
           />
+          <p class="auth-hint">Paste the code or the whole email. Only the 6 digits are kept.</p>
         </div>
         <button class="n-lookup-btn auth-submit" type="submit" :disabled="verifying">
           {{ verifying ? 'Verifying…' : 'Verify' }}
@@ -63,6 +66,8 @@
 </template>
 
 <script setup lang="ts">
+import { emailOtpDigits } from '~/utils/emailOtp'
+
 const {
   dialog,
   error,
@@ -102,6 +107,13 @@ function onKey(e: KeyboardEvent) {
 
 onMounted(() => window.addEventListener('keydown', onKey))
 onUnmounted(() => window.removeEventListener('keydown', onKey))
+
+function onCodeInput(e: Event) {
+  const el = e.target as HTMLInputElement
+  const next = emailOtpDigits(el.value)
+  code.value = next
+  if (el.value !== next) el.value = next
+}
 
 async function onSend() {
   await sendCode(email.value)
