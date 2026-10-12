@@ -842,6 +842,7 @@ line-height: 1.1; margin-bottom: 0.35rem;
 .auth-form { display: flex; flex-direction: column; gap: 12px; }
 .auth-submit { width: 100%; justify-content: center; height: 42px; }
 .auth-sent { font-size: 13px; color: var(--sky); margin: 0; }
+.auth-hint { font-size: 12px; color: var(--muted); margin: 0; }
 .auth-back {
 background: none; border: none; padding: 0;
 color: var(--sky-mid); font-size: 13px; font-weight: 500;

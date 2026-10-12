@@ -86,10 +86,32 @@ test('bad OTP stays logged out and shows an error', async ({ page, consoleGuard 
   const dialog = loginDialog(page)
   await dialog.getByLabel(/verification code/i).fill('000000')
   await dialog.getByRole('button', { name: /^verify$/i }).click()
-  await expect(dialog.getByRole('alert')).toBeVisible({ timeout: 15_000 })
+  await expect(dialog.getByRole('alert')).toContainText(/send a new code/i, { timeout: 15_000 })
   await expect(dialog).toBeVisible()
   await expect(signInButton(page)).toBeVisible()
   await expect(manageAccountButton(page)).toHaveCount(0)
+})
+
+test('pasting the sign-in email keeps the 6-digit code', async ({ page }) => {
+  const email = uniqueTestEmail()
+  await openLogin(page)
+  await requestOtp(page, email)
+  const code = await fetchOtp(email)
+  const dialog = loginDialog(page)
+  const pasted = [
+    'Your sign-in code',
+    '',
+    'Enter this code in SmallPlaneValue to sign in:',
+    '',
+    code,
+    '',
+    'This code expires in one hour.',
+  ].join('\n')
+  await dialog.getByLabel(/verification code/i).fill(pasted)
+  await expect(dialog.getByLabel(/verification code/i)).toHaveValue(code)
+  await dialog.getByRole('button', { name: /^verify$/i }).click()
+  await expect(manageAccountButton(page)).toBeVisible({ timeout: 15_000 })
+  await expect(dialog).toBeHidden()
 })
 
 test('Use a different email returns to the email step', async ({ page }) => {

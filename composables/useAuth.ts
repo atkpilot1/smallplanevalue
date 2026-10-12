@@ -1,5 +1,6 @@
 import type { User } from '@supabase/supabase-js'
 import { FREE_VALUATIONS, freeRemaining as freeRemainingOf } from '~/utils/credits'
+import { emailOtpDigits, signInCodeError } from '~/utils/emailOtp'
 import { STATE } from '~/utils/stateKeys'
 import { useToast } from '~/composables/useToast'
 
@@ -113,7 +114,7 @@ export function useAuth() {
   }
 
   async function verifyCode(token: string) {
-    const code = token.replace(/\s/g, '')
+    const code = emailOtpDigits(token)
     if (!/^\d{6}$/.test(code)) {
       error.value = 'Enter the 6-digit code from your email.'
       return false
@@ -127,13 +128,13 @@ export function useAuth() {
         type: 'email',
       })
       if (err) {
-        error.value = err.message
+        error.value = signInCodeError(err.message)
         return false
       }
       closeDialog()
       return true
     } catch (e) {
-      error.value = (e as Error).message || 'Could not verify code.'
+      error.value = signInCodeError((e as Error).message || 'Could not verify code.')
       return false
     } finally {
       verifying.value = false
