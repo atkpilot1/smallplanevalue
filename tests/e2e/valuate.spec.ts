@@ -241,6 +241,31 @@ test('IO-550 conversion on a pre-1996 Bonanza adds the STC premium', async ({ pa
   await expect(valuationResult(page)).toContainText('+$27,000')
 })
 
+test('1962 Beech H-18 N62CJ below the market floor is lifted to about $325,000', async ({ page }) => {
+  await fillValuation(page, {
+    make: 'Beech',
+    model: 'H-18',
+    year: '1962',
+    engines: '2',
+    notes: 'N62CJ',
+  })
+  await submitValuation(page)
+  await expectValuationDollars(page, 325_000, 355_000, 305_000)
+  await expect(valuationResult(page)).toContainText('Market calibration applied for Beech 18 N62CJ')
+})
+
+test('a Beech G18S stays on the model baseline', async ({ page }) => {
+  await fillValuation(page, { make: 'Beech', model: 'G18S', year: '1960', engines: '2' })
+  await submitValuation(page)
+  await expectValuationDollars(
+    page,
+    AI_BASELINE.fairMarketValue,
+    AI_BASELINE.sellerAsk,
+    AI_BASELINE.buyerTarget,
+  )
+  await expect(valuationResult(page)).not.toContainText('N62CJ')
+})
+
 test('equipped F33A below the market floor is lifted to the 2025-2026 band', async ({ page }) => {
   await fillMidtimeValuation(page, {
     make: 'Beech',
