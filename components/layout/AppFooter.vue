@@ -6,9 +6,10 @@
         <div class="footer-tagline">Honest GA aircraft valuations · Built for pilots, by pilots.</div>
       </div>
       <div class="footer-links">
-        <a href="#tools">Tools</a>
-        <a href="#how-it-works">How it works</a>
-        <a href="#aircraft-types">Aircraft types</a>
+        <a :href="homeHash('#tools')">Tools</a>
+        <a :href="homeHash('#how-it-works')">How it works</a>
+        <a :href="homeHash('#aircraft-types')">Aircraft types</a>
+        <NuxtLink to="/aircraft">Aircraft guides</NuxtLink>
         <a id="footer-share-fb" :href="facebookHref" target="_blank" rel="noopener noreferrer">Share on Facebook</a>
         <a id="footer-share-x" :href="xHref" target="_blank" rel="noopener noreferrer">Share on X</a>
       </div>
@@ -22,4 +23,9 @@
 
 <script setup lang="ts">
 const { facebookHref, xHref } = useShare()
+const route = useRoute()
+
+function homeHash(hash: string) {
+  return route.path === '/' ? hash : `/${hash}`
+}
 </script>
