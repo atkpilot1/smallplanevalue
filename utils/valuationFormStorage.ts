@@ -1,4 +1,10 @@
 import { ALL_AVIONICS_ITEMS } from '~/data/avionicsCatalog'
+import {
+  DEFAULT_INTERIOR_CONDITION,
+  DEFAULT_OVERALL_CONDITION,
+  DEFAULT_PAINT_CONDITION,
+  migrateLegacyCosmetics,
+} from '~/utils/conditionOptions'
 
 export const VALUATION_FORM_STORAGE_KEY = 'spv_valuation_form'
 
@@ -25,7 +31,8 @@ export type ValuationFormSnapshot = {
   propL: string
   propR: string
   cond: string
-  cosm: string
+  paint: string
+  interior: string
   logbooks: string
   damage: string
   avionicsPackage: string
@@ -79,8 +86,9 @@ export function emptyValuationForm(): ValuationFormSnapshot {
     smohR: '',
     propL: '',
     propR: '',
-    cond: 'Good — minor wear',
-    cosm: 'Good condition',
+    cond: DEFAULT_OVERALL_CONDITION,
+    paint: DEFAULT_PAINT_CONDITION,
+    interior: DEFAULT_INTERIOR_CONDITION,
     logbooks: '',
     damage: '',
     avionicsPackage: '',
@@ -99,17 +107,23 @@ export function emptyValuationForm(): ValuationFormSnapshot {
 export function mergeValuationForm(raw: unknown): ValuationFormSnapshot {
   const base = emptyValuationForm()
   if (!raw || typeof raw !== 'object') return base
-  const v = raw as Partial<ValuationFormSnapshot>
+  const record = raw as Partial<ValuationFormSnapshot> & { cosm?: string }
+  const { cosm: legacyCosm, ...rest } = record
+  const hasOwnPaint = typeof record.paint === 'string' && record.paint.length > 0
+  const hasOwnInterior = typeof record.interior === 'string' && record.interior.length > 0
+  const migrated = hasOwnPaint && hasOwnInterior ? null : migrateLegacyCosmetics(legacyCosm)
   return {
     ...base,
-    ...v,
-    avChecked: { ...base.avChecked, ...(v.avChecked || {}) },
-    avQty: { ...base.avQty, ...(v.avQty || {}) },
-    avSize: { ...base.avSize, ...(v.avSize || {}) },
-    extraTbo: v.extraTbo ?? null,
-    outOfAnnual: !!v.outOfAnnual,
-    cirrusTouched: !!v.cirrusTouched,
-    tboUserOverride: !!v.tboUserOverride,
-    engineTboAuto: typeof v.engineTboAuto === 'number' ? v.engineTboAuto : base.engineTboAuto,
+    ...rest,
+    paint: hasOwnPaint ? record.paint! : (migrated?.paint || base.paint),
+    interior: hasOwnInterior ? record.interior! : (migrated?.interior || base.interior),
+    avChecked: { ...base.avChecked, ...(record.avChecked || {}) },
+    avQty: { ...base.avQty, ...(record.avQty || {}) },
+    avSize: { ...base.avSize, ...(record.avSize || {}) },
+    extraTbo: record.extraTbo ?? null,
+    outOfAnnual: !!record.outOfAnnual,
+    cirrusTouched: !!record.cirrusTouched,
+    tboUserOverride: !!record.tboUserOverride,
+    engineTboAuto: typeof record.engineTboAuto === 'number' ? record.engineTboAuto : base.engineTboAuto,
   }
 }

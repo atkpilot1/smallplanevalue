@@ -172,6 +172,8 @@ export interface ParsedListing {
   propHrsR?: number | null
   condition?: string | null
   cosmetics?: string | null
+  paint?: string | null
+  interior?: string | null
   avionics?: string[] | null
   notes?: string | null
 }
@@ -184,6 +186,8 @@ export interface ValuationRequest {
   engineInfo: string
   annualInfo: string
   cond: string
+  paint: string
+  interior: string
   cosm: string
   avionics: string[]
   notes: string
