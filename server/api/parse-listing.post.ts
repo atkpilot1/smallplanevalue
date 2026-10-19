@@ -27,6 +27,8 @@ const listingSchema = z.object({
   propHrsR: z.number().nullable(),
   condition: z.string().nullable(),
   cosmetics: z.string().nullable(),
+  paint: z.string().nullable(),
+  interior: z.string().nullable(),
   avionics: z.array(z.string()).nullable(),
   notes: z.string().nullable(),
 })
@@ -34,7 +36,8 @@ const listingSchema = z.object({
 function listingPrompt(text: string, hasImage: boolean): string {
   let prompt =
     'Parse this aircraft listing and extract structured data. Use null for any unknown field. ' +
-    'Example shape: {"make":"BEECH","model":"B58","year":1981,"ttaf":4673,"engines":2,"smoh":0,"smohR":0,"propHrs":689,"propHrsR":689,"condition":"Good","cosmetics":"Average","avionics":["GTX345","KFC200","GNS480","A/C","TAWS"],"notes":"RAM engines, Bose LEMO jacks, dual Insight G2 monitors"}\n\n' +
+    'Example shape: {"make":"BEECH","model":"B58","year":1981,"ttaf":4673,"engines":2,"smoh":0,"smohR":0,"propHrs":689,"propHrsR":689,"condition":"Good","paint":"Original (age-typical wear)","interior":"Brand new / recently redone","cosmetics":"Original paint, new interior","avionics":["GTX345","KFC200","GNS480","A/C","TAWS"],"notes":"RAM engines, Bose LEMO jacks, dual Insight G2 monitors"}\n\n' +
+    'Paint/exterior and interior are independent. A listing can have worn or original paint and a brand-new interior (or the reverse). Do not collapse those into one cosmetics grade. Use paint and interior for appearance; condition is the overall airframe.\n\n' +
     'In avionics[], include comfort/safety tokens when mentioned: A/C or air conditioning; FIKI (certified known ice) vs inadvertent/known-ice TKS separately; AOA; TAWS; synthetic vision/SVT; Oshkosh or EAA award winner.\n\n'
 
   if (hasImage) {

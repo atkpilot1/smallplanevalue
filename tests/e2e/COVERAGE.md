@@ -46,7 +46,8 @@ Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000`
 - [x] OTP from that dialog does not auto-submit; a second click produces a valuation
 - [x] Signed-in valuation cases use an Admin-seeded session (OTP UI stays in Auth)
 - [x] Parse listing auto-fills identity (make / model / year)
-- [x] Parse listing also fills TTAF, SMOH, and checks G1000
+- [x] Parse listing also fills TTAF, SMOH, G1000, and separate paint and interior
+- [x] Paint / exterior and interior can be scored independently (worn paint + brand-new interior) and are sent as separate fields
 - [x] Parse listing failure alerts the user
 - [x] Missing SMOH is treated as fresh: +$23k vs AI baseline, “Engine time premium”
 - [x] Mid-time SMOH (1000 / 2000 TBO) leaves the AI baseline unchanged

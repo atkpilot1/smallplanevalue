@@ -45,6 +45,8 @@ export const listingFixture = {
   propHrsR: null,
   condition: 'good',
   cosmetics: 'average',
+  paint: 'Good',
+  interior: 'Good',
   avionics: ['Garmin G1000'],
   notes: 'No damage history',
 }
