@@ -23,6 +23,7 @@
       <div class="listing-narrative-hdr"><i class="ti ti-report-analytics"></i> LISTING VS MARKET</div>
       <div class="listing-narrative-body">{{ listingNarrative }}</div>
     </div>
+    <ForSaleNote :summary="market" :year="year" test-id="market-count" :show-synced="false" />
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:1rem">
       <div style="text-align:center;padding:14px 8px;background:var(--offwhite);border-radius:var(--radius)">
         <div style="font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em;margin-bottom:4px">BUYER TARGET</div>
@@ -87,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ValuationResult } from '~/types/app'
+import type { ForSaleCount, ValuationResult } from '~/types/app'
 import { fmt, impactClass } from '~/utils/format'
 import { buildListingNarrative } from '~/utils/listingNarrative'
 import { sendAppFeedback } from '~/composables/useFeedback'
@@ -100,6 +101,7 @@ const props = defineProps<{
   model: string
   year: string
   listingAsk: number
+  market?: ForSaleCount | null
 }>()
 
 const val = useValuationForm()

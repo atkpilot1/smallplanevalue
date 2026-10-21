@@ -753,16 +753,44 @@ margin-top: 1.5rem;
   font-family: var(--body);
   text-decoration: underline;
 }
-.for-sale-note {
+.market-breakout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
   margin: 0 0 14px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   background: rgba(19, 64, 116, 0.06);
   border-radius: var(--radius);
+  color: var(--sky);
   font-size: 13px;
   line-height: 1.45;
+}
+.market-breakout-main { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.market-breakout-num {
+  font-family: var(--display);
+  font-size: 42px;
+  line-height: 0.85;
+  letter-spacing: 0.02em;
   color: var(--sky);
 }
-.for-sale-note strong { font-weight: 600; }
+.market-breakout-kicker {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.market-breakout-line { font-size: 14px; font-weight: 500; line-height: 1.35; }
+.market-breakout-extras { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; }
+.market-breakout-extra {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--sky);
+  background: var(--white);
+  border-radius: 99px;
+  padding: 4px 10px;
+}
 .for-sale-meta { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; }
 .ex-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem; align-items: center; }
 .ex-lbl { font-size: 12px; color: var(--muted); }
@@ -804,6 +832,7 @@ to { opacity: 1; transform: translateY(0); }
 
 /* ── responsive ──────────────────────────────────────── */
 @media (max-width: 768px) {
+.market-breakout-extras { margin-left: 0; }
 .showcase-grid, .why-grid, .tools-grid, .form-grid-2, .form-grid-3, .action-row-3 { grid-template-columns: 1fr; }
 .aircraft-val-badge { font-size: 11px; padding: 4px 8px; }
 .steps { flex-direction: column; gap: 2rem; }

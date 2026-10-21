@@ -61,6 +61,7 @@ Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000`
 - [x] Equipped F33A below the market floor is lifted to $330k / $345k / $310k
 - [x] Cirrus make/model reveals the generation selector (auto G6 for 2018)
 - [x] Asking price renders the listing-vs-market narrative
+- [x] Valuation result shows the Trade-A-Plane catalog count beside buyer / fair market / typical ask
 - [x] Empty make/model alerts the user
 - [x] Anthropic 500 surfaces a valuation failure in the UI
 - [x] Successful valuation writes `spv_client_id` and a `usage_events` row with `user_id`
@@ -98,6 +99,7 @@ Deterministic valuation dollars are pinned to the mocked AI baseline (`$320,000`
 ## Market comps (live `POST /api/comps`)
 
 - [x] Search renders ranges and days listed
+- [x] Comps result shows the Trade-A-Plane catalog count beside the asking-price breakdown
 - [x] Lookup prefills the comps make/model field
 - [x] Empty model alerts the user
 - [x] Year-band select still returns results

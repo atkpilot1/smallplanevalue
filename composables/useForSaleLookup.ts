@@ -44,3 +44,20 @@ export function useForSaleLookup(key: string) {
 
   return { summary, lookup }
 }
+
+/** Catalog count for the aircraft just submitted, independent of the debounced form lookup. */
+export async function fetchForSaleCount(make: string, model: string, year = ''): Promise<ForSaleCount | null> {
+  const mk = make.trim()
+  const md = model.trim()
+  const enough = (mk.length >= 3 && md.length >= 1) || (mk.length === 0 && md.length >= 4)
+  if (!enough) return null
+  try {
+    return await apiPost<ForSaleCount>('/api/for-sale-count', {
+      make: mk,
+      model: md,
+      year: year.trim(),
+    })
+  } catch {
+    return null
+  }
+}

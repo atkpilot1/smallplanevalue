@@ -80,6 +80,7 @@ test.describe('snapshots', { tag: '@snapshot' }, () => {
     await field(pane(page, 'val'), 'Model').fill('SR22')
     await field(pane(page, 'val'), 'Year').fill('2018')
     await expect(field(pane(page, 'val'), 'Cirrus generation')).toBeVisible()
+    await expect(pane(page, 'val').getByTestId('for-sale-count')).toContainText('for sale')
     await expectShot(page.locator('#app'), 'pane-val-cirrus', { hideFixedNav: true })
   })
 
