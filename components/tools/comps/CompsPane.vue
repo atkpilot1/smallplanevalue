@@ -28,13 +28,13 @@
     </button>
     <Spinner id="c-spin" :on="loading" message="Pulling active listing ranges..." />
     <div id="c-result" data-testid="comps-result">
-      <CompsResult :v="result" :model="submittedModel" :failed="failed" />
+      <CompsResult :v="result" :model="submittedModel" :market="submittedMarket" :failed="failed" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { CompsResult } from '~/types/app'
+import type { CompsResult, ForSaleCount } from '~/types/app'
 
 const { activeTab } = useToolsTab()
 const { model } = useCompsForm()
@@ -48,6 +48,7 @@ const loading = ref(false)
 const result = ref<CompsResult | null>(null)
 const failed = ref(false)
 const submittedModel = ref('')
+const submittedMarket = ref<ForSaleCount | null>(null)
 
 async function doComps() {
   const m = model.value.trim()
@@ -58,9 +59,14 @@ async function doComps() {
   loading.value = true
   result.value = null
   failed.value = false
+  submittedMarket.value = null
   try {
-    const v = await apiPost<CompsResult>('/api/comps', { model: m, years: years.value || '' })
+    const [v, market] = await Promise.all([
+      apiPost<CompsResult>('/api/comps', { model: m, years: years.value || '' }),
+      fetchForSaleCount('', m, ''),
+    ])
     submittedModel.value = m
+    submittedMarket.value = market
     result.value = v
   } catch {
     failed.value = true

@@ -1,5 +1,6 @@
 import { test, expect } from './fixtures'
-import { expectAlert, field, openApp, openTab, pane } from './helpers'
+import { signInWithAdminSession } from './auth'
+import { compsResult, expectAlert, field, fillMidtimeValuation, openApp, openTab, pane, submitValuation, valuationResult } from './helpers'
 
 const TINY_PNG = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
@@ -52,7 +53,9 @@ test('valuation form shows how many similar aircraft are for sale', async ({ pag
   await field(form, 'Model').fill('172S')
   const note = form.getByTestId('for-sale-count')
   await expect(note).toContainText('216', { timeout: 10_000 })
+  await expect(note).toContainText('On the market')
   await expect(note).toContainText('Cessna 172 are for sale')
+  await expect(note).not.toContainText('Trade-A-Plane')
   await expect(note).toContainText('145 list an asking price')
   await field(form, 'Year').fill('2004')
   await expect(note).toContainText('1 is listed as 2004')
@@ -64,7 +67,44 @@ test('comps form shows the catalog count for the model being searched', async ({
   await field(form, 'Make & model').fill('Cirrus SR22')
   const note = form.getByTestId('for-sale-count')
   await expect(note).toContainText('158', { timeout: 10_000 })
+  await expect(note).toContainText('On the market')
   await expect(note).toContainText('Cirrus SR22 are for sale')
+  await expect(note).not.toContainText('Trade-A-Plane')
+})
+
+test('comps result puts the catalog count next to the asking-price breakdown', async ({ page }) => {
+  await openTab(page, 'comps')
+  const form = pane(page, 'comps')
+  await field(form, 'Make & model').fill('Cessna 172S')
+  await form.getByRole('button', { name: 'Search asking prices' }).click()
+  const result = compsResult(page)
+  const market = result.getByTestId('market-count')
+  await expect(market).toContainText('216', { timeout: 20_000 })
+  await expect(market).toContainText('On the market')
+  await expect(market).toContainText('Cessna 172 are for sale')
+  await expect(market).not.toContainText('Trade-A-Plane')
+  await expect(market).toContainText('145 list an asking price')
+  await expect(result).toContainText('Low ask')
+  await expect(result).toContainText('Median ask')
+  await expect(result).toContainText('High ask')
+  await expect(result).toContainText('$295,000')
+})
+
+test('valuation result keeps the catalog count with the price breakdown', async ({ page }) => {
+  await signInWithAdminSession(page)
+  await fillMidtimeValuation(page, { asking: '340000' })
+  await submitValuation(page)
+  const result = valuationResult(page)
+  const market = result.getByTestId('market-count')
+  await expect(market).toContainText('216')
+  await expect(market).toContainText('On the market')
+  await expect(market).toContainText('Cessna 172 are for sale')
+  await expect(market).not.toContainText('Trade-A-Plane')
+  await expect(market).toContainText('145 list an asking price')
+  await expect(market).toContainText('1 is listed as 2004')
+  await expect(result).toContainText('BUYER TARGET')
+  await expect(result).toContainText('FAIR MARKET VALUE')
+  await expect(result).toContainText('TYPICAL MARKET ASK')
 })
 
 test('screenshot auto-fills the same fields as pasted text', async ({ page }) => {

@@ -31,6 +31,7 @@
         :model="submittedModel"
         :year="submittedYear"
         :listing-ask="submittedAsk"
+        :market="submittedMarket"
       />
     </div>
     <p class="val-free-note" id="v-free-note">3 free valuations per account, then $24 each or $75 for five.</p>
@@ -38,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ValuationResult } from '~/types/app'
+import type { ForSaleCount, ValuationResult } from '~/types/app'
 import { TRUSTED_PARTNERS, partnerTipHtml } from '~/data/partners'
 import { getOrCreateClientId, getValuationEmail } from '~/composables/useClientId'
 import { trackEvent } from '~/composables/useAnalytics'
@@ -64,6 +65,7 @@ const submittedMake = ref('')
 const submittedModel = ref('')
 const submittedYear = ref('')
 const submittedAsk = ref(0)
+const submittedMarket = ref<ForSaleCount | null>(null)
 const partnerTip = ref('')
 let partnerTimer: ReturnType<typeof setInterval> | null = null
 let partnerIndex = 0
@@ -114,12 +116,17 @@ async function doValuation() {
   startPartnerTipRotation()
   result.value = null
   failMsg.value = ''
+  submittedMarket.value = null
   try {
-    const v = await apiPost<ValuationResult>('/api/valuate', body, { accessToken })
+    const [v, market] = await Promise.all([
+      apiPost<ValuationResult>('/api/valuate', body, { accessToken }),
+      fetchForSaleCount(body.make, body.model, body.year),
+    ])
     submittedMake.value = body.make
     submittedModel.value = body.model
     submittedYear.value = body.year
     submittedAsk.value = body.asking ? parseInt(body.asking, 10) : 0
+    submittedMarket.value = market
     result.value = v
     val.hasResult.value = true
     trackEvent('valuation_completed', { make: body.make, model: body.model })
@@ -142,6 +149,7 @@ watch(() => val.hasResult.value, (on) => {
   if (!on) {
     result.value = null
     failMsg.value = ''
+    submittedMarket.value = null
   }
 })
 </script>

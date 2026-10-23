@@ -1,4 +1,4 @@
-- text: /Cessna 172S — active listings \$\d+,\d+ Low ask \$\d+,\d+ Median ask \$\d+,\d+ High ask 45d Avg listed/
+- text: /Cessna 172S — active listings \d+ On the market Cessna \d+ are for sale\. \d+ list an asking price \$\d+,\d+ Low ask \$\d+,\d+ Median ask \$\d+,\d+ High ask 45d Avg listed/
 - paragraph: Active listings show steady demand for the 172S.
 - text: Most sell within 5% of asking.
 - table:
