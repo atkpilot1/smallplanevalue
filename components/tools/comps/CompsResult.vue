@@ -2,7 +2,7 @@
   <p v-if="failed" style="color:var(--danger);font-size:14px;margin-top:1rem">Failed. Please try again.</p>
   <div v-else-if="v" class="result-card">
     <div style="font-weight:500;font-size:16px;color:var(--sky);margin-bottom:1rem">{{ model }} — active listings</div>
-    <ForSaleNote :summary="market" test-id="market-count" :show-synced="false" />
+    <ForSaleNote :summary="market" test-id="market-count" />
     <div class="metric-row" style="grid-template-columns:repeat(4,1fr)">
       <div class="metric"><div class="metric-val">{{ fmt(v.askLow || 0) }}</div><div class="metric-lbl">Low ask</div></div>
       <div class="metric"><div class="metric-val">{{ fmt(v.askMid || 0) }}</div><div class="metric-lbl">Median ask</div></div>

@@ -55,6 +55,7 @@ test('valuation form shows how many similar aircraft are for sale', async ({ pag
   await expect(note).toContainText('216', { timeout: 10_000 })
   await expect(note).toContainText('On the market')
   await expect(note).toContainText('Cessna 172 are for sale')
+  await expect(note).not.toContainText('Trade-A-Plane')
   await expect(note).toContainText('145 list an asking price')
   await field(form, 'Year').fill('2004')
   await expect(note).toContainText('1 is listed as 2004')
@@ -68,6 +69,7 @@ test('comps form shows the catalog count for the model being searched', async ({
   await expect(note).toContainText('158', { timeout: 10_000 })
   await expect(note).toContainText('On the market')
   await expect(note).toContainText('Cirrus SR22 are for sale')
+  await expect(note).not.toContainText('Trade-A-Plane')
 })
 
 test('comps result puts the catalog count next to the asking-price breakdown', async ({ page }) => {
@@ -80,6 +82,7 @@ test('comps result puts the catalog count next to the asking-price breakdown', a
   await expect(market).toContainText('216', { timeout: 20_000 })
   await expect(market).toContainText('On the market')
   await expect(market).toContainText('Cessna 172 are for sale')
+  await expect(market).not.toContainText('Trade-A-Plane')
   await expect(market).toContainText('145 list an asking price')
   await expect(result).toContainText('Low ask')
   await expect(result).toContainText('Median ask')
@@ -96,6 +99,7 @@ test('valuation result keeps the catalog count with the price breakdown', async 
   await expect(market).toContainText('216')
   await expect(market).toContainText('On the market')
   await expect(market).toContainText('Cessna 172 are for sale')
+  await expect(market).not.toContainText('Trade-A-Plane')
   await expect(market).toContainText('145 list an asking price')
   await expect(market).toContainText('1 is listed as 2004')
   await expect(result).toContainText('BUYER TARGET')
