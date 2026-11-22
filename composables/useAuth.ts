@@ -6,6 +6,7 @@ import { useToast } from '~/composables/useToast'
 export type AuthDialog = 'login' | 'account' | 'paywall' | null
 export type AuthStep = 'email' | 'code'
 export type CheckoutSku = 'single' | 'pack'
+export type AccessRole = 'owner' | 'beta'
 
 function isEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
@@ -24,6 +25,7 @@ export function useAuth() {
   const creditBalance = useState(STATE.authCreditBalance, () => 0)
   const checkoutBusy = useState(STATE.authCheckoutBusy, () => false)
   const checkoutError = useState(STATE.authCheckoutError, () => '')
+  const accessRole = useState<AccessRole | null>(STATE.authAccessRole, () => null)
 
   const freeRemaining = computed(() =>
     freeRemainingOf({ valuation_count: valuationCount.value, credit_balance: creditBalance.value }),
@@ -37,7 +39,44 @@ export function useAuth() {
     sb.auth.onAuthStateChange((_event, session) => {
       user.value = session?.user ?? null
     })
+    await refreshAccessRole()
     ready.value = true
+  }
+
+  async function refreshAccessRole() {
+    if (!import.meta.client) return
+    try {
+      const res = await fetch('/api/access-code')
+      const data = await res.json().catch(() => ({})) as { role?: string }
+      accessRole.value = data.role === 'owner' || data.role === 'beta' ? data.role : null
+    } catch {
+      accessRole.value = null
+    }
+  }
+
+  async function redeemAccessCode(code: string) {
+    const trimmed = code.trim()
+    if (trimmed.length < 4) {
+      error.value = 'Enter the access code.'
+      return false
+    }
+    verifying.value = true
+    error.value = ''
+    try {
+      const data = await apiPost<{ role?: string }>('/api/access-code', { code: trimmed })
+      if (data.role !== 'owner' && data.role !== 'beta') {
+        error.value = 'That code is not valid.'
+        return false
+      }
+      accessRole.value = data.role
+      closeDialog()
+      return true
+    } catch (e) {
+      error.value = (e as Error).message || 'That code is not valid.'
+      return false
+    } finally {
+      verifying.value = false
+    }
   }
 
   function openLogin() {
@@ -197,6 +236,12 @@ export function useAuth() {
   }
 
   async function signOut() {
+    try {
+      await fetch('/api/access-code', { method: 'DELETE' })
+    } catch {
+      // The email session can still end if the access cookie route is down.
+    }
+    accessRole.value = null
     await useSupabase().auth.signOut()
     valuationCount.value = 0
     creditBalance.value = 0
@@ -218,7 +263,9 @@ export function useAuth() {
     freeAllowance: FREE_VALUATIONS,
     checkoutBusy,
     checkoutError,
+    accessRole,
     init,
+    redeemAccessCode,
     openLogin,
     openAccount,
     openPaywall,

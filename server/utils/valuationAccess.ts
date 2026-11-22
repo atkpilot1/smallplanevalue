@@ -51,13 +51,13 @@ export async function refundValuation(userId: string): Promise<CreditStatus> {
   )
 }
 
-/** Claim a slot atomically, run work, refund if the work throws. Show accounts are not charged. */
+/** Claim a slot atomically, run work, refund if the work throws. Show accounts and access codes are not charged. */
 export async function withValuationCredit<T>(
   userId: string,
   work: () => Promise<T>,
-  options?: { email?: string | null },
+  options?: { email?: string | null; unlimited?: boolean },
 ): Promise<T> {
-  if (isShowEmail(options?.email)) return await work()
+  if (options?.unlimited || isShowEmail(options?.email)) return await work()
   await consumeValuation(userId)
   try {
     return await work()

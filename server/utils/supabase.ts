@@ -30,6 +30,17 @@ function adminCreds() {
 
 const SIGN_IN_REQUIRED = 'Sign in to get a valuation.'
 
+/** A bearer token when one is present and valid. Missing or rejected tokens are not a session. */
+export async function optionalAuthUser(event: Parameters<typeof getHeader>[0]): Promise<AuthUser | null> {
+  const header = getHeader(event, 'authorization') || ''
+  if (!/^Bearer\s+\S+/i.test(header)) return null
+  try {
+    return await requireAuthUser(event)
+  } catch {
+    return null
+  }
+}
+
 /** Verify a Supabase access token via GoTrue. Rejects missing/invalid JWTs. */
 export async function requireAuthUser(event: Parameters<typeof getHeader>[0]): Promise<AuthUser> {
   const header = getHeader(event, 'authorization') || ''

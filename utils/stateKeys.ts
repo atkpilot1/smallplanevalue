@@ -12,6 +12,7 @@ export const STATE = {
   authCreditBalance: 'auth-credit-balance',
   authCheckoutBusy: 'auth-checkout-busy',
   authCheckoutError: 'auth-checkout-error',
+  authAccessRole: 'auth-access-role',
   toasts: 'toasts',
   toolsTab: 'tools-tab',
   lastLookup: 'last-lookup',

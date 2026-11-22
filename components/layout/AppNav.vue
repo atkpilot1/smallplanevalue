@@ -15,21 +15,28 @@
         Look up my plane
       </button>
       <button class="nav-account" type="button" @click="onAccount">
-        {{ user ? 'Manage Account' : 'Sign In' }}
+        {{ accountLabel }}
       </button>
     </div>
   </nav>
 </template>
 
 <script setup lang="ts">
-const { user, openLogin, openAccount } = useAuth()
+const { user, accessRole, openLogin, openAccount } = useAuth()
+
+const accountLabel = computed(() => {
+  if (user.value) return 'Manage Account'
+  if (accessRole.value === 'beta') return 'Beta access'
+  if (accessRole.value === 'owner') return 'Signed in'
+  return 'Sign In'
+})
 
 function scrollToApp() {
   scrollToTools()
 }
 
 function onAccount() {
-  if (user.value) openAccount()
+  if (user.value || accessRole.value) openAccount()
   else openLogin()
 }
 </script>

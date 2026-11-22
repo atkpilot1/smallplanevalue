@@ -14,12 +14,33 @@
       <button type="button" class="auth-close" aria-label="Close" @click="closeDialog">
         <i class="ti ti-x" aria-hidden="true"></i>
       </button>
-      <h2 id="login-title">Sign in</h2>
+      <h2 id="login-title">{{ mode === 'access' ? 'Access code' : 'Sign in' }}</h2>
       <p id="login-lead" class="auth-dialog-lead">
-        Enter your email and we’ll send a 6-digit code. No password needed.
+        {{ mode === 'access'
+          ? 'Enter your code or the beta code. This browser stays signed in for 30 days.'
+          : 'Enter your email and we’ll send a 6-digit code. No password needed.' }}
       </p>
 
-      <form v-if="step === 'email'" class="auth-form" @submit.prevent="onSend">
+      <form v-if="mode === 'access'" class="auth-form" @submit.prevent="onAccess">
+        <div class="form-group">
+          <label for="auth-access-code">Access code</label>
+          <input
+            id="auth-access-code"
+            ref="accessInput"
+            v-model="accessCode"
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Enter code"
+          />
+        </div>
+        <button class="n-lookup-btn auth-submit" type="submit" :disabled="verifying">
+          {{ verifying ? 'Checking…' : 'Continue' }}
+        </button>
+        <button type="button" class="auth-back" @click="mode = 'email'">Use email instead</button>
+      </form>
+
+      <form v-else-if="step === 'email'" class="auth-form" @submit.prevent="onSend">
         <div class="form-group">
           <label for="auth-email">Email</label>
           <input
@@ -56,6 +77,9 @@
         </button>
         <button type="button" class="auth-back" @click="onBack">Use a different email</button>
       </form>
+      <button v-if="mode === 'email' && step === 'email'" type="button" class="auth-back" @click="mode = 'access'">
+        Use an access code
+      </button>
 
       <p v-if="error" class="auth-error" role="alert">{{ error }}</p>
     </div>
@@ -74,19 +98,31 @@ const {
   sendCode,
   verifyCode,
   backToEmail,
+  redeemAccessCode,
 } = useAuth()
 
 const email = ref('')
 const code = ref('')
+const accessCode = ref('')
+const mode = ref<'email' | 'access'>('email')
 const emailInput = ref<HTMLInputElement | null>(null)
 const codeInput = ref<HTMLInputElement | null>(null)
+const accessInput = ref<HTMLInputElement | null>(null)
 
 watch(dialog, async (open) => {
   if (open !== 'login') return
   email.value = ''
   code.value = ''
+  accessCode.value = ''
+  mode.value = 'email'
   await nextTick()
   emailInput.value?.focus()
+})
+
+watch(mode, async (next) => {
+  if (next !== 'access' || dialog.value !== 'login') return
+  await nextTick()
+  accessInput.value?.focus()
 })
 
 watch(step, async (s) => {
@@ -109,6 +145,10 @@ async function onSend() {
 
 async function onVerify() {
   await verifyCode(code.value)
+}
+
+async function onAccess() {
+  await redeemAccessCode(accessCode.value)
 }
 
 function onBack() {

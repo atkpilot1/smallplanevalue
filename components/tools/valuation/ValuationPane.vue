@@ -33,9 +33,7 @@
         :listing-ask="submittedAsk"
       />
     </div>
-    <p class="val-free-note" id="v-free-note">
-      {{ showAccount ? 'Show account — valuations on this login do not count against the free limit.' : '3 free valuations per account, then $24 each or $75 for five.' }}
-    </p>
+    <p class="val-free-note" id="v-free-note">{{ valuationNote }}</p>
   </div>
 </template>
 
@@ -47,8 +45,17 @@ import { trackEvent } from '~/composables/useAnalytics'
 import { isShowEmail } from '~/utils/showAccess'
 
 const { activeTab } = useToolsTab()
-const { openLogin, openPaywall, getAccessToken, user } = useAuth()
+const { openLogin, openPaywall, getAccessToken, user, accessRole } = useAuth()
 const showAccount = computed(() => isShowEmail(user.value?.email))
+const valuationNote = computed(() => {
+  if (accessRole.value === 'owner' || showAccount.value) {
+    return 'Your login can run valuations without the free limit.'
+  }
+  if (accessRole.value === 'beta') {
+    return 'Beta access — valuations on this login do not count against the free limit.'
+  }
+  return '3 free valuations per account, then $24 each or $75 for five.'
+})
 const val = useValuationForm()
 const notes = val.notes
 const year = val.year
@@ -99,7 +106,7 @@ async function doValuation() {
   }
 
   const accessToken = await getAccessToken()
-  if (!accessToken) {
+  if (!accessToken && !accessRole.value) {
     openLogin()
     return
   }

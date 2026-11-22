@@ -8,7 +8,8 @@ import {
 } from '../utils/valuationAccess'
 import { engineAdjustment } from '../utils/valuationEngine'
 import { engineLifeRemaining, lookupEngineTbo } from '../data/engineTbo'
-import { requireAuthUser } from '../utils/supabase'
+import { readAccessGrant } from '../utils/accessGrant'
+import { optionalAuthUser, requireAuthUser } from '../utils/supabase'
 
 const bodySchema = z.object({
   make: z.string().min(1),
@@ -325,9 +326,10 @@ export default defineEventHandler(async (event) => {
   const avs = d.avionics
   const clientId = (d.clientId || '').trim()
 
-  const user = await requireAuthUser(event)
+  const accessRole = readAccessGrant(event)
+  const user = accessRole ? await optionalAuthUser(event) : await requireAuthUser(event)
 
-  return await withValuationCredit(user.id, async () => {
+  return await withValuationCredit(user?.id || 'access-code', async () => {
   let prompt =
     'You are an expert aircraft appraiser with current 2025-2026 market knowledge. Provide ACCURATE asking prices — not lowballed.\n\n'
   prompt +=
@@ -573,12 +575,12 @@ export default defineEventHandler(async (event) => {
         model: d.model,
         year: d.year || null,
       },
-      user.id,
+      user?.id,
     )
   }
 
   return out
-  }, { email: user.email })
+  }, { email: user?.email, unlimited: Boolean(accessRole) })
 })
 
 // Flat deduction applied when the aircraft is out of annual (airworthiness
