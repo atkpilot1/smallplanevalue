@@ -1,4 +1,5 @@
 import { FREE_VALUATIONS, freeRemaining } from '~/utils/credits'
+import { isShowEmail } from '~/utils/showAccess'
 import { supabaseAdminInsert, supabaseAdminRpc } from './supabase'
 
 export type CreditStatus = {
@@ -50,8 +51,13 @@ export async function refundValuation(userId: string): Promise<CreditStatus> {
   )
 }
 
-/** Claim a slot atomically, run work, refund if the work throws. */
-export async function withValuationCredit<T>(userId: string, work: () => Promise<T>): Promise<T> {
+/** Claim a slot atomically, run work, refund if the work throws. Show accounts are not charged. */
+export async function withValuationCredit<T>(
+  userId: string,
+  work: () => Promise<T>,
+  options?: { email?: string | null },
+): Promise<T> {
+  if (isShowEmail(options?.email)) return await work()
   await consumeValuation(userId)
   try {
     return await work()

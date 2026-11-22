@@ -33,7 +33,9 @@
         :listing-ask="submittedAsk"
       />
     </div>
-    <p class="val-free-note" id="v-free-note">3 free valuations per account, then $24 each or $75 for five.</p>
+    <p class="val-free-note" id="v-free-note">
+      {{ showAccount ? 'Show account — valuations on this login do not count against the free limit.' : '3 free valuations per account, then $24 each or $75 for five.' }}
+    </p>
   </div>
 </template>
 
@@ -42,9 +44,11 @@ import type { ValuationResult } from '~/types/app'
 import { TRUSTED_PARTNERS, partnerTipHtml } from '~/data/partners'
 import { getOrCreateClientId, getValuationEmail } from '~/composables/useClientId'
 import { trackEvent } from '~/composables/useAnalytics'
+import { isShowEmail } from '~/utils/showAccess'
 
 const { activeTab } = useToolsTab()
-const { openLogin, openPaywall, getAccessToken } = useAuth()
+const { openLogin, openPaywall, getAccessToken, user } = useAuth()
+const showAccount = computed(() => isShowEmail(user.value?.email))
 const val = useValuationForm()
 const notes = val.notes
 const year = val.year

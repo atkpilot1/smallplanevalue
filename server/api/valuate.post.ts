@@ -578,7 +578,7 @@ export default defineEventHandler(async (event) => {
   }
 
   return out
-  })
+  }, { email: user.email })
 })
 
 // Flat deduction applied when the aircraft is out of annual (airworthiness
